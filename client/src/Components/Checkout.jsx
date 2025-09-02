@@ -1,0 +1,380 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CreditCard, MapPin, User, Phone } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteCartItem, getCartItems, placeCustomerOrder } from '../redux/productSlice';
+
+const Checkout = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const cartItems = useSelector((state) => state.product.cartItems);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.product_price * item.quantity), 0);
+  
+  const shipping = 5.99;
+  const total = subtotal + shipping;
+  const [formData, setFormData] = useState({
+    // Personal Info
+    user_id:userInfo?.user_id,
+    firstName: userInfo?.name,
+    email: userInfo?.email,
+    phone: userInfo?.mobile_no,
+    // Address
+    address: userInfo?.address,
+    city: '',
+    state: '',
+    zipCode: '',
+    // Payment
+    paymentMethod:'CREDIT',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardName: ''
+  });
+  
+
+
+  
+  const dispatch=useDispatch();
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+  const clearCart=async(cartItemId)=>{
+    await dispatch(deleteCartItem({
+        user_id: userInfo?.user_id,
+        cart_item_id: parseInt(cartItemId),
+    }))
+    await dispatch(getCartItems({user_id:userInfo?.user_id}));
+  }
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    // Simulate order processing
+    await dispatch(placeCustomerOrder({formData,cartItems}));
+    console.log(formData)
+    clearCart();
+    // navigate('/order-success');
+  };
+
+  const nextStep = () => setCurrentStep(Math.min(3, currentStep + 1));
+  const prevStep = () => setCurrentStep(Math.max(1, currentStep - 1));
+
+  if (cartItems.length === 0) {
+    navigate('/cart');
+    return null;
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+      {/* Progress Steps */}
+      <div className="flex items-center justify-center mb-8">
+        {[1, 2, 3].map((step) => (
+          <div key={step} className="flex items-center">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                step <= currentStep
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {step}
+            </div>
+            {step < 3 && (
+              <div
+                className={`w-20 h-1 ${
+                  step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                }`}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Checkout Form */}
+        <div className="lg:col-span-2">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Step 1: Personal Information */}
+            {currentStep === 1 && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-6">
+                  <User className="h-6 w-6 text-green-600 mr-2" />
+                  <h2 className="text-xl font-bold">Personal Information</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      required
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      required
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Delivery Address */}
+            {currentStep === 2 && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-6">
+                  <MapPin className="h-6 w-6 text-green-600 mr-2" />
+                  <h2 className="text-xl font-bold">Delivery Address</h2>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Street Address
+                    </label>
+                    <input
+                      type="text"
+                      name="address"
+                      required
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        name="city"
+                        required
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        State
+                      </label>
+                      <input
+                        type="text"
+                        name="state"
+                        required
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        ZIP Code
+                      </label>
+                      <input
+                        type="text"
+                        name="zipCode"
+                        required
+                        value={formData.zipCode}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Payment Information */}
+            {currentStep === 3 && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-6">
+                  <CreditCard className="h-6 w-6 text-green-600 mr-2" />
+                  <h2 className="text-xl font-bold">Payment Information</h2>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Card Number
+                    </label>
+                    <input
+                      type="text"
+                      name="cardNumber"
+                      maxLength={16} // 16 digits + 3 spaces
+                      required
+                      placeholder="1234 5678 9012 3456"
+                      value={formData.cardNumber}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Expiry Date
+                      </label>
+                      <input
+                        type="text"
+                        name="expiryDate"
+                        required
+                        placeholder="MM/YY"
+                        value={formData.expiryDate}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        CVV
+                      </label>
+                      <input
+                        type="text"
+                        name="cvv"
+                        required
+                        placeholder="123"
+                        value={formData.cvv}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cardholder Name
+                    </label>
+                    <input
+                      type="text"
+                      name="cardName"
+                      required
+                      value={formData.cardName}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              {currentStep > 1 && (
+                <button
+                  type="button"
+                  onClick={prevStep}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  Previous
+                </button>
+              )}
+              {currentStep < 3 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                >
+                  Place Order
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Order Summary */}
+        <div className="bg-white rounded-lg shadow-md p-6 h-fit">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
+          
+          <div className="space-y-4 mb-6">
+            {cartItems.map((item) =>{const product = item; // assuming item itself contains full product details
+            let images = [];
+
+            try {
+              images = JSON.parse(product.product_image);
+            } catch (err) {
+              console.error("Invalid image format");
+            } return(
+              <div key={item.product_id} className="flex items-center space-x-3">
+                <img
+                  src={images[0]}
+                  alt={item.name}
+                  className="w-12 h-12 object-cover rounded"
+                />
+                <div className="flex-1">
+                  <p className="font-medium text-sm">{item.product_name}</p>
+                  <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
+                </div>
+                <p className="font-medium">${(item.product_price * item.quantity).toFixed(2)}</p>
+              </div>
+            )})}
+          </div>
+
+          <div className="space-y-3 border-t border-gray-200 pt-4">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Subtotal</span>
+              <span className="font-medium">${subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Shipping</span>
+              <span className="font-medium">${shipping.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg">
+              <span>Total</span>
+              <span className="text-green-600">${total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Checkout;
