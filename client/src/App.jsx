@@ -24,6 +24,7 @@ import AdminOrders from "./pages/AdminDashboard/AdminOrders";
 import AdminPayments from "./pages/AdminDashboard/AdminPayments";
 import AdminReviews from "./pages/AdminDashboard/AdminReviews";
 import Checkout from "./Components/Checkout";
+import Profile from "./Components/Profile";
 
 const ProtectedAdminRoute= ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
@@ -35,8 +36,10 @@ const ProtectedAdminRoute= ({ children }) => {
 function App() {
   const userInfo = useSelector((state) => state.auth.userInfo);
   const appearance = {
-    theme: 'stripe'
+    theme: 'stripe',
   };
+  // Enable the skeleton loader UI for optimal loading.
+  const loader = 'auto';
  // This is your test publishable API key.
 
   const stripePromise = loadStripe('pk_test_51RyflqKnzA1djliPeNryh0ES6pw1NvRIcb7LOnw1S4q4VQsq3hNgjmi3Sbfl92EE1uHJbfSINguJsB8Og6nV34Ow00qKC55yV4');
@@ -49,9 +52,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={userInfo ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mycart" element={<CartPage />} />
-          <Route path="/checkout" element={<Elements stripe={stripePromise} >
+          <Route path="/checkout" element={<Elements options={{appearance,loader}} stripe={stripePromise} >
                 <Checkout />
               </Elements>} />
           <Route path="/allitems" element={<Categories />} />

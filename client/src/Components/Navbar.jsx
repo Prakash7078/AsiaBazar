@@ -189,7 +189,7 @@ function Navbar() {
             <hr />
             {userInfo && (
               <div>
-                <Route to="/myprofile">
+                <Route to="/profile">
                   <div onClick={toggleMenu} className="flex items-center gap-4">
                     {notifications?.length > 0 ? (
                       <Badge
@@ -264,7 +264,7 @@ function Navbar() {
             )}
 
         {userInfo && userInfo.image != "" && (
-          <Route to="/myprofile">
+          <Route to="/profile">
             {notifications?.length > 0 ? (
               <Badge
                 overlap="circular"

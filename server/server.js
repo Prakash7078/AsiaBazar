@@ -7,6 +7,9 @@ const adminRouter = require('./routes/adminRoutes');
 const productRouter=require('./routes/productRoutes');
 const connectDB=require('./db/connectDB');
 const app = express();
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
+
+
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -19,7 +22,25 @@ app.use(cors());
 app.use(express.json());
 //socket server
 
+//create payment Intent used to send client secret to client
+app.post("/create-payment-intent", async (req, res) => {
+  const { amount } = req.body;
+  const amountInCents = Math.round(amount * 100);
 
+  // Create a PaymentIntent with the order amount and currency
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amountInCents,
+    currency: "usd",
+    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
 
 
 

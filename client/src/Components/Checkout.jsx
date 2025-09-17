@@ -2,9 +2,25 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, MapPin, User, Phone } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteCartItem, getCartItems, placeCustomerOrder } from '../redux/productSlice';
+import { deleteCart, deleteCartItem, getCartItems, placeCustomerOrder } from '../redux/productSlice';
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+  CardElement
+} from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { toast } from 'react-toastify';
+import { BASE_URL } from '../config/url';
+import axios from 'axios';
 
 const Checkout = () => {
+
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const cartItems = useSelector((state) => state.product.cartItems);
@@ -25,7 +41,6 @@ const Checkout = () => {
     state: '',
     zipCode: '',
     // Payment
-    paymentMethod:'CREDIT',
     cardNumber: '',
     expiryDate: '',
     cvv: '',
@@ -49,14 +64,97 @@ const Checkout = () => {
     }))
     await dispatch(getCartItems({user_id:userInfo?.user_id}));
   }
-  const handleSubmit = async(e) => {
+
+
+  
+
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate order processing
-    await dispatch(placeCustomerOrder({formData,cartItems}));
-    console.log(formData)
-    clearCart();
-    // navigate('/order-success');
-  };
+
+    if (!stripe || !elements) {
+      setMessage('Stripe has not loaded yet.');
+      return;
+    }
+    if( !formData.address || !formData.city || !formData.state || !formData.zipCode ){
+      toast.error("Please fill all the required fields");
+      return;
+    }
+
+    setLoading(true);
+
+    // Create a payment intent on the server (replace with your API call)
+    const response = await fetch(`${BASE_URL}/create-payment-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount:total}), // Replace with your amount
+    });
+    if (!response.ok) {
+      setMessage('Failed to create payment intent.');
+      setLoading(false);
+      return;
+    }
+    const { clientSecret } = await response.json();
+
+    // Confirm the payment
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement),
+        billing_details: {
+                  name: userInfo?.username,
+                  email: userInfo?.email,
+                  phone: userInfo?.mobile,
+                  address: {
+                    line1: formData?.address, // Your actual address
+                    city:formData?.city,      // Your actual city
+                    state: formData?.state,          // Your actual state
+                    postal_code: formData?.zipCode, // Your actual postal code
+                    country: 'US'// Use US as your country
+                  },
+          
+                },
+      },
+    });
+    console.log("result after payment",result);
+    if(result.error){
+          console.log(result.error);
+          toast.dismiss()
+          toast.error(result.error.message);
+    } else if (result.paymentIntent?.status === 'succeeded') {
+      // Payment succeeded, call the addCustomerOrder controller
+      const orderData = {
+        formData: {
+          user_id: formData?.user_id,
+          firstName: formData?.name,
+          email: formData?.email,
+          phone: formData?.phone,
+          address: formData?.address,
+          city: formData?.city,
+          state: formData?.state,
+          zipCode: formData?.zipCode,
+          paymentIntent: result.paymentIntent.id, // Payment method ID
+          paymentStatus: result.paymentIntent.status,
+          totalAmount: result.paymentIntent.amount / 100, // Convert cents to dollars
+        },
+        cartItems, // Pass the cart items from your state
+      };
+  
+      await dispatch(placeCustomerOrder(orderData));
+      const res=await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?.user_id}`,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }});
+      toast.success(res?.data?.message);
+      await dispatch(deleteCart({user_id:userInfo?.user_id}));
+      // for(const item of cartItems){
+      //   await clearCart(item?.cart_item_id);
+      // }
+      navigate('/');
+      
+    }
+  
+    setLoading(false);
+  }
 
   const nextStep = () => setCurrentStep(Math.min(3, currentStep + 1));
   const prevStep = () => setCurrentStep(Math.max(1, currentStep - 1));
@@ -186,7 +284,7 @@ const Checkout = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        City
+                        City*
                       </label>
                       <input
                         type="text"
@@ -197,9 +295,10 @@ const Checkout = () => {
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        State
+                        State*
                       </label>
                       <input
                         type="text"
@@ -212,7 +311,7 @@ const Checkout = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        ZIP Code
+                        ZIP Code*
                       </label>
                       <input
                         type="text"
@@ -228,104 +327,45 @@ const Checkout = () => {
               </div>
             )}
 
-            {/* Step 3: Payment Information */}
-            {currentStep === 3 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex items-center mb-6">
-                  <CreditCard className="h-6 w-6 text-green-600 mr-2" />
-                  <h2 className="text-xl font-bold">Payment Information</h2>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Card Number
-                    </label>
-                    <input
-                      type="text"
-                      name="cardNumber"
-                      maxLength={16} // 16 digits + 3 spaces
-                      required
-                      placeholder="1234 5678 9012 3456"
-                      value={formData.cardNumber}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        name="expiryDate"
-                        required
-                        placeholder="MM/YY"
-                        value={formData.expiryDate}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        CVV
-                      </label>
-                      <input
-                        type="text"
-                        name="cvv"
-                        required
-                        placeholder="123"
-                        value={formData.cvv}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cardholder Name
-                    </label>
-                    <input
-                      type="text"
-                      name="cardName"
-                      required
-                      value={formData.cardName}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {/* Navigation Buttons */}
-            <div className="flex justify-between">
-              {currentStep > 1 && (
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  Previous
-                </button>
+            {/* Step 3: Payment Information */}
+            <div>
+              {currentStep === 3 && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <CardElement/>
+                </div>
               )}
-              {currentStep < 3 ? (
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
-                >
-                  Next
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
-                >
-                  Place Order
-                </button>
-              )}
+
+              {/* Navigation Buttons */}
+              <div className="flex justify-between mt-10">
+                {currentStep > 1 && (
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    Previous
+                  </button>
+                )}
+                {currentStep < 3 ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                  >
+                    Place Order
+                  </button>
+                )}
+              </div>
             </div>
+
           </form>
         </div>
 

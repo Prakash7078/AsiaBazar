@@ -112,7 +112,7 @@ function CartPage() {
         </div>
       )}
       </div>
-      <div className="bg-white rounded-lg shadow-md p-6 h-fit">
+      {cartItems?.length>0 && <div className="bg-white rounded-lg shadow-md p-6 h-fit">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
           
           <div className="space-y-3 mb-6">
@@ -145,7 +145,7 @@ function CartPage() {
           >
             Continue Shopping
           </Link>
-        </div>
+        </div>}
       </div>
   );
 }

@@ -53,6 +53,18 @@ const getCartItems=expressAsyncHandler(async(req,res)=>{
   res.status(StatusCodes.OK).json(cartItems);
 })
 
+const deleteCart=expressAsyncHandler(async(req,res)=>{
+  const db = await connectDB();
+  console.log("user_id",req.params.user_id);
+  try{
+    const[cartItems]=await db.query(`delete from cart_items where user_id=?`,[req.params.user_id]);
+    res.status(StatusCodes.OK).json({cartItems,message:"Your cart is empty."});
+  }catch(error){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Error deleting cart items"});
+  }
+  
+})
+
 const deleteCartItem=expressAsyncHandler(async(req,res)=>{
   const db = await connectDB();
   const[cartItems]=await db.query(`delete from cart_items where cart_item_id=? and user_id=?
@@ -96,8 +108,8 @@ const addProductCart=expressAsyncHandler(async(req,res)=>{
   };
 
   res.status(201).json({
-    message: "✅ Product added successfully",
+    message: "✅ added to cart",
     cartItem: newCartitem,
   });
 })
-module.exports={getAllProducts,getSingleProduct,getCartItems,addProductCart,deleteCartItem,updateCartItem}
+module.exports={getAllProducts,getSingleProduct,getCartItems,addProductCart,deleteCartItem,updateCartItem,deleteCart}

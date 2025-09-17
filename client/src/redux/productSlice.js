@@ -139,6 +139,33 @@ export const placeCustomerOrder=createAsyncThunk("api/placeOrder",async({formDat
   }
 })
 
+export const getCustomerOrders=createAsyncThunk("api/getOrders",async(user_id)=>{
+  try{
+    const result=await axios.get(`${BASE_URL}/api/products/getOrders/${user_id}`,{
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }}
+    )
+    return result.data;
+  }catch(err){
+    console.log(err);
+  }
+})
+
+export const deleteCart=createAsyncThunk("api/deleteCart",async(user_id)=>{
+  try{
+    const result=await axios.delete(`${BASE_URL}/api/products/deleteCart/${user_id}`,{
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      }}
+    )
+    toast.success(result?.data?.message);
+    return result.data;
+  }catch(err){
+    console.log(err);
+  }
+})
+
 const productSlice = createSlice({
   name: "products",
   initialState: {
@@ -213,6 +240,17 @@ const productSlice = createSlice({
         state.loading = false;
       });
     builder
+      .addCase(deleteCart.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteCart.fulfilled, (state) => {
+        state.loading = false;
+        state.cartItems = [];
+      })
+      .addCase(deleteCart.rejected, (state) => {
+        state.loading = false;
+      });
+    builder
       .addCase(placeCustomerOrder.pending, (state) => {
         state.loading = true;
       })
@@ -221,6 +259,17 @@ const productSlice = createSlice({
         toast.success(payload?.message);
       })
       .addCase(placeCustomerOrder.rejected, (state) => {
+        state.loading = false;
+      });
+      builder
+      .addCase(getCustomerOrders.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getCustomerOrders.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.customer_orders = payload;
+      })
+      .addCase(getCustomerOrders.rejected, (state) => {
         state.loading = false;
       });
   },
