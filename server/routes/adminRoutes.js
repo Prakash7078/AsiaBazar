@@ -3,8 +3,7 @@ const router = express.Router();
 
 
 const isAuth = require('../middleware/auth');
-const { addProduct, updateProduct, deleteProduct, getAllUsers, getAllOrders,updateOrder } = require("../controllers/adminControllers.js");
-
+const { addProduct, updateProduct, deleteProduct, updateOrder, getAllOrders, getAllUsers } = require("../controllers/adminControllers");
 // router.get("/", isAuth, getDetails);
 // router.post("/addAdmin", isAuth, addAdmin);
 router.get("/getUsers",isAuth,getAllUsers)

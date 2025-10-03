@@ -1,8 +1,21 @@
 const expressAsyncHandler = require("express-async-handler");
-const connectDB = require("../db/connectDB.js");
 const { StatusCodes } = require("http-status-codes");
 const uploadImage = require("../middleware/uploadMiddleware.js");
+const dotenv = require("dotenv");
+const Product = require("../models/productModel.js");
+const Order = require("../models/orderModel.js");
+const User = require("../models/userModel.js");
 
+
+dotenv.config();
+
+// 🔹 Get All Users
+const getAllUsers = expressAsyncHandler(async (req, res) => {
+  // Mongoose equivalent to: SELECT * FROM Users
+  // Use .select('-password') to ensure the password hash is never returned
+  const users = await User.find({}).select('-password');
+  res.status(StatusCodes.OK).json(users);
+});
 // 🔹 Add Product
 const addProduct = expressAsyncHandler(async (req, res) => {
   const {
@@ -16,41 +29,27 @@ const addProduct = expressAsyncHandler(async (req, res) => {
   } = req.body;
 
   const imageUrls = [];
-  const totalQty = req.body.total_quantity === '' ? null : parseInt(req.body.total_quantity, 10);
+  // Default to 0 if total_quantity is not provided/valid
+  const totalQty = parseInt(total_quantity, 10) || 0; 
 
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
-      await uploadImage("asiabazar", file); // uploads to S3
+      await uploadImage("asiabazar", file);
       const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/asiabazar/${file.originalname}`;
       imageUrls.push(imageUrl);
     }
   }
 
-  const db = await connectDB();
-  const [result] = await db.query(
-    `INSERT INTO Products (product_name, product_price, product_quantity,quantity_measure,total_quantity, product_category, product_description, product_image)
-     VALUES (?, ?, ?, ?, ?,?,?,?)`,
-    [
-      product_name,
-      product_price,
-      product_quantity,
-      quantity_measure,
-      total_quantity,
-      product_category,
-      product_description,
-      JSON.stringify(imageUrls), // Store as stringified array
-    ]
-  );
-
-  const newProduct = {
-    product_id: result.insertId,
+  const newProduct = await Product.create({
     product_name,
     product_price,
     product_quantity,
+    quantity_measure,
+    total_quantity: totalQty,
     product_category,
     product_description,
     product_image: imageUrls,
-  };
+  });
 
   res.status(201).json({
     message: "✅ Product added successfully",
@@ -58,19 +57,22 @@ const addProduct = expressAsyncHandler(async (req, res) => {
   });
 });
 
+// 🔹 Delete Product
 const deleteProduct = expressAsyncHandler(async(req,res)=>{
-  const db = await connectDB();
-  await db.query(`delete from Products where product_id=?`,[req.params.id])
-  res.status(StatusCodes.OK).json({ message: "✅ Product deleted successfully" });
-
-})
+  const productId = req.params.id;
   
-
-
+  const result = await Product.findByIdAndDelete(productId);
+  
+  if (!result) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
+  }
+  
+  res.status(StatusCodes.OK).json({ message: "✅ Product deleted successfully" });
+});
+  
 // 🔹 Update Product
 const updateProduct = expressAsyncHandler(async (req, res) => {
   const {
-    product_id,
     product_name,
     product_price,
     product_quantity,
@@ -79,6 +81,9 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
     product_category,
     product_description
   } = req.body;
+  
+  const productId = req.params.id;
+  // Parse existing image URLs from the stringified body data
   const existingImages = JSON.parse(req.body.existing_images || "[]");
 
   const newImageUrls = [];
@@ -86,71 +91,77 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   // Handle new file uploads
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
-      await uploadImage("asiabazar", file); // S3 upload
+      await uploadImage("asiabazar", file);
       const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/asiabazar/${file.originalname}`;
       newImageUrls.push(imageUrl);
     }
   }
 
-  // Merge existing and new images
   const allImages = [...existingImages, ...newImageUrls];
 
-  // Update in database
-  const db = await connectDB();
-  await db.query(
-    `UPDATE Products 
-     SET product_name = ?, 
-         product_price = ?, 
-         product_quantity = ?, 
-         quantity_measure = ?, 
-         total_quantity = ?, 
-         product_category = ?, 
-         product_description= ?,
-         product_image = ? 
-     WHERE product_id = ?`,
-    [
-      product_name,
-      product_price,
-      product_quantity,
-      quantity_measure,
-      total_quantity,
-      product_category,
-      product_description,
-      JSON.stringify(allImages),
-      req.params.id,
-    ]
+  const updateFields = {
+    product_name,
+    product_price,
+    product_quantity,
+    quantity_measure,
+    total_quantity,
+    product_category,
+    product_description,
+    product_image: allImages,
+  };
+
+  const updatedProduct = await Product.findByIdAndUpdate(
+    productId,
+    updateFields,
+    { new: true, runValidators: true }
   );
+
+  if (!updatedProduct) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
+  }
 
   res.status(StatusCodes.OK).json({ message: "✅ Product updated successfully" });
 });
-const getAllUsers = expressAsyncHandler(async (req, res) => {
-  const db = await connectDB();
-  const [users] = await db.query(`SELECT * FROM Users`);
-  res.status(StatusCodes.OK).json(users);
-});
 
+// 🔹 Get All Orders
 const getAllOrders = expressAsyncHandler(async (req, res) => {
-  const db=await connectDB();
-  const [orders]=await db.query(`select * from orders order by order_id desc`);
-  for(const order of orders){
-    const [items]=await db.query(`SELECT oi.*, p.product_name, p.product_image,p.product_description,p.quantity_measure,p.product_category,p.product_description FROM order_items oi JOIN products p ON oi.product_id = p.product_id WHERE oi.order_id=?`,[order.order_id]);
-    order.items=items;
-  }
+  
+  // Find all orders and sort by creation date descending
+  const orders = await Order.find({})
+    .sort({ createdAt: -1 })
+    .lean();
+
   res.status(200).json(orders);
 });
 
-const updateOrder=expressAsyncHandler(async(req,res)=>{
-  const db=await connectDB();
-  const {order_status,updated_mobile_no,shipping_address}=req.body;
-  const orderId=req.params.orderId;
-  await db.query(`update orders set order_status=?,updated_mobile_no=?,shipping_address=? where order_id=?`,[order_status,updated_mobile_no,shipping_address,orderId]);
-  res.status(StatusCodes.OK).json({ message: "✅ Order updated successfully" });
+// 🔹 Update Order
+const updateOrder = expressAsyncHandler(async(req,res)=>{
+  const {order_status, updated_mobile_no, shipping_address} = req.body;
+  const orderId = req.params.orderId;
+
+  const updatedOrder = await Order.findByIdAndUpdate(
+    orderId,
+    {
+      order_status,
+      updated_mobile_no,
+      shipping_address,
+      updatedAt: Date.now() // Update the timestamp
+    },
+    { new: true }
+  );
+  
+  if (!updatedOrder) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: "Order not found" });
+  }
+
+  res.status(StatusCodes.OK).json({ message: "✅ Order updated successfully", order: updatedOrder });
 })
+
 module.exports = {
+  getAllUsers,
   addProduct,
   getAllOrders,
   updateOrder,
-  getAllUsers,
   updateProduct,
   deleteProduct
 };

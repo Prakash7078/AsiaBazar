@@ -1,30 +1,42 @@
-const mongoose=require('mongoose');
-const jwt=require('jsonwebtoken');
-const bcrypt=require('bcrypt');
-const validator=require('validator');
-const userSchema=new mongoose.Schema(
-    {
-        category:{type:String,default:"Student"},
-        username:{type:String,required:true},
-        email: {
-            type: String,
-            required: [true, "Email is required"],
-            unique: true,
-            lowercase:true,
-        },        
-        password:{type:String,required:true},
-        image:{type: String,
-            default:
-              "https://booktalks.s3.ap-south-1.amazonaws.com/istockphoto-1305665241-1024x1024.jpg",
-        },
-        branch:{type:String,required:true},
-        year:{type:Number,required:true},
-        section:{type:String,required:true},
-        rollno:{type:String,required:true,unique:true},
-        isAdmin:{type:Boolean,default:false,required:true},
-    },{
-        timestamps:true,
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema({
+    // Corresponds to user_id (MongoDB automatically uses _id as the primary key)
+    
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    mobile_no: {
+        type: String,
+        // No 'unique' constraint here, as users might not provide one, but good for searching
+    },
+    address: {
+        type: String
+    },
+    admin: {
+        type: Boolean,
+        default: false
+    },
+    // Corresponds to created_at
+    createdAt: { 
+        type: Date, 
+        default: Date.now 
     }
-);
-const User=mongoose.model('User',userSchema);
-module.exports=User;
+    // Note: The `select * from Users;` query doesn't create collections, it's a SQL command.
+});
+
+const User = mongoose.model('User', UserSchema);
+module.exports = User;

@@ -1,115 +1,140 @@
-const express = require("express");
-const connectDB=require('../db/connectDB.js');
 const expressAsyncHandler = require("express-async-handler");
-const uploadImage = require("../middleware/uploadMiddleware");
-const userRoutes = express.Router();
-const dotenv = require("dotenv");
 const { StatusCodes } = require("http-status-codes");
-// const { sendMail } = require("../middleware/sendMail");
+const uploadImage = require("../middleware/uploadMiddleware.js");
+const dotenv = require("dotenv");
+
+const Product = require("../models/productModel.js");
+const CartItem = require("../models/cartItemModel.js");
+
 dotenv.config();
-// const getCategories = expressAsyncHandler(async (req, res) => {
-//     console.log("logn", req.body.data.email.toLowerCase());
-//     const db = await connectDB(); // ✅ Get the pool first
-//     const [rows] =await db.query(
-//       `SELECT * FROM Users WHERE email = ?`, 
-//       [req.body.data.email.toLowerCase()]
-//     );
-//     console.log(rows[0])
-//     const user = rows[0];
-//     if (!user) {
-//       res.status(403).send({ error: "user not found" });
-//     }
-//     if (bcrypt.compareSync(req.body.data.password, user.password)) {
-//       const token = generateToken(user);
-//       res.status(201).json({ token, user });
-//       return;
-//     }
-//     res.status(401).send({ error: "Invalid Password" });
-//   });
+
+
+
 // 🔹 Get All Products
 const getAllProducts = expressAsyncHandler(async (req, res) => {
-    const db = await connectDB();
-    const [products] = await db.query(`SELECT * FROM Products`);
+    // Find all products
+    const products = await Product.find({});
     res.status(StatusCodes.OK).json(products);
-  });
-  
-  // 🔹 Get Single Product (optional)
-  const getSingleProduct = expressAsyncHandler(async (req, res) => {
-    const db = await connectDB();
-    const [rows] = await db.query(`SELECT * FROM Products WHERE product_id = ?`, [req.params.id]);
-    const product = rows[0];
-  
-    if (!product) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
-    }
-  
-    res.status(StatusCodes.OK).json(product);
-  });
+});
 
+// 🔹 Get Single Product
+const getSingleProduct = expressAsyncHandler(async (req, res) => {
+  // Find product by MongoDB _id
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
+  }
+
+  res.status(StatusCodes.OK).json(product);
+});
+
+
+
+// 🔹 Get Cart Items (SQL JOIN equivalent)
 const getCartItems=expressAsyncHandler(async(req,res)=>{
-  const db = await connectDB();
-  const[cartItems]=await db.query(`select * from Products p join cart_items c on p.product_id=c.product_id where c.user_id=?
-`,[req.params.userId]);
+  const userId = req.params.userId;
+  
+  // Find cart items for the user and use populate('product') for the JOIN equivalent
+  const cartItems = await CartItem.find({ user: userId })
+    .populate('product') // Fills the product reference with the actual Product document
+    .lean();
+    
   res.status(StatusCodes.OK).json(cartItems);
-})
+});
 
+// 🔹 Delete Cart (Empty Cart)
 const deleteCart=expressAsyncHandler(async(req,res)=>{
-  const db = await connectDB();
-  console.log("user_id",req.params.user_id);
+  const userId = req.params.user_id;
+  
   try{
-    const[cartItems]=await db.query(`delete from cart_items where user_id=?`,[req.params.user_id]);
-    res.status(StatusCodes.OK).json({cartItems,message:"Your cart is empty."});
+    // Delete all cart items belonging to the user
+    await CartItem.deleteMany({ user: userId });
+    res.status(StatusCodes.OK).json({message:"Your cart is empty."});
   }catch(error){
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Error deleting cart items"});
   }
-  
-})
+});
 
+// 🔹 Delete Single Cart Item
 const deleteCartItem=expressAsyncHandler(async(req,res)=>{
-  const db = await connectDB();
-  const[cartItems]=await db.query(`delete from cart_items where cart_item_id=? and user_id=?
-`,[req.params.cart_item_id,req.params.user_id]);
-  res.status(StatusCodes.OK).json(cartItems);
-})
+  const cartItemId = req.params.cart_item_id;
+  const userId = req.params.user_id;
 
+  // Find the item by _id and user, then delete it
+  const result = await CartItem.findOneAndDelete({ 
+      _id: cartItemId, 
+      user: userId 
+  });
+
+  if (!result) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart item not found or does not belong to user" });
+  }
+
+  res.status(StatusCodes.OK).json({ message: "Cart item deleted successfully" });
+});
+
+// 🔹 Update Cart Item Quantity
 const updateCartItem=expressAsyncHandler(async(req,res)=>{
-  const db=await connectDB();
-  const [cartItems]=await db.query(`update cart_items
-    set quantity=?
-    where user_id=? and cart_item_id=?;`,[req.body.quantity,req.params.user_id,req.params.cart_item_id]);
-  res.status(StatusCodes.OK).json(cartItems);
-})
+  const cartItemId = req.params.cart_item_id;
+  const userId = req.params.user_id;
+  const { quantity } = req.body;
 
-const addProductCart=expressAsyncHandler(async(req,res)=>{
-  const db = await connectDB();
-  const{
-    user_id,
-    product_id,
-    quantity
-  }=req.body;
-  const [existing] = await db.query(
-    `SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?`,
-    [user_id, product_id]
+  // Find and update the quantity of a specific cart item
+  const updatedItem = await CartItem.findOneAndUpdate(
+    { _id: cartItemId, user: userId },
+    { quantity: quantity },
+    { new: true, runValidators: true }
   );
 
-  if (existing.length > 0) {
-    // Product already in cart
+  if (!updatedItem) {
+    return res.status(StatusCodes.NOT_FOUND).json({ message: "Cart item not found or does not belong to user" });
+  }
+  
+  res.status(StatusCodes.OK).json({ message: "Cart item updated successfully", cartItem: updatedItem });
+});
+
+// 🔹 Add Product to Cart
+const addProductCart=expressAsyncHandler(async(req,res)=>{
+  const{ user_id, product_id, quantity } = req.body;
+  
+  // Check if item already exists in cart
+  const existing = await CartItem.findOne({ 
+      user: user_id, 
+      product: product_id 
+  });
+
+  if (existing) {
     return res.status(409).json({
       message: "Product already added to cart",
-      cartItem: existing[0],
+      cartItem: existing,
     });
   }
-  const[result]=await db.query(`INSERT INTO cart_items(user_id,product_id,quantity) values(?,?,?)`,[user_id,product_id,quantity]);
-  const newCartitem = {
-    cart_item_id: result.insertId,
-    user_id,
-    product_id,
-    quantity
-  };
+  
+  // Insert new cart item
+  const newCartItem = await CartItem.create({
+      user: user_id,
+      product: product_id,
+      quantity: quantity || 1
+  });
 
   res.status(201).json({
     message: "✅ added to cart",
-    cartItem: newCartitem,
+    cartItem: newCartItem,
   });
-})
-module.exports={getAllProducts,getSingleProduct,getCartItems,addProductCart,deleteCartItem,updateCartItem,deleteCart}
+});
+
+
+
+
+module.exports = {
+  getAllProducts,
+  getSingleProduct,
+  getCartItems,
+  addProductCart,
+  deleteCartItem,
+  updateCartItem,
+  deleteCart,
+
+};
+

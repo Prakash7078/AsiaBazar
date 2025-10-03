@@ -5,10 +5,12 @@ const uploadImage = require("../middleware/uploadMiddleware");
 const userRoutes = express.Router();
 const dotenv = require("dotenv");
 const { StatusCodes } = require("http-status-codes");
+const CartItem = require("../models/cartItemModel.js");
+const Order = require("../models/orderModel.js");
 // const { sendMail } = require("../middleware/sendMail");
 dotenv.config();
-const addCustomerOrder=expressAsyncHandler(async(req,res)=>{
-    const db=await connectDB();
+// 🔹 Add Customer Order
+const addCustomerOrder = expressAsyncHandler(async(req,res)=>{
     const { formData, cartItems } = req.body;
     const {
         user_id,
@@ -22,47 +24,57 @@ const addCustomerOrder=expressAsyncHandler(async(req,res)=>{
         paymentIntent,
         paymentStatus,
         totalAmount,
-      } = formData;
+    } = formData;
+    
+    // Combine shipping address details
     const shipping_address = `${address}, ${city}, ${state}, ${zipCode}`;
     const updated_mobile_no = phone;
 
+    // Map cart items to the embedded structure required by the Order model
+    const orderItems = cartItems.map(item => ({
+        product: item.product_id, // Reference to Product ID
+        product_name: item.product_name, // Copy product name for historical record
+        quantity: item.quantity,
+        price: item.product_price, // Unit price at time of purchase
+    }));
+
     try{
-        const[result]=await db.query(`INSERT INTO orders(user_id,total_amount,payment_method,payment_status,updated_mobile_no,shipping_address) values(?,?,?,?,?,?)`,[user_id,totalAmount,paymentIntent,paymentStatus,updated_mobile_no,shipping_address]);
-        console.log("result",result);
-        const orderId=result?.insertId;
-        console.log("orderId",orderId);
-        for (const item of cartItems) {
-            const { product_id, quantity, product_price } = item;
-            await db.query(
-                `INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`,
-                [orderId, product_id, quantity, product_price]
-            );
-        }
+        // Create the Order document with embedded items
+        const newOrder = await Order.create({
+            user: user_id,
+            total_amount: totalAmount,
+            payment_method: paymentIntent,
+            payment_status: paymentStatus,
+            updated_mobile_no,
+            shipping_address,
+            items: orderItems, // Embedded order items
+        });
+        
+        // Delete the cart items after successful order creation
+        await CartItem.deleteMany({ user: user_id });
+
         // Final response
         res.status(201).json({
             message: "✅ Order placed successfully",
-            orderId: orderId,
+            orderId: newOrder._id,
         });
     }
     catch (error) {
         console.error("Error placing order:", error);
         return res.status(500).json({ message: "❌ Failed to place order" });
     }
-    
-    
-})
+});
 
-const getUserOrders=expressAsyncHandler(async(req,res)=>{
-    const db=await connectDB();
-    const userId=req.params.user_id;
-    console.log("userId",userId);
-    const [orders]=await db.query(`SELECT * FROM orders WHERE user_id=? ORDER BY order_id DESC`,[userId]);
-    console.log("orders",orders);
-    for(const order of orders){
-        const [items]=await db.query(`SELECT oi.*, p.product_name, p.product_image,p.product_description,p.quantity_measure,p.product_category,p.product_description FROM order_items oi JOIN products p ON oi.product_id = p.product_id WHERE oi.order_id=?`,[order.order_id]);
-        order.items=items;
-    }
+// 🔹 Get User Orders
+const getUserOrders = expressAsyncHandler(async(req,res)=>{
+    const userId = req.params.user_id;
+
+    // Find all orders for the user, sort by creation date
+    const orders = await Order.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .lean();
+    
     res.status(200).json(orders);
-})
+});
 
 module.exports={addCustomerOrder,getUserOrders}

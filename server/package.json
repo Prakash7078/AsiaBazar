@@ -21,7 +21,7 @@
     "http-status-codes": "^2.2.0",
     "jsonwebtoken": "^9.0.1",
     "moment-timezone": "^0.5.43",
-    "mongoose": "^8.18.2",
+    "mongoose": "^8.19.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.14.1",
     "mysql2-promise": "^0.1.4",
