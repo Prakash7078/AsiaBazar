@@ -9,7 +9,6 @@ import { Elements } from "@stripe/react-stripe-js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 import ProductForm from "./pages/AdminDashboard/Product";
 import AllProducts from "./pages/AdminDashboard/AdminProducts";
 import ProductScreen from "./pages/ProductScreen";
@@ -26,27 +25,67 @@ import AdminReviews from "./pages/AdminDashboard/AdminReviews";
 import Checkout from "./Components/Checkout";
 import Profile from "./Components/Profile";
 
-const ProtectedAdminRoute= ({ children }) => {
+const ProtectedAdminRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
-  if(!userInfo || !userInfo?.admin){
+  if (!userInfo || !userInfo?.admin) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 };
+
 function App() {
   const userInfo = useSelector((state) => state.auth.userInfo);
+  
+  // Enhanced appearance configuration for PaymentElement
   const appearance = {
     theme: 'stripe',
+    variables: {
+      colorPrimary: '#10b981', // Green color to match your design
+      colorBackground: '#ffffff',
+      colorText: '#374151',
+      colorDanger: '#ef4444',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      spacingUnit: '4px',
+      borderRadius: '8px',
+    },
+    rules: {
+      '.Tab': {
+        border: '1px solid #d1d5db',
+        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+      },
+      '.Tab:hover': {
+        color: '#10b981',
+      },
+      '.Tab--selected': {
+        borderColor: '#10b981',
+        boxShadow: '0 0 0 1px #10b981',
+      },
+      '.Input': {
+        border: '1px solid #d1d5db',
+        borderRadius: '8px',
+        padding: '12px',
+      },
+      '.Input:focus': {
+        borderColor: '#10b981',
+        boxShadow: '0 0 0 2px rgba(16, 185, 129, 0.2)',
+      },
+    },
   };
-  // Enable the skeleton loader UI for optimal loading.
-  const loader = 'auto';
- // This is your test publishable API key.
 
+  // Options for PaymentElement
+  const options = {
+    mode: 'payment',
+    amount: 1099, // This will be dynamically set in the checkout component
+    currency: 'usd',
+    appearance,
+    // Enable automatic payment methods
+  };
+
+  // This is your test publishable API key
   const stripePromise = loadStripe('pk_test_51RyflqKnzA1djliPeNryh0ES6pw1NvRIcb7LOnw1S4q4VQsq3hNgjmi3Sbfl92EE1uHJbfSINguJsB8Og6nV34Ow00qKC55yV4');
 
-  
   return (
-    <div className="max-w-7xl mx-auto ">
+    <div className="max-w-7xl mx-auto">
       <BrowserRouter>
         <Navbar />
         <Routes>
@@ -55,21 +94,26 @@ function App() {
           <Route path="/profile" element={userInfo ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mycart" element={<CartPage />} />
-          <Route path="/checkout" element={<Elements options={{appearance,loader}} stripe={stripePromise} >
+          <Route 
+            path="/checkout" 
+            element={
+              <Elements options={options} stripe={stripePromise}>
                 <Checkout />
-              </Elements>} />
+              </Elements>
+            } 
+          />
           <Route path="/allitems" element={<Categories />} />
           <Route path="/product/:productId" element={<ProductScreen />} />
-          {/* <Route path="/passwordrequest" element={<PasswordRequest />} /> */}
-          {/* <Route
-            path="/reset-password/:id/:token"
-            element={<ResetPassword />}
-          /> */}
-          <Route path="/admin" element={
-            <ProtectedAdminRoute>
-              <AdminLayout />
-            </ProtectedAdminRoute>
-          }>
+          
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedAdminRoute>
+                <AdminLayout />
+              </ProtectedAdminRoute>
+            }
+          >
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="addProduct" element={<ProductForm />} />
@@ -80,20 +124,21 @@ function App() {
             <Route path="payments" element={<AdminPayments />} />
             <Route path="reviews" element={<AdminReviews />} />
           </Route>
-          
-
-         
-         
         </Routes>
       </BrowserRouter>
-      <div>
-        
-        <ToastContainer
-          position="bottom-center"
-          bodyClassName="font-bold text-blue-900 text-center"
-        />
-       
-      </div>
+      
+      <ToastContainer
+        position="bottom-center"
+        bodyClassName="font-bold text-blue-900 text-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }

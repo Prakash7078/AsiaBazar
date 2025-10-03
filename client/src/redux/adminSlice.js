@@ -31,135 +31,37 @@ export const addAdmin = createAsyncThunk("api/addAdmin", async (data) => {
   }
 });
 
-export const getReviews = createAsyncThunk("api/getReviews", async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/api/msgs/messages`, {
+
+export const updateOrder= createAsyncThunk("api/updateOrder",async({orderId,orderdata})=>{
+  try{
+    const res=await axios.put(`${BASE_URL}/api/admin/updateOrder/${orderId}`,orderdata,{
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log(res.data);
     return res.data;
-  } catch (error) {
+  }catch(error){
     throw new Error(error.message);
   }
 });
-export const deleteClubRegister = createAsyncThunk(
-  "api/clubregister",
-  async (rollno) => {
-    try {
-      console.log("clubregister", rollno);
-      const res = await axios.delete(
-        `${BASE_URL}/api/admin/deleteClubregister/${rollno}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return res.data;
-    } catch (error) {
-      throw new Error(error.message);
-    }
+export const getAllOrders = createAsyncThunk("api/getAllOrders",async()=>{
+  try{
+    const res=await axios.get(`${BASE_URL}/api/admin/getOrders`,{
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return res.data;
+  }catch(error){
+    throw new Error(error.message);
   }
-);
-export const makeRunner = createAsyncThunk(
-  "api/makeRunner",
-  async ({ rollno, runner }) => {
-    try {
-      const res = await axios.patch(
-        `${BASE_URL}/api/events/register/update/runner/${rollno}`,
-        {
-          isRunner: !runner,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return res.data;
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
-);
-//createAsyncThunk(name,async function);
-export const makeWinner = createAsyncThunk(
-  "api/makewinner",
-  async ({ rollno, winner }) => {
-    console.log("roll and winner", rollno, winner);
-    try {
-      const res = await axios.patch(
-        `${BASE_URL}/api/events/register/update/winner/${rollno}`,
-        {
-          isWinner: !winner,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return res.data;
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
-);
-export const makeCoordinator = createAsyncThunk(
-  "api/makeCoordinator",
-  async ({ newCategory, roll }) => {
-    try {
-      const res = await axios.patch(
-        `${BASE_URL}/api/clubs/registers/update/${roll}`,
-        {
-          category: newCategory,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return res.data;
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
-);
-export const getNotifications = createAsyncThunk(
-  "api/notifications",
-  async (id) => {
-    console.log("id", id);
-    try {
-      const res = await axios.get(`${BASE_URL}/api/msgs/notifications/${id}`);
-      return res.data;
-    } catch (err) {
-      console.log("error", err);
-    }
-  }
-);
-export const deleteReviews = createAsyncThunk(
-  "api/deleteReviews",
-  async (id) => {
-    try {
-      const res = await axios.delete(`${BASE_URL}/api/msgs/remove/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      return res.data;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
-);
+});
 //createSlice(name,state,reducers,extrareducers)
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
     admins: [],
+    orders:[],
     users: [],
     notifications: [],
     loading: false,
@@ -187,83 +89,18 @@ const adminSlice = createSlice({
       .addCase(addAdmin.rejected, () => {
         toast.error("Add admin failed");
       });
+    
     builder
-      .addCase(getReviews.pending, (state) => {
+      .addCase(getAllOrders.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getReviews.fulfilled, (state, action) => {
-        const { messages } = action.payload;
-        state.reviews = messages;
+      .addCase(getAllOrders.fulfilled, (state, {payload}) => {
+        state.orders = payload;
       })
-      .addCase(getReviews.rejected, () => {
+      .addCase(getAllOrders.rejected, () => {
         toast.error("Getting Reviews failed");
       });
-    builder
-      .addCase(deleteReviews.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(deleteReviews.fulfilled, (state, action) => {
-        const { message } = action.payload;
-        toast.success(message);
-      })
-      .addCase(deleteReviews.rejected, () => {
-        toast.error("delete review failed");
-      });
-    builder
-      .addCase(makeCoordinator.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(makeCoordinator.fulfilled, (state, action) => {
-        const { message } = action.payload;
-        toast.success(message);
-      })
-      .addCase(makeCoordinator.rejected, () => {
-        toast.error("make coordinator failed");
-      });
-    builder
-      .addCase(makeWinner.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(makeWinner.fulfilled, (state, action) => {
-        const { message } = action.payload;
-        toast.success(message);
-      })
-      .addCase(makeWinner.rejected, () => {
-        toast.error("He is already Runner");
-      });
-    builder
-      .addCase(makeRunner.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(makeRunner.fulfilled, (state, action) => {
-        const { message } = action.payload;
-        toast.success(message);
-      })
-      .addCase(makeRunner.rejected, () => {
-        toast.error("He is already winner");
-      });
-    builder
-      .addCase(deleteClubRegister.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(deleteClubRegister.fulfilled, (state, action) => {
-        const { message } = action.payload;
-        toast.success(message);
-      })
-      .addCase(deleteClubRegister.rejected, () => {
-        toast.error("unable to delete user from club");
-      });
-    builder
-      .addCase(getNotifications.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getNotifications.fulfilled, (state, action) => {
-        const { notifications } = action.payload;
-        state.notifications = notifications;
-      })
-      .addCase(getNotifications.rejected, () => {
-        toast.error("Network error");
-      });
+   
   },
 });
 export default adminSlice.reducer;

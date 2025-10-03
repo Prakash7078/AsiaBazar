@@ -70,15 +70,21 @@ function ProductScreen() {
       };
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-8 2xl:px-16 mt-24">
-            <div className="block grid-cols-9 items-start gap-x-10 pb-10  lg:grid lg:pb-14 xl:gap-x-14 2xl:pb-20">
+            <div className=" grid-cols-9 items-start gap-x-10 pb-10  grid lg:pb-14 xl:gap-x-14 2xl:pb-20">
             {product.product_image && (
             <div className="col-span-5">
-                <ImageSlider data={JSON.parse(product?.product_image)} />
+                <ImageSlider data={(() => {
+                    try {
+                    return JSON.parse(product.product_image);
+                    } catch {
+                    return [];
+                    }
+                })()} />
             </div>
             )}
 
 
-            <div className="col-span-4 pt-3 lg:pt-10">
+            <div className="col-span-4 pt-3 lg:pt-10 ">
                 {/* <div className="flex justify-end md:justify-start mb-10"><Button className={`${selectroom ? "bg-brown-300":"bg-white border-black border-b-2"} text-black`} onClick={()=>setSelectroom(!selectroom)}>Select Room</Button></div> */}
 
                 <div className="m-4 pb-7">

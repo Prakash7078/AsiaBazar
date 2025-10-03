@@ -19,6 +19,8 @@ const upload = multer({
   },
 });
 app.use(cors());
+
+//middlewares
 app.use(express.json());
 //socket server
 

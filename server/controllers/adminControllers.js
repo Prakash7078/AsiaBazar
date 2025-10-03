@@ -128,8 +128,28 @@ const getAllUsers = expressAsyncHandler(async (req, res) => {
   const [users] = await db.query(`SELECT * FROM Users`);
   res.status(StatusCodes.OK).json(users);
 });
+
+const getAllOrders = expressAsyncHandler(async (req, res) => {
+  const db=await connectDB();
+  const [orders]=await db.query(`select * from orders order by order_id desc`);
+  for(const order of orders){
+    const [items]=await db.query(`SELECT oi.*, p.product_name, p.product_image,p.product_description,p.quantity_measure,p.product_category,p.product_description FROM order_items oi JOIN products p ON oi.product_id = p.product_id WHERE oi.order_id=?`,[order.order_id]);
+    order.items=items;
+  }
+  res.status(200).json(orders);
+});
+
+const updateOrder=expressAsyncHandler(async(req,res)=>{
+  const db=await connectDB();
+  const {order_status,updated_mobile_no,shipping_address}=req.body;
+  const orderId=req.params.orderId;
+  await db.query(`update orders set order_status=?,updated_mobile_no=?,shipping_address=? where order_id=?`,[order_status,updated_mobile_no,shipping_address,orderId]);
+  res.status(StatusCodes.OK).json({ message: "✅ Order updated successfully" });
+})
 module.exports = {
   addProduct,
+  getAllOrders,
+  updateOrder,
   getAllUsers,
   updateProduct,
   deleteProduct

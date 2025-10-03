@@ -6,16 +6,13 @@ import { deleteCart, deleteCartItem, getCartItems, placeCustomerOrder } from '..
 import {
   PaymentElement,
   useStripe,
-  useElements,
-  CardElement
+  useElements
 } from "@stripe/react-stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../config/url';
 import axios from 'axios';
 
 const Checkout = () => {
-
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -31,7 +28,7 @@ const Checkout = () => {
   const total = subtotal + shipping;
   const [formData, setFormData] = useState({
     // Personal Info
-    user_id:userInfo?.user_id,
+    user_id: userInfo?.user_id,
     firstName: userInfo?.name,
     email: userInfo?.email,
     phone: userInfo?.mobile_no,
@@ -46,29 +43,24 @@ const Checkout = () => {
     cvv: '',
     cardName: ''
   });
-  
 
-
+  const dispatch = useDispatch();
   
-  const dispatch=useDispatch();
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
-  const clearCart=async(cartItemId)=>{
+
+  const clearCart = async (cartItemId) => {
     await dispatch(deleteCartItem({
-        user_id: userInfo?.user_id,
-        cart_item_id: parseInt(cartItemId),
+      user_id: userInfo?.user_id,
+      cart_item_id: parseInt(cartItemId),
     }))
-    await dispatch(getCartItems({user_id:userInfo?.user_id}));
+    await dispatch(getCartItems({ user_id: userInfo?.user_id }));
   }
 
-
-  
-
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -76,85 +68,119 @@ const Checkout = () => {
       setMessage('Stripe has not loaded yet.');
       return;
     }
-    if( !formData.address || !formData.city || !formData.state || !formData.zipCode ){
+    
+    if (!formData.address || !formData.city || !formData.state || !formData.zipCode) {
       toast.error("Please fill all the required fields");
       return;
     }
 
     setLoading(true);
 
-    // Create a payment intent on the server (replace with your API call)
-    const response = await fetch(`${BASE_URL}/create-payment-intent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount:total}), // Replace with your amount
-    });
-    if (!response.ok) {
-      setMessage('Failed to create payment intent.');
-      setLoading(false);
+    const {error: submitError} = await elements.submit();
+    if (submitError) {
+      // handleError(submitError);
       return;
     }
-    const { clientSecret } = await response.json();
+  
 
-    // Confirm the payment
-    const result = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: elements.getElement(CardElement),
-        billing_details: {
-                  name: userInfo?.username,
-                  email: userInfo?.email,
-                  phone: userInfo?.mobile,
-                  address: {
-                    line1: formData?.address, // Your actual address
-                    city:formData?.city,      // Your actual city
-                    state: formData?.state,          // Your actual state
-                    postal_code: formData?.zipCode, // Your actual postal code
-                    country: 'US'// Use US as your country
-                  },
-          
-                },
-      },
-    });
-    console.log("result after payment",result);
-    if(result.error){
-          console.log(result.error);
-          toast.dismiss()
-          toast.error(result.error.message);
-    } else if (result.paymentIntent?.status === 'succeeded') {
-      // Payment succeeded, call the addCustomerOrder controller
-      const orderData = {
-        formData: {
-          user_id: formData?.user_id,
-          firstName: formData?.name,
-          email: formData?.email,
-          phone: formData?.phone,
-          address: formData?.address,
-          city: formData?.city,
-          state: formData?.state,
-          zipCode: formData?.zipCode,
-          paymentIntent: result.paymentIntent.id, // Payment method ID
-          paymentStatus: result.paymentIntent.status,
-          totalAmount: result.paymentIntent.amount / 100, // Convert cents to dollars
+    try {
+      // Create a payment intent on the server
+      const response = await fetch(`${BASE_URL}/create-payment-intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: total }),
+      });
+
+      if (!response.ok) {
+        setMessage('Failed to create payment intent.');
+        setLoading(false);
+        return;
+      }
+
+      const { clientSecret } = await response.json();
+
+      // Confirm the payment using PaymentElement
+      const result = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/order-confirmation`, // Optional: for redirect-based payments
+          payment_method_data: {
+            billing_details: {
+              name: formData.firstName,
+              email: formData.email,
+              phone: formData.phone,
+              address: {
+                line1: formData.address,
+                city: formData.city,
+                state: formData.state,
+                postal_code: formData.zipCode,
+                country: 'US',
+              },
+            },
+          },
+          shipping: {
+            name: formData.firstName,
+            address: {
+              line1: formData.address,
+              city: formData.city,
+              state: formData.state,
+              postal_code: formData.zipCode,
+              country: 'US',
+            },
+          },
+          receipt_email: formData.email,
         },
-        cartItems, // Pass the cart items from your state
-      };
-  
-      await dispatch(placeCustomerOrder(orderData));
-      const res=await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?.user_id}`,{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }});
-      toast.success(res?.data?.message);
-      await dispatch(deleteCart({user_id:userInfo?.user_id}));
-      // for(const item of cartItems){
-      //   await clearCart(item?.cart_item_id);
-      // }
-      navigate('/');
-      
+        redirect: 'if_required', // This prevents automatic redirect for card payments
+      });
+
+      console.log("result after payment", result);
+
+      if (result.error) {
+        console.log(result.error);
+        toast.dismiss();
+        toast.error(result.error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+        // Payment succeeded, call the addCustomerOrder controller
+        const orderData = {
+          formData: {
+            user_id: formData?.user_id,
+            firstName: formData?.firstName,
+            email: formData?.email,
+            phone: formData?.phone,
+            address: formData?.address,
+            city: formData?.city,
+            state: formData?.state,
+            zipCode: formData?.zipCode,
+            paymentIntent: result.paymentIntent.id,
+            paymentStatus: result.paymentIntent.status,
+            totalAmount: result.paymentIntent.amount / 100,
+          },
+          cartItems,
+        };
+
+        await dispatch(placeCustomerOrder(orderData));
+        const res = await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?.user_id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          }
+        });
+        
+        toast.success(res?.data?.message);
+        await dispatch(deleteCart({ user_id: userInfo?.user_id }));
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('An error occurred during payment processing');
+    } finally {
+      setLoading(false);
     }
-  
-    setLoading(false);
-  }
+  };
 
   const nextStep = () => setCurrentStep(Math.min(3, currentStep + 1));
   const prevStep = () => setCurrentStep(Math.max(1, currentStep - 1));
@@ -327,45 +353,67 @@ const Checkout = () => {
               </div>
             )}
 
-
             {/* Step 3: Payment Information */}
-            <div>
-              {currentStep === 3 && (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <CardElement/>
+            {currentStep === 3 && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-6">
+                  <CreditCard className="h-6 w-6 text-green-600 mr-2" />
+                  <h2 className="text-xl font-bold">Payment Information</h2>
                 </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-10">
-                {currentStep > 1 && (
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
-                  >
-                    Previous
-                  </button>
-                )}
-                {currentStep < 3 ? (
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
-                  >
-                    Next
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
-                  >
-                    Place Order
-                  </button>
-                )}
+                <div className="space-y-4">
+                  <PaymentElement 
+                    options={{
+                      layout: {
+                        type: 'tabs',
+                        defaultCollapsed: false,
+                      },
+                      fields: {
+                        billingDetails: {
+                          name: 'never',
+                          email: 'never',
+                          phone: 'never',
+                          address: 'never'
+                        }
+                      }
+                    }}
+                  />
+                  {message && (
+                    <div className="text-red-600 text-sm mt-2">{message}</div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
+            {/* Navigation Buttons */}
+            <div className="flex justify-between mt-16">
+              {currentStep > 1 && (
+                <button
+                  type="button"
+                  onClick={prevStep}
+                  disabled={loading}
+                  className="bg-gray-300 hover:bg-gray-400 disabled:opacity-50 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  Previous
+                </button>
+              )}
+              {currentStep < 3 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading || !stripe || !elements}
+                  className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                >
+                  {loading ? 'Processing...' : 'Place Order'}
+                </button>
+              )}
+            </div>
           </form>
         </div>
 
@@ -374,27 +422,31 @@ const Checkout = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
           
           <div className="space-y-4 mb-6">
-            {cartItems.map((item) =>{const product = item; // assuming item itself contains full product details
-            let images = [];
+            {cartItems.map((item) => {
+              const product = item;
+              let images = [];
 
-            try {
-              images = JSON.parse(product.product_image);
-            } catch (err) {
-              console.error("Invalid image format");
-            } return(
-              <div key={item.product_id} className="flex items-center space-x-3">
-                <img
-                  src={images[0]}
-                  alt={item.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{item.product_name}</p>
-                  <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
+              try {
+                images = JSON.parse(product.product_image);
+              } catch (err) {
+                console.error("Invalid image format");
+              } 
+              
+              return (
+                <div key={item.product_id} className="flex items-center space-x-3">
+                  <img
+                    src={images[0]}
+                    alt={item.name}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{item.product_name}</p>
+                    <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
+                  </div>
+                  <p className="font-medium">${(item.product_price * item.quantity).toFixed(2)}</p>
                 </div>
-                <p className="font-medium">${(item.product_price * item.quantity).toFixed(2)}</p>
-              </div>
-            )})}
+              )
+            })}
           </div>
 
           <div className="space-y-3 border-t border-gray-200 pt-4">
