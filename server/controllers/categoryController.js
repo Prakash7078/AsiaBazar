@@ -2,10 +2,9 @@ const expressAsyncHandler = require("express-async-handler");
 const { StatusCodes } = require("http-status-codes");
 const uploadImage = require("../middleware/uploadMiddleware.js");
 const dotenv = require("dotenv");
-
 const Product = require("../models/productModel.js");
 const CartItem = require("../models/cartItemModel.js");
-
+const User = require("../models/userModel.js");
 dotenv.config();
 
 
@@ -97,11 +96,13 @@ const updateCartItem=expressAsyncHandler(async(req,res)=>{
 // 🔹 Add Product to Cart
 const addProductCart=expressAsyncHandler(async(req,res)=>{
   const{ user_id, product_id, quantity } = req.body;
-  
+  console.log(user_id, product_id, quantity);
   // Check if item already exists in cart
+  const user=await User.findById(user_id);
+  const product=await Product.findById(product_id);
   const existing = await CartItem.findOne({ 
-      user: user_id, 
-      product: product_id 
+      user: user, 
+      product: product 
   });
 
   if (existing) {
@@ -113,8 +114,8 @@ const addProductCart=expressAsyncHandler(async(req,res)=>{
   
   // Insert new cart item
   const newCartItem = await CartItem.create({
-      user: user_id,
-      product: product_id,
+      user: user,
+      product: product,
       quantity: quantity || 1
   });
 

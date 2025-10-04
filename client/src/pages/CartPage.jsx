@@ -17,10 +17,10 @@ function CartPage() {
   const dispatch=useDispatch();
   const handleDelete=async(cartItemId)=>{
     await dispatch(deleteCartItem({
-        user_id: userInfo?.user_id,
+        user_id: userInfo?._id,
         cart_item_id: parseInt(cartItemId),
     }))
-    await dispatch(getCartItems({user_id:userInfo?.user_id}));
+    await dispatch(getCartItems({user_id:userInfo?._id}));
   }
   const handleUpdate=async(sym,cartItemId,quantity)=>{
     if(sym==='less'){
@@ -35,11 +35,11 @@ function CartPage() {
       setDisableminicon('');
 
     }
-    await dispatch(updateCartItem({user_id: userInfo?.user_id,
+    await dispatch(updateCartItem({user_id: userInfo?._id,
       cart_item_id: parseInt(cartItemId),
       quantity,
       }))
-    await dispatch(getCartItems({user_id:userInfo?.user_id}));
+    await dispatch(getCartItems({user_id:userInfo?._id}));
   }
   const totalCartPrice = () => {
     return cartItems?.reduce((total, item) => {

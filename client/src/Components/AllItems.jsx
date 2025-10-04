@@ -47,11 +47,11 @@ function AllItems({selectedCategory,onCategorySelect}) {
         navigate('/login')
     }else{
         await dispatch(addproducttoCart({
-            user_id: userInfo?.user_id,
+            user_id: userInfo?._id,
             product_id: parseInt(productId),
             quantity: 1
           }))
-        await dispatch(getCartItems({user_id:userInfo?.user_id}))
+        await dispatch(getCartItems({user_id:userInfo?._id}))
     }
 }
 
@@ -110,11 +110,11 @@ function AllItems({selectedCategory,onCategorySelect}) {
               </Typography>
             ) : (
             filteredProducts.slice(0, 3)?.filter((product)=>product.product_category?.toLowerCase().includes(selectedCategory.toLowerCase())).map((product) => (
-                <Card key={product.product_id} shadow className="p-4 hover:shadow-xl transition">
-                  <Link to={`/product/${product?.product_id}`} >
+                <Card key={product._id} shadow className="p-4 hover:shadow-xl transition">
+                  <Link to={`/product/${product?._id}`} >
                   
                   <Slider {...settings} className="product-slider">
-                    {JSON.parse(product?.product_image)?.map((imgUrl, idx) => (
+                    {product?.product_image?.map((imgUrl, idx) => (
                       <div key={idx} className="w-full  h-60 lg:h-80">
                         <img
                           className="object-fill w-full md:h-full rounded-md"

@@ -21,7 +21,7 @@ const Profile = () => {
   const orders= useSelector((state) => state.product.customer_orders);
   // Fetch user profile and orders on component mount
   useEffect(() => {
-    dispatch(getCustomerOrders(userInfo?.user_id));
+    dispatch(getCustomerOrders(userInfo?._id));
   }, [dispatch]);
 
   // Populate form data when userInfo is loaded

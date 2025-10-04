@@ -32,7 +32,7 @@ const addCustomerOrder = expressAsyncHandler(async(req,res)=>{
 
     // Map cart items to the embedded structure required by the Order model
     const orderItems = cartItems.map(item => ({
-        product: item.product_id, // Reference to Product ID
+        product: item._id, // Reference to Product ID
         product_name: item.product_name, // Copy product name for historical record
         quantity: item.quantity,
         price: item.product_price, // Unit price at time of purchase

@@ -28,7 +28,7 @@ const Checkout = () => {
   const total = subtotal + shipping;
   const [formData, setFormData] = useState({
     // Personal Info
-    user_id: userInfo?.user_id,
+    user_id: userInfo?._id,
     firstName: userInfo?.name,
     email: userInfo?.email,
     phone: userInfo?.mobile_no,
@@ -55,10 +55,10 @@ const Checkout = () => {
 
   const clearCart = async (cartItemId) => {
     await dispatch(deleteCartItem({
-      user_id: userInfo?.user_id,
+      user_id: userInfo?._id,
       cart_item_id: parseInt(cartItemId),
     }))
-    await dispatch(getCartItems({ user_id: userInfo?.user_id }));
+    await dispatch(getCartItems({ user_id: userInfo?._id }));
   }
 
   const handleSubmit = async (e) => {
@@ -164,14 +164,14 @@ const Checkout = () => {
         };
 
         await dispatch(placeCustomerOrder(orderData));
-        const res = await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?.user_id}`, {
+        const res = await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?._id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           }
         });
         
         toast.success(res?.data?.message);
-        await dispatch(deleteCart({ user_id: userInfo?.user_id }));
+        await dispatch(deleteCart({ user_id: userInfo?._id }));
         navigate('/');
       }
     } catch (error) {
@@ -433,7 +433,7 @@ const Checkout = () => {
               } 
               
               return (
-                <div key={item.product_id} className="flex items-center space-x-3">
+                <div key={item._id} className="flex items-center space-x-3">
                   <img
                     src={images[0]}
                     alt={item.name}

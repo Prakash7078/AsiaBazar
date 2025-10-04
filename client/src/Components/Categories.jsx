@@ -53,11 +53,11 @@ function Categories() {
         navigate('/login')
     }else{
         await dispatch(addproducttoCart({
-            user_id: userInfo?.user_id,
+            user_id: userInfo?._id,
             product_id: parseInt(productId),
             quantity: 1
           }))
-        await dispatch(getCartItems({user_id:userInfo?.user_id}))
+        await dispatch(getCartItems({user_id:userInfo?._id}))
     }
 }
 
@@ -178,8 +178,8 @@ function Categories() {
               </Typography>
             ) : (
               filteredProducts?.filter((product)=>product.product_category?.toLowerCase().includes(selectedCategory.toLowerCase())).map((product) => (
-                <Card key={product.product_id} shadow className="p-4 hover:shadow-xl transition">
-                  <Link to={`/product/${product?.product_id}`} >
+                <Card key={product._id} shadow className="p-4 hover:shadow-xl transition">
+                  <Link to={`/product/${product?._id}`} >
                   
                   <Slider {...settings} className="product-slider">
                     {JSON.parse(product?.product_image)?.map((imgUrl, idx) => (
@@ -230,7 +230,7 @@ function Categories() {
                   <Typography className="text-2xl text-green-600 font-bold mt-5">
                     ${product?.product_price}
                   </Typography>
-                  <Button onClick={()=>handleCart(product?.product_id)} className="mt-3" color="red" size="sm" >
+                  <Button onClick={()=>handleCart(product?._id)} className="mt-3" color="red" size="sm" >
                       Add to Cart
                     </Button>
                   
