@@ -18,7 +18,7 @@ function CartPage() {
   const handleDelete=async(cartItemId)=>{
     await dispatch(deleteCartItem({
         user_id: userInfo?._id,
-        cart_item_id: parseInt(cartItemId),
+        cart_item_id: cartItemId,
     }))
     await dispatch(getCartItems({user_id:userInfo?._id}));
   }
@@ -36,14 +36,14 @@ function CartPage() {
 
     }
     await dispatch(updateCartItem({user_id: userInfo?._id,
-      cart_item_id: parseInt(cartItemId),
+      cart_item_id: cartItemId,
       quantity,
       }))
     await dispatch(getCartItems({user_id:userInfo?._id}));
   }
   const totalCartPrice = () => {
     return cartItems?.reduce((total, item) => {
-      return total + (item.product_price * item.quantity);
+      return total + (item.product?.product_price * item.quantity);
     }, 0);
   };
   
@@ -56,59 +56,48 @@ function CartPage() {
         <p className="text-gray-500 text-center text-lg">Your cart is empty.</p>
       ) : (
         <div className="space-y-6 mb-48  ">
-          {cartItems.map((item) => {
-            const product = item; // assuming item itself contains full product details
-            let images = [];
-
-            try {
-              images = JSON.parse(product.product_image);
-            } catch (err) {
-              console.error("Invalid image format");
-            }
-
-            return (
+          {cartItems.map((item) => (
               <div
-                key={product.cart_item_id}
+                key={item?._id}
                 className="flex flex-col md:flex-row gap-6 items-center bg-white rounded-lg shadow-md p-4 border"
               >
                 <img
-                  src={images[0]}
+                  src={item?.product?.product_image[0]}
                   alt="product"
                   className="w-40 h-40 rounded-md object-cover border"
                 />
 
                 <div className="flex-1 space-y-2">
                   <p className="text-gray-600 text-sm">🛍️ Cart Item </p>
-                  <h2 className="text-xl font-bold text-gray-800">{product.product_name}</h2>
-                  <p className="text-sm text-gray-600">{product.product_description}</p>
+                  <h2 className="text-xl font-bold text-gray-800">{item?.product.product_name}</h2>
+                  <p className="text-sm text-gray-600">{item?.product.product_description}</p>
                   <p className="text-sm">
-                    <span className="font-semibold">Category:</span> {product.product_category}
+                    <span className="font-semibold">Category:</span> {item?.product.product_category}
                   </p>
                   <p className="text-sm">
                     <span className="font-semibold">Quantity:</span>{' '}
-                    {product.product_quantity}
-                    {product.quantity_measure}
+                    {item?.product.product_quantity}
+                    {item?.product.quantity_measure}
                   </p>
                   <p className="text-sm">
-                    <span className="font-semibold">Price:</span> ${product.product_price}
+                    <span className="font-semibold">Price:</span> ${item?.product.product_price}
                   </p>
                 </div>
                 <div className="flex items-center gap-4 mt-2">
-                    <button  onClick={()=>handleUpdate('less',product?.cart_item_id,product?.quantity)}  disabled={disableminicon===product?.cart_item_id} className={` ${disableminicon===product?.cart_item_id
+                    <button  onClick={()=>handleUpdate('less',item?._id,item?.quantity)}  disabled={disableminicon===item?._id} className={` ${disableminicon===item?._id
                           ? 'opacity-50 cursor-not-allowed'
                           : 'hover:bg-gray-300 bg-gray-200 cursor-pointer'
                       }  p-2 rounded-full`}>
                       <FaMinus size={12}  />
                     </button>
-                    <span className="px-3 py-1 border rounded">{product.quantity}</span>
-                    <button onClick={()=>handleUpdate('more',product?.cart_item_id,product?.quantity)} className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full">
+                    <span className="px-3 py-1 border rounded">{item?.quantity}</span>
+                    <button onClick={()=>handleUpdate('more',item?._id,item?.quantity)} className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full">
                       <FaPlus size={12}  />
                     </button>
-                    <AiFillDelete color='red' size={28} onClick={()=>handleDelete(product?.cart_item_id)} />
+                    <AiFillDelete color='red' size={28} onClick={()=>handleDelete(item?._id)} />
                   </div>
               </div>
-            );
-          })}
+            ))}
         </div>
       )}
       </div>

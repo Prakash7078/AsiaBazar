@@ -37,6 +37,7 @@ const getCartItems=expressAsyncHandler(async(req,res)=>{
   // Find cart items for the user and use populate('product') for the JOIN equivalent
   const cartItems = await CartItem.find({ user: userId })
     .populate('product') // Fills the product reference with the actual Product document
+    .populate('user')
     .lean();
     
   res.status(StatusCodes.OK).json(cartItems);

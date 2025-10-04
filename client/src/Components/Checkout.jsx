@@ -22,7 +22,7 @@ const Checkout = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const cartItems = useSelector((state) => state.product.cartItems);
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.product_price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + (item?.product?.product_price * item.quantity), 0);
   
   const shipping = 5.99;
   const total = subtotal + shipping;
@@ -56,7 +56,7 @@ const Checkout = () => {
   const clearCart = async (cartItemId) => {
     await dispatch(deleteCartItem({
       user_id: userInfo?._id,
-      cart_item_id: parseInt(cartItemId),
+      cart_item_id: cartItemId,
     }))
     await dispatch(getCartItems({ user_id: userInfo?._id }));
   }
@@ -164,15 +164,15 @@ const Checkout = () => {
         };
 
         await dispatch(placeCustomerOrder(orderData));
-        const res = await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?._id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          }
-        });
+        // const res = await axios.delete(`${BASE_URL}/api/products/deleteCart/${userInfo?._id}`, {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+        //   }
+        // });
         
-        toast.success(res?.data?.message);
+        // toast.success(res?.data?.message);
         await dispatch(deleteCart({ user_id: userInfo?._id }));
-        navigate('/');
+        // navigate('/');
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -422,31 +422,20 @@ const Checkout = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
           
           <div className="space-y-4 mb-6">
-            {cartItems.map((item) => {
-              const product = item;
-              let images = [];
-
-              try {
-                images = JSON.parse(product.product_image);
-              } catch (err) {
-                console.error("Invalid image format");
-              } 
-              
-              return (
+            {cartItems.map((item) =>(
                 <div key={item._id} className="flex items-center space-x-3">
                   <img
-                    src={images[0]}
-                    alt={item.name}
+                    src={item?.product?.product_image[0]}
+                    alt={item?.product?.product_name}
                     className="w-12 h-12 object-cover rounded"
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-sm">{item.product_name}</p>
-                    <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
+                    <p className="font-medium text-sm">{item?.product?.product_name}</p>
+                    <p className="text-gray-600 text-sm">Qty: {item?.quantity}</p>
                   </div>
-                  <p className="font-medium">${(item.product_price * item.quantity).toFixed(2)}</p>
+                  <p className="font-medium">${(item?.product?.product_price * item?.quantity).toFixed(2)}</p>
                 </div>
-              )
-            })}
+              ))}
           </div>
 
           <div className="space-y-3 border-t border-gray-200 pt-4">

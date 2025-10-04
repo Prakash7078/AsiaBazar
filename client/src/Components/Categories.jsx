@@ -54,7 +54,7 @@ function Categories() {
     }else{
         await dispatch(addproducttoCart({
             user_id: userInfo?._id,
-            product_id: parseInt(productId),
+            product_id: productId,
             quantity: 1
           }))
         await dispatch(getCartItems({user_id:userInfo?._id}))
@@ -182,7 +182,7 @@ function Categories() {
                   <Link to={`/product/${product?._id}`} >
                   
                   <Slider {...settings} className="product-slider">
-                    {JSON.parse(product?.product_image)?.map((imgUrl, idx) => (
+                    {product?.product_image?.map((imgUrl, idx) => (
                       <div key={idx} className="w-full  h-60 lg:h-80">
                         <img
                           className="object-fill w-full md:h-full rounded-md"
