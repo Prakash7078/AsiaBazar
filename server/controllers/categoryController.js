@@ -98,11 +98,11 @@ const addProductCart=expressAsyncHandler(async(req,res)=>{
   const{ user_id, product_id, quantity } = req.body;
   console.log(user_id, product_id, quantity);
   // Check if item already exists in cart
-  const user=await User.findById(user_id);
-  const product=await Product.findById(product_id);
+ 
+
   const existing = await CartItem.findOne({ 
-      user: user, 
-      product: product 
+      user: user_id, 
+      product: product_id 
   });
 
   if (existing) {
@@ -114,8 +114,8 @@ const addProductCart=expressAsyncHandler(async(req,res)=>{
   
   // Insert new cart item
   const newCartItem = await CartItem.create({
-      user: user,
-      product: product,
+      user: user_id,
+      product: product_id,
       quantity: quantity || 1
   });
 

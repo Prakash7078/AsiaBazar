@@ -33,7 +33,7 @@ function ProductScreen() {
         }else{
             await dispatch(addproducttoCart({
                 user_id: userInfo?._id,
-                product_id: parseInt(productId),
+                product_id: productId,
                 quantity: 1
               }))
             await dispatch(getCartItems({user_id:userInfo?._id}))
