@@ -34,7 +34,7 @@ function ProductForm() {
           if (products.length === 0) {
             dispatch(getProducts());
           } else {
-            const selectedProduct = products.find((item) => item.product_id.toString() === productId);
+            const selectedProduct = products.find((item) => item._id.toString() === productId);
             if (selectedProduct) {
               let parsedImages = [];
               try {
@@ -44,7 +44,7 @@ function ProductForm() {
               }
     
               setProductData({
-                product_id: selectedProduct.product_id,
+                product_id: selectedProduct._id,
                 product_name: selectedProduct.product_name,
                 product_price: selectedProduct.product_price,
                 product_quantity: selectedProduct.product_quantity,
@@ -75,7 +75,7 @@ function ProductForm() {
             formData.append("product_images", img); // backend should handle multiple files
         });
         if (productId) {
-            formData.append("product_id", productData.product_id);
+            formData.append("product_id", productData._id);
             await dispatch(updateProduct({formData,productId}));
             toast.success("Product updated successfully");
         } else {

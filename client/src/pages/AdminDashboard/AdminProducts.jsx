@@ -179,7 +179,7 @@ function AdminProducts() {
       
                   return (
                     
-                    <tr key={item?.product_id}>
+                    <tr key={item?._id}>
                       <td className={classes}>
                         <Link to={`/${item.name}`}><Avatar src={
                             (() => {
@@ -192,7 +192,7 @@ function AdminProducts() {
                               }
                             })()
                           }
-                          alt={item?.product_id} size="sm" />
+                          alt={item?._id} size="sm" />
                         </Link>
                       </td>
                       <td className={classes}>
@@ -221,13 +221,13 @@ function AdminProducts() {
                         </Typography>
                       </td>
                       <td className={classes}>
-                        <Link to={`/admin/${userInfo?.user_id}/updateProduct/${item.product_id}`}>
+                        <Link to={`/admin/${userInfo?._id}/updateProduct/${item._id}`}>
                           <BiSolidEditAlt size={22}/>
                         </Link>
                       </td>
                       <td className={classes}>
-                        <Link to={`/admin/${userInfo?.user_id}/deleteProduct/${item.product_id}`}>
-                          <MdDelete size={20} color="red" className="cursor-pointer" onClick={()=>handleDelete(item.product_id)}/>
+                        <Link to={`/admin/${userInfo?._id}/deleteProduct/${item._id}`}>
+                          <MdDelete size={20} color="red" className="cursor-pointer" onClick={()=>handleDelete(item._id)}/>
                         </Link>
                       </td>
                     </tr>

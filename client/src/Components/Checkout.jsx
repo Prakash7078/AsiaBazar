@@ -37,7 +37,7 @@ const Checkout = () => {
   const total = subtotal + shipping;
   const [formData, setFormData] = useState({
     // Personal Info
-    user_id: userInfo?.user_id,
+    user_id: userInfo?._id,
     firstName: userInfo?.name,
     email: userInfo?.email,
     phone: userInfo?.mobile_no,
