@@ -43,8 +43,8 @@ function Categories() {
     return (
       item.product_name.toLowerCase().includes(filters.name.toLowerCase()) &&
       item.product_price.toString().includes(filters.price) &&
-      `${item.product_quantity}${item.quantity_measure}`.toLowerCase().includes(filters.quantity.toLowerCase()) &&
-      item.total_quantity.toString().includes(filters.total) &&
+      `${item.product_size}${item.quantity_measure}`.toLowerCase().includes(filters.quantity.toLowerCase()) &&
+      item.total_products.toString().includes(filters.total) &&
       item.product_category.toLowerCase().includes(filters.category.toLowerCase())
     );
   });
@@ -219,10 +219,10 @@ function Categories() {
                   </div>
                  
                   <Typography className="text-sm text-gray-600 font-semibold mt-1">
-                    {product?.product_quantity}{product?.quantity_measure}
+                    {product?.product_size}{product?.quantity_measure}
                   </Typography>
-                  {product?.total_quantity!=0 && <Typography className="text-sm text-gray-600 mt-1">
-                    Total Items: {product?.total_quantity}
+                  {product?.total_products!=0 && <Typography className="text-sm text-gray-600 mt-1">
+                    Total Items: {product?.total_products}
                   </Typography>}
                   <Typography className=" mt-1">
                     {product?.product_description}

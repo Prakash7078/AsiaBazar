@@ -57,14 +57,14 @@ function AdminProducts() {
   const handlePageChange = (selectedPage) => {
       setCurrentPage(selectedPage.selected + 1);
   };
-  const TABLE_HEAD = ["Product_Image","Product_Name", "Product_Price", "Product_Quantity","Total_Quantity", "Product_Category", "Edit","Delete"];
+  const TABLE_HEAD = ["Product_Image","Product_Name", "Product_Price", "product_size","total_products", "Product_Category", "Edit","Delete"];
   
   const filteredProducts = products?.filter((item) => {
     return (
       item.product_name.toLowerCase().includes(filters.name.toLowerCase()) &&
       item.product_price.toString().includes(filters.price) &&
-      `${item.product_quantity}${item.quantity_measure}`.toLowerCase().includes(filters.quantity.toLowerCase()) &&
-      item.total_quantity.toString().includes(filters.total) &&
+      `${item.product_size}${item.quantity_measure}`.toLowerCase().includes(filters.quantity.toLowerCase()) &&
+      item.total_products.toString().includes(filters.total) &&
       item.product_category.toLowerCase().includes(filters.category.toLowerCase())
     );
   });
@@ -184,8 +184,7 @@ function AdminProducts() {
                         <Link to={`/${item.name}`}><Avatar src={
                             (() => {
                               try {
-                                const images = JSON.parse(item?.product_image);
-                                console.log('images',images[0])
+                                const images = item?.product_image;
                                 return images[0]; // get first image
                               } catch (err) {
                                 return err; // fallback if parsing fails
@@ -207,12 +206,12 @@ function AdminProducts() {
                       </td>
                       <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                          {item?.product_quantity}{item?.quantity_measure}
+                          {item?.product_size}{item?.quantity_measure}
                         </Typography>
                       </td>
                       <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                          {item.total_quantity}
+                          {item.total_products}
                         </Typography>
                       </td>
                       <td className={classes}>

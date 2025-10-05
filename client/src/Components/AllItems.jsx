@@ -109,7 +109,7 @@ function AllItems({selectedCategory,onCategorySelect}) {
                 No products found.
               </Typography>
             ) : (
-            filteredProducts.slice(0, 3)?.filter((product)=>product.product_category?.toLowerCase().includes(selectedCategory.toLowerCase())).map((product) => (
+            filteredProducts.slice(0, 3)?.filter((product)=>product?.product_category?.toLowerCase().includes(selectedCategory.toLowerCase())).map((product) => (
                 <Card key={product._id} shadow className="p-4 hover:shadow-xl transition">
                   <Link to={`/product/${product?._id}`} >
                   
@@ -151,10 +151,10 @@ function AllItems({selectedCategory,onCategorySelect}) {
                   </div>
                  
                   <Typography className="text-sm text-gray-600 font-semibold mt-1">
-                    {product?.product_quantity}{product?.quantity_measure}
+                    {product?.product_size}{product?.quantity_measure}
                   </Typography>
-                  {product?.total_quantity!=0 && <Typography className="text-sm text-gray-600 mt-1">
-                    Total Items: {product?.total_quantity}
+                  {product?.total_products!=0 && <Typography className="text-sm text-gray-600 mt-1">
+                    Total Items: {product?.total_products}
                   </Typography>}
                   <Typography className=" mt-1">
                     {product?.product_description}
@@ -162,7 +162,7 @@ function AllItems({selectedCategory,onCategorySelect}) {
                   <Typography className="text-2xl text-green-600 font-bold mt-5">
                     ${product?.product_price}
                   </Typography>
-                  <Button onClick={()=>handleCart(product?.product_id)} className="mt-3" color="red" size="sm" >
+                  <Button onClick={()=>handleCart(product?._id)} className="mt-3" color="red" size="sm" >
                       Add to Cart
                     </Button>
                   

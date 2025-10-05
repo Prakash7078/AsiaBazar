@@ -76,7 +76,7 @@ function CartPage() {
                   </p>
                   <p className="text-sm">
                     <span className="font-semibold">Quantity:</span>{' '}
-                    {item?.product.product_quantity}
+                    {item?.product.product_size}
                     {item?.product.quantity_measure}
                   </p>
                   <p className="text-sm">

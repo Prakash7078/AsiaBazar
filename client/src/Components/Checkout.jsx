@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CreditCard, MapPin, User, Phone } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteCart, deleteCartItem, getCartItems, placeCustomerOrder } from '../redux/productSlice';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { CreditCard, MapPin, User, Phone } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteCart,
+  deleteCartItem,
+  getCartItems,
+  placeCustomerOrder,
+} from "../redux/productSlice";
 import {
   PaymentElement,
   useStripe,
-  useElements
+  useElements,
 } from "@stripe/react-stripe-js";
-import { toast } from 'react-toastify';
-import { BASE_URL } from '../config/url';
-import axios from 'axios';
+import { toast } from "react-toastify";
+import { BASE_URL } from "../config/url";
+import axios from "axios";
 
 const Checkout = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -34,22 +40,22 @@ const Checkout = () => {
     phone: userInfo?.mobile_no,
     // Address
     address: userInfo?.address,
-    city: '',
-    state: '',
-    zipCode: '',
+    city: "",
+    state: "",
+    zipCode: "",
     // Payment
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardName: ''
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardName: "",
   });
 
   const dispatch = useDispatch();
-  
+
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -63,36 +69,66 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!stripe || !elements) {
-      setMessage('Stripe has not loaded yet.');
+    if (
+      !formData.address ||
+      !formData.city ||
+      !formData.state ||
+      !formData.zipCode
+    ) {
+      toast.error("Please fill all the required fields");
       return;
     }
-    
-    if (!formData.address || !formData.city || !formData.state || !formData.zipCode) {
-      toast.error("Please fill all the required fields");
+
+    if (paymentMethod === "CASH_ON_DELIVERY") {
+      setLoading(true);
+      const orderData = {
+        formData: {
+          user_id: formData?.user_id,
+          firstName: formData?.name,
+          email: formData?.email,
+          phone: formData?.phone,
+          address: formData?.address,
+          city: formData?.city,
+          state: formData?.state,
+          zipCode: formData?.zipCode,
+          paymentIntent: "Cash on Delivery", // Payment method ID
+          paymentStatus: "pending",
+          totalAmount: total.toFixed(2),
+        },
+        cartItems, // Pass the cart items from your state
+      };
+      await dispatch(placeCustomerOrder(orderData));
+     
+      await dispatch(deleteCart({ user_id: userInfo?._id }));
+      navigate("/");
+      setLoading(false);
+      setPaymentMethod("");
+      return;
+    }
+
+    if (!stripe || !elements) {
+      setMessage("Stripe has not loaded yet.");
       return;
     }
 
     setLoading(true);
 
-    const {error: submitError} = await elements.submit();
+    const { error: submitError } = await elements.submit();
     if (submitError) {
       // handleError(submitError);
       return;
     }
-  
 
     try {
       // Create a payment intent on the server
       const response = await fetch(`${BASE_URL}/create-payment-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: total }),
       });
 
       if (!response.ok) {
-        setMessage('Failed to create payment intent.');
+        setMessage("Failed to create payment intent.");
         setLoading(false);
         return;
       }
@@ -115,7 +151,7 @@ const Checkout = () => {
                 city: formData.city,
                 state: formData.state,
                 postal_code: formData.zipCode,
-                country: 'US',
+                country: "US",
               },
             },
           },
@@ -126,12 +162,12 @@ const Checkout = () => {
               city: formData.city,
               state: formData.state,
               postal_code: formData.zipCode,
-              country: 'US',
+              country: "US",
             },
           },
           receipt_email: formData.email,
         },
-        redirect: 'if_required', // This prevents automatic redirect for card payments
+        redirect: "if_required", // This prevents automatic redirect for card payments
       });
 
       console.log("result after payment", result);
@@ -144,7 +180,7 @@ const Checkout = () => {
         return;
       }
 
-      if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+      if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
         // Payment succeeded, call the addCustomerOrder controller
         const orderData = {
           formData: {
@@ -175,8 +211,8 @@ const Checkout = () => {
         // navigate('/');
       }
     } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('An error occurred during payment processing');
+      console.error("Payment error:", error);
+      toast.error("An error occurred during payment processing");
     } finally {
       setLoading(false);
     }
@@ -186,7 +222,7 @@ const Checkout = () => {
   const prevStep = () => setCurrentStep(Math.max(1, currentStep - 1));
 
   if (cartItems.length === 0) {
-    navigate('/cart');
+    navigate("/cart");
     return null;
   }
 
@@ -201,8 +237,8 @@ const Checkout = () => {
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
                 step <= currentStep
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-600'
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 text-gray-600"
               }`}
             >
               {step}
@@ -210,7 +246,7 @@ const Checkout = () => {
             {step < 3 && (
               <div
                 className={`w-20 h-1 ${
-                  step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                  step < currentStep ? "bg-green-500" : "bg-gray-200"
                 }`}
               />
             )}
@@ -321,7 +357,7 @@ const Checkout = () => {
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         State*
@@ -355,30 +391,62 @@ const Checkout = () => {
 
             {/* Step 3: Payment Information */}
             {currentStep === 3 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex items-center mb-6">
-                  <CreditCard className="h-6 w-6 text-green-600 mr-2" />
-                  <h2 className="text-xl font-bold">Payment Information</h2>
+              <div className="flex flex-col gap-4">
+                <h1 className="font-bold text-center text-xl">
+                  Select payment option
+                </h1>
+                <div
+                  onClick={() => {
+                    setPaymentMethod("CASH_ON_DELIVERY");
+                  }}
+                  className={`${
+                    paymentMethod === "CASH_ON_DELIVERY" && "border-green-500"
+                  } p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 border`}
+                >
+                  Cash on delivery
                 </div>
-                <div className="space-y-4">
-                  <PaymentElement 
-                    options={{
-                      layout: {
-                        type: 'tabs',
-                        defaultCollapsed: false,
-                      },
-                      fields: {
-                        billingDetails: {
-                          name: 'never',
-                          email: 'never',
-                          phone: 'never',
-                          address: 'never'
-                        }
-                      }
-                    }}
-                  />
-                  {message && (
-                    <div className="text-red-600 text-sm mt-2">{message}</div>
+
+                <div
+                  onClick={() => {
+                    setPaymentMethod("CARD");
+                  }}
+                  className={`${
+                    paymentMethod === "CARD" && "border-green-500"
+                  } bg-white rounded-lg shadow-md p-4 transition-all duration-300 flex flex-col gap-4 cursor-pointer border`}
+                >
+                  <p>Credit / Debit Card</p>
+                  {paymentMethod == "CARD" && (
+                    <div>
+                      <div className="flex items-center mb-6">
+                        <CreditCard className="h-6 w-6 text-green-600 mr-2" />
+                        <h2 className="text-xl font-bold">
+                          Payment Information
+                        </h2>
+                      </div>
+                      <div className="space-y-4">
+                        <PaymentElement
+                          options={{
+                            layout: {
+                              type: "tabs",
+                              defaultCollapsed: false,
+                            },
+                            fields: {
+                              billingDetails: {
+                                name: "never",
+                                email: "never",
+                                phone: "never",
+                                address: "never",
+                              },
+                            },
+                          }}
+                        />
+                        {message && (
+                          <div className="text-red-600 text-sm mt-2">
+                            {message}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -410,7 +478,7 @@ const Checkout = () => {
                   disabled={loading || !stripe || !elements}
                   className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
                 >
-                  {loading ? 'Processing...' : 'Place Order'}
+                  {loading ? "Processing..." : "Place Order"}
                 </button>
               )}
             </div>
@@ -419,8 +487,10 @@ const Checkout = () => {
 
         {/* Order Summary */}
         <div className="bg-white rounded-lg shadow-md p-6 h-fit">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
-          
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Order Summary
+          </h2>
+
           <div className="space-y-4 mb-6">
             {cartItems.map((item) =>(
                 <div key={item._id} className="flex items-center space-x-3">
@@ -431,9 +501,9 @@ const Checkout = () => {
                   />
                   <div className="flex-1">
                     <p className="font-medium text-sm">{item?.product?.product_name}</p>
-                    <p className="text-gray-600 text-sm">Qty: {item?.quantity}</p>
+                    <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
                   </div>
-                  <p className="font-medium">${(item?.product?.product_price * item?.quantity).toFixed(2)}</p>
+                  <p className="font-medium">${(item?.product?.product_price * item.quantity).toFixed(2)}</p>
                 </div>
               ))}
           </div>

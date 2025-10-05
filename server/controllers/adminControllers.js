@@ -21,16 +21,16 @@ const addProduct = expressAsyncHandler(async (req, res) => {
   const {
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     product_category,
     quantity_measure,
-    total_quantity,
+    total_products,
     product_description,
   } = req.body;
 
   const imageUrls = [];
-  // Default to 0 if total_quantity is not provided/valid
-  const totalQty = parseInt(total_quantity, 10) || 0; 
+  // Default to 0 if total_products is not provided/valid
+  const totalQty = parseInt(total_products, 10) || 0; 
 
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
@@ -43,9 +43,9 @@ const addProduct = expressAsyncHandler(async (req, res) => {
   const newProduct = await Product.create({
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     quantity_measure,
-    total_quantity: totalQty,
+    total_products: totalQty,
     product_category,
     product_description,
     product_image: imageUrls,
@@ -75,9 +75,9 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   const {
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     quantity_measure,
-    total_quantity,
+    total_products,
     product_category,
     product_description
   } = req.body;
@@ -102,9 +102,9 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   const updateFields = {
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     quantity_measure,
-    total_quantity,
+    total_products,
     product_category,
     product_description,
     product_image: allImages,

@@ -74,7 +74,7 @@ const AdminUsers: React.FC = () => {
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">ID: {user.user_id}</div>
+                        <div className="text-sm text-gray-500">ID: {user._id}</div>
                       </div>
                     </div>
                   </td>
@@ -86,7 +86,7 @@ const AdminUsers: React.FC = () => {
                     <div className="text-sm text-gray-900 max-w-xs truncate">{user.address}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.created_at}</div>
+                    <div className="text-sm text-gray-900">{user.added_at}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{2}</div>

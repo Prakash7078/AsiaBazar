@@ -111,7 +111,7 @@ function ProductScreen() {
                         className="hover:text-heading transition hover:underline"
                         href="#"
                         >
-                        {product?.product_quantity} {product?.quantity_measure}
+                        {product?.product_size} {product?.quantity_measure}
                         </a>
                     </li>
                     <li className="productTags">
@@ -122,7 +122,7 @@ function ProductScreen() {
                         className="hover:text-heading inline-block pr-1.5 transition last:pr-0 hover:underline"
                         href="#"
                         >
-                        {product?.product_quantity>0?product?.product_quantity:<h1 className="text-red-400 font-bold">Sold Out</h1>}
+                        {product?.product_size>0?product?.product_size:<h1 className="text-red-400 font-bold">Sold Out</h1>}
                         </a>
                     </li>
 
@@ -184,10 +184,10 @@ function ProductScreen() {
                         </div>
                         
                         <Typography className="text-sm text-gray-600 font-semibold mt-1">
-                            {product?.product_quantity}{product?.quantity_measure}
+                            {product?.product_size}{product?.quantity_measure}
                         </Typography>
-                        {product?.total_quantity!=0 && <Typography className="text-sm text-gray-600 mt-1">
-                            Total Items: {product?.total_quantity}
+                        {product?.total_products!=0 && <Typography className="text-sm text-gray-600 mt-1">
+                            Total Items: {product?.total_products}
                         </Typography>}
                         <Typography className=" mt-1">
                             {product?.product_description}

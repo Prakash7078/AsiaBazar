@@ -21,7 +21,7 @@ const AdminOrders = () => {
   // Filter orders based on search and filters
   const filteredOrders = orders?.filter(order => {
     const matchesSearch = 
-      order.order_id.toString().includes(searchQuery.toLowerCase()) ||
+      order._id.toString().includes(searchQuery.toLowerCase()) ||
       order.shipping_address.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.updated_mobile_no.includes(searchQuery);
     
@@ -71,14 +71,7 @@ const AdminOrders = () => {
     setExpandedOrders(newExpanded);
   };
 
-  const getFirstImage = (imageString) => {
-    try {
-      const images = JSON.parse(imageString);
-      return images[0] || '/placeholder-image.jpg';
-    } catch {
-      return '/placeholder-image.jpg';
-    }
-  };
+  
 
   const updateOrderDetails = async(orderId, newStatus,updatemobileno,updateaddress) => {
     const orderdata={
@@ -203,12 +196,12 @@ const AdminOrders = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders?.map((order) => (
-                <React.Fragment key={order.order_id}>
+                <React.Fragment key={order._id}>
                   <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <button
-                          onClick={() => toggleOrderExpansion(order.order_id)}
+                          onClick={() => toggleOrderExpansion(order._id)}
                           className="mr-2 p-1 hover:bg-gray-100 rounded"
                         >
                           {expandedOrders.has(order.order_id) ? 
@@ -217,7 +210,7 @@ const AdminOrders = () => {
                           }
                         </button>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">#{order.order_id}</div>
+                          <div className="text-sm font-medium text-gray-900">#{order._id}</div>
                           <div className="text-xs text-gray-500">{order.items.length} items</div>
                         </div>
                       </div>
@@ -266,36 +259,36 @@ const AdminOrders = () => {
                   </tr>
                   
                   {/* Expanded Order Items */}
-                  {expandedOrders.has(order.order_id) && (
+                  {expandedOrders.has(order._id) && (
                     <tr>
                       <td colSpan="7" className="px-6 py-4 bg-gray-50">
                         <div className="space-y-3">
                           <h4 className="font-medium text-gray-900">Order Items:</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {order.items.map((item) => (
-                              <div key={item.order_item_id} className="bg-white rounded-lg p-4 border">
+                              <div key={item._id} className="bg-white rounded-lg p-4 border">
                                 <div className="flex items-start space-x-3">
                                   <img
-                                    src={getFirstImage(item.product_image)}
-                                    alt={item.product_name}
+                                    src={item?.product_image[0]}
+                                    alt={item?.product_name}
                                     className="w-16 h-16 object-cover rounded-lg"
                                     onError={(e) => {
                                       e.target.src = '/placeholder-image.jpg';
                                     }}
                                   />
                                   <div className="flex-1">
-                                    <h5 className="font-medium text-gray-900">{item.product_name}</h5>
-                                    <p className="text-sm text-gray-600 capitalize">{item.product_category}</p>
+                                    <h5 className="font-medium text-gray-900">{item?.product_name}</h5>
+                                    <p className="text-sm text-gray-600 capitalize">{item?.product_category}</p>
                                     <div className="flex justify-between items-center mt-2">
                                       <span className="text-sm text-gray-500">
-                                        Qty: {item.quantity} {item.quantity_measure}
+                                        Qty: {item?.quantity} {item?.quantity_measure}
                                       </span>
                                       <span className="font-medium text-gray-900">
-                                        ${parseFloat(item.total_price).toFixed(2)}
+                                        ${parseFloat(item?.total_price).toFixed(2)}
                                       </span>
                                     </div>
                                     <p className="text-xs text-gray-500 mt-1">
-                                      Unit Price: ${parseFloat(item.price).toFixed(2)}
+                                      Unit Price: ${parseFloat(item?.price).toFixed(2)}
                                     </p>
                                   </div>
                                 </div>
