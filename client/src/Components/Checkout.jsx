@@ -208,7 +208,7 @@ const Checkout = () => {
         
         // toast.success(res?.data?.message);
         await dispatch(deleteCart({ user_id: userInfo?._id }));
-        // navigate('/');
+        navigate('/');
       }
     } catch (error) {
       console.error("Payment error:", error);

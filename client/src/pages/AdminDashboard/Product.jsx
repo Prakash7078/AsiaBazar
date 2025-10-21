@@ -30,15 +30,14 @@ function ProductForm() {
         toast.success(`${files.length} image(s) uploaded successfully`);
     };
     useEffect(() => {
+        console.log("Products in state:", productId);
         if (productId) {
-          if (products.length === 0) {
             dispatch(getProducts());
-          } else {
             const selectedProduct = products.find((item) => item._id.toString() === productId);
             if (selectedProduct) {
               let parsedImages = [];
               try {
-                parsedImages = JSON.parse(selectedProduct.product_image);
+                parsedImages = selectedProduct.product_image;
               } catch (e) {
                 console.warn("Image parsing failed:", e);
               }
@@ -56,7 +55,6 @@ function ProductForm() {
                 existing_images: parsedImages || [],
               });
             }
-          }
         }
       }, [dispatch, productId, products]);
     const handleSubmit = async (e) => {
@@ -80,6 +78,15 @@ function ProductForm() {
             toast.success("Product updated successfully");
         } else {
             await dispatch(addProduct(formData));
+            setProductData({product_id: '',
+                product_name: '',
+                product_price: 0,
+                product_size: 0,
+                quantity_measure:'',
+                total_products:0,
+                product_category: '',
+                product_description:'',
+                product_images: []})
         }
     };
 

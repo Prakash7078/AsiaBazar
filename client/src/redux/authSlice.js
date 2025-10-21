@@ -51,10 +51,9 @@ export const forgotPassword=createAsyncThunk(
 )
 export const updateRegister=createAsyncThunk(
   "api/updateRegister",
-  async(payload)=>{
-    console.log("payload",payload);
+  async({user_id,formData})=>{
     try{
-      const response=await axios.patch(`${BASE_URL}/api/auth/profile`,payload,{
+      const response=await axios.patch(`${BASE_URL}/api/auth/profile/${user_id}`,formData,{
         headers:{
           "Content-Type":"multipart/form-data",
           Authorization:`Bearer ${localStorage.getItem("token")}`,

@@ -12,7 +12,7 @@ dotenv.config();
 // 🔹 Get All Products
 const getAllProducts = expressAsyncHandler(async (req, res) => {
     // Find all products
-    const products = await Product.find({});
+    const products = await Product.find({ isDeleted: false });
     res.status(StatusCodes.OK).json(products);
 });
 

@@ -34,7 +34,9 @@ const ProductSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    isDeleted: { type: Boolean, default: false },
+
 });
 
 const Product = mongoose.model('Product', ProductSchema);

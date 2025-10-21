@@ -36,35 +36,44 @@ function CategoryScroller({onCategorySelect}) {
 //       </div>
 //     );
 //   }
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 6,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-        },
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 6,
+  slidesToScroll: 6,
+  responsive: [
+    {
+      breakpoint: 1280, // large screens (laptops)
+      settings: {
+        slidesToShow: 4,
+        slidesToScroll: 2,
       },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
+    },
+    {
+      breakpoint: 1024, // tablets
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 2,
       },
-      {
-        breakpoint: 580,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
+    },
+    {
+      breakpoint: 768, // medium phones
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1,
       },
-    ],
-  };
+    },
+    {
+      breakpoint: 480, // small phones
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+      },
+    },
+  ],
+};
+
 
   return (
     // <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay:0.1  }}>
@@ -82,16 +91,14 @@ function CategoryScroller({onCategorySelect}) {
                     <div
                       key={index}
                     //   onClick={() => checkLogin(product.name)}
-                      className="m-3  "
+                      className="m-3 flex flex-col items-center justify-center text-center cursor-pointer"
                     >
                     <div onClick={()=>onCategorySelect(product?.name)} className="m-3 flex flex-col cursor-pointer items-center justify-center">
-                        <img
-                            src={product?.image}
-                            className="h-24 object-cover w-28 rounded-full"
-                            alt={product.id}
-                        />
-                        <h1 className="font-bold">{product.name}</h1>
-
+                    <img
+                        src={product?.image}
+                        className="h-20 w-20 sm:h-20 sm:w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 rounded-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                        <h1 className="font-semibold text-sm sm:text-base mt-2">{product.name}</h1>
                     </div>
                     </div>
                 );

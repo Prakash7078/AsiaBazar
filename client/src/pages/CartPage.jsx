@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { AiFillDelete } from "react-icons/ai";
 import { deleteCartItem, getCartItems, updateCartItem } from '../redux/productSlice';
-import { Button } from '@material-tailwind/react';
+import { Button, Typography } from '@material-tailwind/react';
 import {
   Drawer,
 } from "@material-tailwind/react";
@@ -23,6 +23,7 @@ function CartPage() {
     await dispatch(getCartItems({user_id:userInfo?._id}));
   }
   const handleUpdate=async(sym,cartItemId,quantity)=>{
+    
     if(sym==='less'){
       if(quantity<=1){
         setDisableminicon(cartItemId)
@@ -79,6 +80,9 @@ function CartPage() {
                     {item?.product.product_size}
                     {item?.product.quantity_measure}
                   </p>
+                  {item?.product?.total_products!=0 && <Typography className="text-sm font-semibold mt-1">
+                    Total Items: {item?.product?.total_products}
+                  </Typography>}
                   <p className="text-sm">
                     <span className="font-semibold">Price:</span> ${item?.product.product_price}
                   </p>

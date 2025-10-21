@@ -57,7 +57,7 @@ function Contact() {
                 className="flex flex-wrap "
                 action="#"
               >
-              <div className="p-2 w-1/2">
+              <div className="md:w-1/2">
                 <div className="relative">
                   <label
                     htmlFor="name"
@@ -75,7 +75,7 @@ function Contact() {
                   />
                 </div>
               </div>
-              <div className="p-2 w-1/2">
+              <div className="md:w-1/2">
                 <div className="relative">
                   <label
                     htmlFor="email"

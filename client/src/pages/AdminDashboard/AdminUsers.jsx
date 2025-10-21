@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUsers } from '../../redux/adminSlice';
 import { Input } from '@material-tailwind/react';
 
-const AdminUsers: React.FC = () => {
+const AdminUsers= () => {
   const [searchQuery, setSearchQuery] = useState('');
   const dispatch=useDispatch();
   const users=useSelector((state)=>state.admin.users);
@@ -20,9 +20,9 @@ const AdminUsers: React.FC = () => {
   },[dispatch])
 
   return (
-    <div className="space-y-6 w-3/4">
+    <div className="space-y-6 md:w-3/4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center md:p-4 justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Users Management</h1>
           <p className="text-gray-600">Manage customer accounts and information</p>
@@ -69,7 +69,12 @@ const AdminUsers: React.FC = () => {
                     <div className="flex items-center">
                       <div className="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                         <span className="text-white font-medium text-sm">
-                          {user.name.split(' ').map(n => n[0]).join('')}
+                        {user?.name
+                          ? user.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')
+                          : ''}                       
                         </span>
                       </div>
                       <div className="ml-4">
@@ -86,7 +91,8 @@ const AdminUsers: React.FC = () => {
                     <div className="text-sm text-gray-900 max-w-xs truncate">{user.address}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.added_at}</div>
+                    <div className="text-sm text-gray-900">{new Date(user.createdAt).toLocaleDateString()}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{2}</div>
