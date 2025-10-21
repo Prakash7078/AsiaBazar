@@ -109,8 +109,8 @@ function AllItems({selectedCategory,onCategorySelect}) {
                 No products found.
               </Typography>
             ) : (
-            filteredProducts.slice(0, 3)?.filter((product)=>product.product_category?.toLowerCase().includes(selectedCategory.toLowerCase())).map((product) => (
-                <Card key={product.product_id} shadow className="p-4 hover:shadow-xl transition">
+            filteredProducts?.slice(0, 3)?.filter((product)=>product?.product_category?.toLowerCase().includes(selectedCategory?.toLowerCase())).map((product) => (
+                <Card key={product?.product_id} shadow className="p-4 hover:shadow-xl transition">
                   <Link to={`/product/${product?.product_id}`} >
                   
                   <Slider {...settings} className="product-slider">
