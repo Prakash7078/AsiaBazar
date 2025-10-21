@@ -4,7 +4,6 @@ import Contact from "./Components/Contact";
 
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Categories from "./Components/Categories";
 import CategoryScroller from "./Components/CategoryScroller";
 import SpecialOrder from "./Components/SpecialOrder";
 import AllItems from "./Components/AllItems";
