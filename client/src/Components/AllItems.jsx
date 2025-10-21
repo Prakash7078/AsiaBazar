@@ -114,7 +114,7 @@ function AllItems({selectedCategory,onCategorySelect}) {
                   <Link to={`/product/${product?.product_id}`} >
                   
                   <Slider {...settings} className="product-slider">
-                    {JSON.parse(product?.product_image)?.map((imgUrl, idx) => (
+                    {product?.product_image?.map((imgUrl, idx) => (
                       <div key={idx} className="w-full  h-60 lg:h-80">
                         <img
                           className="object-fill w-full md:h-full rounded-md"
