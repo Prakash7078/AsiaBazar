@@ -71,11 +71,11 @@ function ProductScreen() {
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-8 2xl:px-16 mt-24">
             <div className=" grid-cols-9 items-start gap-x-10 pb-10  grid lg:pb-14 xl:gap-x-14 2xl:pb-20">
-            {product.product_image && (
+            {product?.product_image && (
             <div className="col-span-5">
                 <ImageSlider data={(() => {
                     try {
-                    return JSON.parse(product.product_image);
+                    return product.product_image;
                     } catch {
                     return [];
                     }
@@ -90,13 +90,13 @@ function ProductScreen() {
                 <div className="m-4 pb-7">
                     <div className='flex gap-2 items-center'>
                         <h2 className="text-heading mb-3.5 text-lg font-bold md:text-xl lg:text-2xl 2xl:text-3xl">
-                        {product.product_name} 
+                        {product?.product_name} 
                         </h2>
                         <h1 className='text-heading mb-3.5 text-md font-bold md:text-xl lg:text-lg '>({product?.product_category})</h1>
                     </div>
                     <div className="mb-4 flex gap-3"><Rating value={5} /><span className="text-gray-500">604 Reviews</span></div>
                     <p className="text-body text-sm leading-6 lg:text-base lg:leading-8">
-                    {product.product_description}
+                    {product?.product_description}
                     </p>
                     <div className="text-heading pr-2 mt-5 text-base font-bold md:pr-0  text-blue-gray-500 ">
                         <span className="text-green-500 text-2xl">${product?.product_price}</span>
@@ -117,7 +117,7 @@ function ProductScreen() {
                         className="hover:text-heading transition hover:underline"
                         href="#"
                         >
-                        {product.product_quantity} {product?.quantity_measure}
+                        {product?.product_quantity} {product?.quantity_measure}
                         </a>
                     </li>
                     <li className="productTags">
@@ -128,7 +128,7 @@ function ProductScreen() {
                         className="hover:text-heading inline-block pr-1.5 transition last:pr-0 hover:underline"
                         href="#"
                         >
-                        {product?.product_quantity>0?product.product_quantity:<h1 className="text-red-400 font-bold">Sold Out</h1>}
+                        {product?.product_quantity>0?product?.product_quantity:<h1 className="text-red-400 font-bold">Sold Out</h1>}
                         </a>
                     </li>
 
@@ -148,12 +148,12 @@ function ProductScreen() {
                         No products found.
                     </Typography>
                     ) : (
-                    products?.filter((item)=>item.product_category?.toLowerCase()===product?.product_category?.toLowerCase()).map((product) => (
-                        <Card key={product.product_id} shadow className="p-4 hover:shadow-xl transition">
+                    products?.filter((item)=>item?.product_category?.toLowerCase()===product?.product_category?.toLowerCase()).map((product) => (
+                        <Card key={product?.product_id} shadow className="p-4 hover:shadow-xl transition">
                         <Link to={`/product/${product?.product_id}`} >
                         
                         <Slider {...settings} className="product-slider">
-                            {JSON.parse(product?.product_image)?.map((imgUrl, idx) => (
+                            {product?.product_image?.map((imgUrl, idx) => (
                             <div key={idx} className="w-full  h-60 lg:h-60">
                                 <img
                                 className="object-fill w-full md:h-full rounded-md"

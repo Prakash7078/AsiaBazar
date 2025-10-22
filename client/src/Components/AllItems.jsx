@@ -110,8 +110,8 @@ function AllItems({selectedCategory,onCategorySelect}) {
               </Typography>
             ) : (
             filteredProducts?.slice(0, 3)?.filter((product)=>product?.product_category?.toLowerCase().includes(selectedCategory?.toLowerCase())).map((product) => (
-                <Card key={product?.product_id} shadow className="p-4 hover:shadow-xl transition">
-                  <Link to={`/product/${product?.product_id}`} >
+                <Card key={product?._id} shadow className="p-4 hover:shadow-xl transition">
+                  <Link to={`/product/${product?._id}`} >
                   
                   <Slider {...settings} className="product-slider">
                     {product?.product_image?.map((imgUrl, idx) => (
