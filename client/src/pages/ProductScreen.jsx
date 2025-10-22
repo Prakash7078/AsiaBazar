@@ -1,217 +1,205 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { addproducttoCart, getCartItems, getProduct, getProducts } from '../redux/productSlice';
-import { Button, Card, Rating, Switch, Typography } from "@material-tailwind/react";
+import { Button, Card, Rating, Typography } from "@material-tailwind/react";
 import { FaPhone } from "react-icons/fa";
 import ImageSlider from '../Components/ImageSlider';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
 function ProductScreen() {
-    const dispatch=useDispatch();
-    const params=useParams();
-    const userInfo = useSelector((state) => state.auth.userInfo);
-    const {productId}=params;
-    const[product,setProduct]=useState([]);
-    const { products, loading } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+  const params = useParams();
+  const userInfo = useSelector((state) => state.auth.userInfo);
+  const { productId } = params;
+  const [product, setProduct] = useState([]);
+  const { products, loading } = useSelector((state) => state.product);
+  const navigate = useNavigate();
 
-    const navigate=useNavigate();
-    useEffect(() => {
-        dispatch(getProducts());
-      }, [dispatch]);
-    useEffect(()=>{
-        const fetchProduct=async()=>{
-            const res=await dispatch(getProduct(productId));
-            setProduct(res.payload);
-        }
-        fetchProduct();
-    },[dispatch,productId])
-    const handleCart=async()=>{
-        if(!userInfo){
-            navigate('/login')
-        }else{
-            await dispatch(addproducttoCart({
-                user_id: userInfo?.user_id,
-                product_id: parseInt(productId),
-                quantity: 1
-              }))
-            await dispatch(getCartItems({user_id:userInfo?.user_id}))
-        }
+  useEffect(() => {
+    dispatch(getProducts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const res = await dispatch(getProduct(productId));
+      setProduct(res.payload);
+    };
+    fetchProduct();
+  }, [dispatch, productId]);
+
+  const handleCart = async () => {
+    if (!userInfo) {
+      navigate('/login');
+    } else {
+      await dispatch(addproducttoCart({
+        user_id: userInfo?._id,
+        product_id: productId,
+        quantity: 1
+      }));
+      await dispatch(getCartItems({ user_id: userInfo?._id }));
     }
-    const settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        responsive: [
-          {
-            breakpoint: 1024,
-            settings: {
-              slidesToShow: 2,
-            },
-          },
-          {
-            breakpoint: 768,
-            settings: {
-              slidesToShow: 2,
-              slidesToScroll: 1,
-            },
-          },
-          {
-            breakpoint: 580,
-            settings: {
-              slidesToShow: 1,
-              slidesToScroll: 1,
-            },
-          },
-        ],
-      };
+  };
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   return (
-    <div className="mx-auto max-w-7xl px-4 md:px-8 2xl:px-16 mt-24">
-            <div className=" grid-cols-9 items-start gap-x-10 pb-10  grid lg:pb-14 xl:gap-x-14 2xl:pb-20">
-            {product?.product_image && (
-            <div className="col-span-5">
-                <ImageSlider data={(() => {
-                    try {
-                    return product.product_image;
-                    } catch {
-                    return [];
-                    }
-                })()} />
+    <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-8 mt-24">
+      {/* ---------- PRODUCT MAIN SECTION ---------- */}
+      <div className="flex flex-col lg:flex-row gap-10 pb-10">
+        {/* Left: Product Images */}
+        <div className="w-full lg:w-1/2">
+          {product?.product_image && (
+            <div className="sticky top-24">
+              <ImageSlider data={product?.product_image} />
             </div>
-            )}
-
-
-            <div className="col-span-4 pt-3 lg:pt-10 ">
-                {/* <div className="flex justify-end md:justify-start mb-10"><Button className={`${selectroom ? "bg-brown-300":"bg-white border-black border-b-2"} text-black`} onClick={()=>setSelectroom(!selectroom)}>Select Room</Button></div> */}
-
-                <div className="m-4 pb-7">
-                    <div className='flex gap-2 items-center'>
-                        <h2 className="text-heading mb-3.5 text-lg font-bold md:text-xl lg:text-2xl 2xl:text-3xl">
-                        {product?.product_name} 
-                        </h2>
-                        <h1 className='text-heading mb-3.5 text-md font-bold md:text-xl lg:text-lg '>({product?.product_category})</h1>
-                    </div>
-                    <div className="mb-4 flex gap-3"><Rating value={5} /><span className="text-gray-500">604 Reviews</span></div>
-                    <p className="text-body text-sm leading-6 lg:text-base lg:leading-8">
-                    {product?.product_description}
-                    </p>
-                    <div className="text-heading pr-2 mt-5 text-base font-bold md:pr-0  text-blue-gray-500 ">
-                        <span className="text-green-500 text-2xl">${product?.product_price}</span>
-                    </div>
-                    <div className="flex items-center text-blue-gray-400 mt-3">
-                        <FaPhone/> <span className=" underline ml-2"> <a href='tel:+1 (316) 612-2700'>+1 (316) 612-2700</a></span>
-                    </div>
-                
-                </div>
-            
-                <div className="py-3 m-4">
-                    <ul className="space-y-5 pb-1 text-sm">
-                    <li>
-                        <span className="text-heading inline-block pr-2 font-semibold">
-                        Size:
-                        </span>
-                        <a
-                        className="hover:text-heading transition hover:underline"
-                        href="#"
-                        >
-                        {product?.product_quantity} {product?.quantity_measure}
-                        </a>
-                    </li>
-                    <li className="productTags">
-                        <span className="text-heading inline-block pr-2 font-semibold">
-                        Available Items
-                        </span>
-                        <a
-                        className="hover:text-heading inline-block pr-1.5 transition last:pr-0 hover:underline"
-                        href="#"
-                        >
-                        {product?.product_quantity>0?product?.product_quantity:<h1 className="text-red-400 font-bold">Sold Out</h1>}
-                        </a>
-                    </li>
-
-                    </ul>
-                </div>
-                <div className='flex justify-end md:justify-start ml-4'>
-                    <Button onClick={handleCart} className='bg-red-700 mt-10 '>Add to Cart</Button>
-                </div>
-                </div>
-                
-            </div>
-            <div className='md:mt-36'>
-                <h1 className='text-2xl font-bold underline'>Related Products</h1>
-                <div className="grid gap-6 mt-10 md:grid-cols-3 lg:grid-cols-4 grid-cols-1">
-                    {products?.length === 0 ? (
-                    <Typography variant="paragraph" className="text-center col-span-full">
-                        No products found.
-                    </Typography>
-                    ) : (
-                    products?.filter((item)=>item?.product_category?.toLowerCase()===product?.product_category?.toLowerCase()).map((product) => (
-                        <Card key={product?.product_id} shadow className="p-4 hover:shadow-xl transition">
-                        <Link to={`/product/${product?.product_id}`} >
-                        
-                        <Slider {...settings} className="product-slider">
-                            {product?.product_image?.map((imgUrl, idx) => (
-                            <div key={idx} className="w-full  h-60 lg:h-60">
-                                <img
-                                className="object-fill w-full md:h-full rounded-md"
-                                src={imgUrl}
-                                alt={`Product Image ${idx + 1}`}
-                                />
-                            </div>
-                            ))}
-                        </Slider>
-                        <style>{`
-                        
-
-                            /* Position arrows slightly inside */
-                            .product-slider .slick-prev {
-                            left: 10px !important;
-                            z-index: 1;
-                            font-size: 24px;
-                            }
-
-                            .product-slider .slick-next {
-                            right: 10px !important;
-                            z-index: 1;
-                            font-size: 24px;
-                            }
-                        `}</style>
-                        </Link>
-                        <div className="flex justify-between items-center">
-                        <Typography variant="h5" className="font-semibold text-[#3c3c3c]">
-                            {product?.product_name}
-                        </Typography>
-                        <Typography color="blue-gray" className="mt-2 font-bold text-sm">
-                            {product?.product_category}
-                        </Typography>
-                        </div>
-                        
-                        <Typography className="text-sm text-gray-600 font-semibold mt-1">
-                            {product?.product_quantity}{product?.quantity_measure}
-                        </Typography>
-                        {product?.total_quantity!=0 && <Typography className="text-sm text-gray-600 mt-1">
-                            Total Items: {product?.total_quantity}
-                        </Typography>}
-                        <Typography className=" mt-1">
-                            {product?.product_description}
-                        </Typography>
-                        <Typography className="text-2xl text-green-600 font-bold mt-5">
-                            ${product?.product_price}
-                        </Typography>
-                        <Button onClick={()=>handleCart(product?.product_id)} className="mt-3" color="red" size="sm" >
-                            Add to Cart
-                            </Button>
-                        
-                        </Card>
-                    ))
-                    )}
-                </div>
-            </div>
+          )}
         </div>
-  )
+
+        {/* Right: Product Details */}
+        <div className="w-full lg:w-1/2 space-y-6">
+          <div>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+              {product?.product_name}
+            </h2>
+            <p className="text-gray-500 text-sm sm:text-base mt-1">
+              Category: <span className="font-semibold">{product?.product_category}</span>
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Rating value={5} />
+            <span className="text-gray-600 text-sm">604 Reviews</span>
+          </div>
+
+          <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+            {product?.product_description}
+          </p>
+
+          <div className="text-green-600 font-bold text-3xl">
+            ${product?.product_price}
+          </div>
+
+          <div className="flex items-center text-blue-gray-400 mt-2">
+            <FaPhone />
+            <a href="tel:+1 (316) 612-2700" className="ml-2 underline">
+              +1 (316) 612-2700
+            </a>
+          </div>
+
+          <ul className="space-y-3 text-sm sm:text-base mt-5">
+            <li>
+              <span className="font-semibold text-gray-800">Size:</span> {product?.product_size} {product?.quantity_measure}
+            </li>
+            <li>
+              <span className="font-semibold text-gray-800">Availability:</span>{" "}
+              {product?.total_products > 0 ? (
+                <span className="text-green-600 font-semibold">In Stock ({product?.total_products})</span>
+              ) : (
+                <span className="text-red-500 font-semibold">Sold Out</span>
+              )}
+            </li>
+          </ul>
+
+          <Button
+            onClick={handleCart}
+            className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white mt-6 py-2 px-6"
+          >
+            Add to Cart
+          </Button>
+        </div>
+      </div>
+
+      {/* ---------- RELATED PRODUCTS SECTION ---------- */}
+      <div className="mt-20">
+        <h1 className="text-2xl font-bold underline mb-6">Related Products</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products?.length === 0 ? (
+            <Typography variant="paragraph" className="text-center col-span-full">
+              No products found.
+            </Typography>
+          ) : (
+            products
+              ?.filter(
+                (item) =>
+                  item.product_category?.toLowerCase() ===
+                  product?.product_category?.toLowerCase()
+              )
+              .map((item) => (
+                <Card key={item?._id} shadow className="p-4 hover:shadow-xl transition">
+                  <Link to={`/product/${item?._id}`}>
+                    <Slider {...settings} className="product-slider">
+                      {item?.product_image?.map((imgUrl, idx) => (
+                        <div key={idx} className="w-full h-52 sm:h-60">
+                          <img
+                            className="object-cover w-full h-full rounded-md"
+                            src={imgUrl}
+                            alt={`Product Image ${idx + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  </Link>
+
+                  <div className="mt-4">
+                    <Typography variant="h6" className="font-semibold text-gray-800">
+                      {item?.product_name}
+                    </Typography>
+                    <Typography className="text-gray-500 text-sm">
+                      {item?.product_category}
+                    </Typography>
+                    <Typography className="text-gray-700 text-sm mt-1">
+                      {item?.product_size}{item?.quantity_measure}
+                    </Typography>
+                    {item?.total_products !== 0 && (
+                      <Typography className="text-gray-600 text-sm">
+                        Total Items: {item?.total_products}
+                      </Typography>
+                    )}
+                    <Typography className="text-gray-600 text-sm mt-2">
+                      {item?.product_description?.length > 50
+                        ? item?.product_description?.slice(0, 50) + "..."
+                        : item?.product_description}
+                    </Typography>
+                    <Typography className="text-green-600 font-bold text-lg mt-3">
+                      ${item?.product_price}
+                    </Typography>
+                    <Button
+                      onClick={() => handleCart(item?._id)}
+                      color="red"
+                      size="sm"
+                      className="mt-3 w-full"
+                    >
+                      Add to Cart
+                    </Button>
+                  </div>
+                </Card>
+              ))
+          )}
+        </div>
+      </div>
+
+      {/* Slider Button Styling */}
+      <style>{`
+        .product-slider .slick-prev {
+          left: 5px !important;
+          z-index: 1;
+        }
+        .product-slider .slick-next {
+          right: 5px !important;
+          z-index: 1;
+        }
+      `}</style>
+    </div>
+  );
 }
 
-export default ProductScreen
+export default ProductScreen;

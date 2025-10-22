@@ -49,9 +49,9 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className=" mt-32 flex">
+    <div className="mt-32 md:flex">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block w-64 ">
+      <div className="hidden lg:block ">
         <Card className="h-full rounded-none p-4 bg-[#ffccbc] shadow-xl">
           <Typography variant="h6" color="blue-gray" className="mb-6">
             Admin Panel
@@ -127,7 +127,7 @@ const AdminLayout = () => {
       </Drawer>
 
       {/* Main Content */}
-      <div className="flex-1 px-4 pt-20 lg:ml-64 ">
+      <div className="flex-1 md:px-4 pt-20 lg:ml-64 ">
         <main className="p-4">
           <Outlet />
         </main>

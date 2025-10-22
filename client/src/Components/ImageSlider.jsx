@@ -65,7 +65,7 @@ const ImageSlider = ({ data }) => {
   return (
     <div style={{ maxWidth: "850px", margin: "0 auto" }}>
       {/* Main Image Container */}
-      <div className="relative bg-gray-200 rounded-lg overflow-hidden" style={{ height: "500px" }}>
+      <div className="relative bg-gray-200 rounded-lg overflow-hidden" style={{ height: "60vh", maxHeight: "500px" }}>
         <img
           src={validImages[currentIndex]}
           alt={`Product image ${currentIndex + 1}`}

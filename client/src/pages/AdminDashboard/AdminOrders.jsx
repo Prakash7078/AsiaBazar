@@ -21,7 +21,7 @@ const AdminOrders = () => {
   // Filter orders based on search and filters
   const filteredOrders = orders?.filter(order => {
     const matchesSearch = 
-      order.order_id.toString().includes(searchQuery.toLowerCase()) ||
+      order._id.toString().includes(searchQuery.toLowerCase()) ||
       order.shipping_address.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.updated_mobile_no.includes(searchQuery);
     
@@ -51,15 +51,22 @@ const AdminOrders = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateValue) => {
+    // handle cases like { $date: "..." }
+    const isoString = dateValue?.$date || dateValue;
+    const d = new Date(isoString);
+    if (isNaN(d)) return "Invalid date";
+  
+    return d.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true
     });
   };
+  
 
   const toggleOrderExpansion = (orderId) => {
     const newExpanded = new Set(expandedOrders);
@@ -71,18 +78,12 @@ const AdminOrders = () => {
     setExpandedOrders(newExpanded);
   };
 
-  const getFirstImage = (imageString) => {
-    try {
-      const images = JSON.parse(imageString);
-      return images[0] || '/placeholder-image.jpg';
-    } catch {
-      return '/placeholder-image.jpg';
-    }
-  };
+  
 
-  const updateOrderDetails = async(orderId, newStatus,updatemobileno,updateaddress) => {
+  const updateOrderDetails = async(orderId, newStatus,paymentStatus,updatemobileno,updateaddress) => {
     const orderdata={
       "order_status": newStatus,
+      "payment_status": paymentStatus,
       "updated_mobile_no":updatemobileno,
       "shipping_address":updateaddress
     }
@@ -109,7 +110,7 @@ const AdminOrders = () => {
   }
 
   return (
-    <div className="space-y-6 w-3/4 p-6">
+    <div className="space-y-6 md:w-3/4 md:p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -203,12 +204,12 @@ const AdminOrders = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders?.map((order) => (
-                <React.Fragment key={order.order_id}>
+                <React.Fragment key={order._id}>
                   <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <button
-                          onClick={() => toggleOrderExpansion(order.order_id)}
+                          onClick={() => toggleOrderExpansion(order._id)}
                           className="mr-2 p-1 hover:bg-gray-100 rounded"
                         >
                           {expandedOrders.has(order.order_id) ? 
@@ -217,17 +218,18 @@ const AdminOrders = () => {
                           }
                         </button>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">#{order.order_id}</div>
+                          <div className="text-sm font-medium text-gray-900">#{order._id}</div>
                           <div className="text-xs text-gray-500">{order.items.length} items</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{order?.user?.name}</div>
                       <div className="text-sm font-medium text-gray-900">{order.updated_mobile_no}</div>
                       <div className="text-sm text-gray-500">{order.shipping_address.slice(0, 40)}...</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatDate(order.created_at)}</div>
+                      <div className="text-sm text-gray-900">{new Date(order.createdAt).toLocaleDateString()}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">${parseFloat(order.total_amount).toFixed(2)}</div>
@@ -235,7 +237,7 @@ const AdminOrders = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
                         value={order.order_status}
-                        onChange={(e) => updateOrderDetails(order.order_id, e.target.value,order.updated_mobile_no,order.shipping_address)}
+                        onChange={(e) => updateOrderDetails(order._id, e.target.value,order.payment_status,order.updated_mobile_no,order.shipping_address)}
                         className={`px-3 py-1 text-xs font-medium rounded-full capitalize border-0 focus:ring-2 focus:ring-green-500 ${getStatusColor(order.order_status)}`}
                       >
                         <option value="pending">Pending</option>
@@ -246,9 +248,16 @@ const AdminOrders = () => {
                       </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full capitalize ${getPaymentStatusColor(order.payment_status)}`}>
-                        {order.payment_status}
-                      </span>
+                      <select
+                          value={order.payment_status}
+                          onChange={(e) => updateOrderDetails(order._id, order.order_status,e.target.value,order.updated_mobile_no,order.shipping_address)}
+                          className={`px-3 py-1 text-xs font-medium rounded-full capitalize border-0 focus:ring-2 focus:ring-green-500 ${getPaymentStatusColor(order.payment_status)}`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="succeeded">Succeeded</option>
+                          <option value="failed">Failed</option>
+                        
+                        </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
@@ -266,36 +275,36 @@ const AdminOrders = () => {
                   </tr>
                   
                   {/* Expanded Order Items */}
-                  {expandedOrders.has(order.order_id) && (
+                  {expandedOrders.has(order?._id) && (
                     <tr>
                       <td colSpan="7" className="px-6 py-4 bg-gray-50">
                         <div className="space-y-3">
                           <h4 className="font-medium text-gray-900">Order Items:</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {order.items.map((item) => (
-                              <div key={item.order_item_id} className="bg-white rounded-lg p-4 border">
+                            {order?.items?.map((item) => (
+                              <div key={item._id} className="bg-white rounded-lg p-4 border">
                                 <div className="flex items-start space-x-3">
                                   <img
-                                    src={getFirstImage(item.product_image)}
-                                    alt={item.product_name}
+                                    src={item?.product?.product_image[0]}
+                                    alt={item?.product_name}
                                     className="w-16 h-16 object-cover rounded-lg"
                                     onError={(e) => {
                                       e.target.src = '/placeholder-image.jpg';
                                     }}
                                   />
                                   <div className="flex-1">
-                                    <h5 className="font-medium text-gray-900">{item.product_name}</h5>
-                                    <p className="text-sm text-gray-600 capitalize">{item.product_category}</p>
+                                    <h5 className="font-medium text-gray-900">{item?.product_name}</h5>
+                                    <p className="text-sm text-gray-600 capitalize">{item?.product_category}</p>
                                     <div className="flex justify-between items-center mt-2">
                                       <span className="text-sm text-gray-500">
-                                        Qty: {item.quantity} {item.quantity_measure}
+                                        Qty: {item?.quantity} {item?.quantity_measure}
                                       </span>
                                       <span className="font-medium text-gray-900">
-                                        ${parseFloat(item.total_price).toFixed(2)}
+                                        ${parseFloat(item?.total_price).toFixed(2)}
                                       </span>
                                     </div>
                                     <p className="text-xs text-gray-500 mt-1">
-                                      Unit Price: ${parseFloat(item.price).toFixed(2)}
+                                      Unit Price: ${parseFloat(item?.product?.product_price).toFixed(2)}
                                     </p>
                                   </div>
                                 </div>

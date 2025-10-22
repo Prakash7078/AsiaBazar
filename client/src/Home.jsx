@@ -8,6 +8,7 @@ import CategoryScroller from "./Components/CategoryScroller";
 import SpecialOrder from "./Components/SpecialOrder";
 import AllItems from "./Components/AllItems";
 import ABCarousel  from "./Components/ABCarousel";
+import MenuSection from "./Components/MenuSection";
 
 function Home() {
   const { pathname } = useLocation();
@@ -21,6 +22,8 @@ function Home() {
       <CategoryScroller onCategorySelect={setSelectcategory}/>
       <AllItems selectedCategory={selectcategory} onCategorySelect={setSelectcategory}/>
       <SpecialOrder/>
+      <MenuSection />
+
       <Contact />
       <Footer />
     </div>

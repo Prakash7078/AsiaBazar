@@ -75,6 +75,8 @@ const adminSlice = createSlice({
       })
       .addCase(getUsers.fulfilled, (state, { payload }) => {
         state.users = payload;
+        state.loading = false;
+
       })
       .addCase(getUsers.rejected, () => {
         toast.error("Network Issue");
@@ -82,9 +84,11 @@ const adminSlice = createSlice({
     builder
       .addCase(addAdmin.pending, (state) => {
         state.loading = true;
+        
       })
-      .addCase(addAdmin.fulfilled, () => {
+      .addCase(addAdmin.fulfilled, (state) => {
         toast.success("admin added succesfully");
+        state.loading = false;
       })
       .addCase(addAdmin.rejected, () => {
         toast.error("Add admin failed");
@@ -96,6 +100,8 @@ const adminSlice = createSlice({
       })
       .addCase(getAllOrders.fulfilled, (state, {payload}) => {
         state.orders = payload;
+        state.loading = false;
+
       })
       .addCase(getAllOrders.rejected, () => {
         toast.error("Getting Reviews failed");

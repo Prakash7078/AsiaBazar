@@ -21,16 +21,16 @@ const addProduct = expressAsyncHandler(async (req, res) => {
   const {
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     product_category,
     quantity_measure,
-    total_quantity,
+    total_products,
     product_description,
   } = req.body;
 
   const imageUrls = [];
-  // Default to 0 if total_quantity is not provided/valid
-  const totalQty = parseInt(total_quantity, 10) || 0; 
+  // Default to 0 if total_products is not provided/valid
+  const totalQty = parseInt(total_products, 10) || 0; 
 
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
@@ -43,9 +43,9 @@ const addProduct = expressAsyncHandler(async (req, res) => {
   const newProduct = await Product.create({
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     quantity_measure,
-    total_quantity: totalQty,
+    total_products: totalQty,
     product_category,
     product_description,
     product_image: imageUrls,
@@ -61,7 +61,7 @@ const addProduct = expressAsyncHandler(async (req, res) => {
 const deleteProduct = expressAsyncHandler(async(req,res)=>{
   const productId = req.params.id;
   
-  const result = await Product.findByIdAndDelete(productId);
+  const result=await Product.findByIdAndUpdate(req.params.id, { isDeleted: true });
   
   if (!result) {
     return res.status(StatusCodes.NOT_FOUND).json({ message: "Product not found" });
@@ -75,9 +75,9 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   const {
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     quantity_measure,
-    total_quantity,
+    total_products,
     product_category,
     product_description
   } = req.body;
@@ -102,9 +102,9 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   const updateFields = {
     product_name,
     product_price,
-    product_quantity,
+    product_size,
     quantity_measure,
-    total_quantity,
+    total_products,
     product_category,
     product_description,
     product_image: allImages,
@@ -128,6 +128,8 @@ const getAllOrders = expressAsyncHandler(async (req, res) => {
   
   // Find all orders and sort by creation date descending
   const orders = await Order.find({})
+    .populate('user')
+    .populate('items.product')
     .sort({ createdAt: -1 })
     .lean();
 
@@ -136,13 +138,14 @@ const getAllOrders = expressAsyncHandler(async (req, res) => {
 
 // 🔹 Update Order
 const updateOrder = expressAsyncHandler(async(req,res)=>{
-  const {order_status, updated_mobile_no, shipping_address} = req.body;
+  const {order_status, payment_status,updated_mobile_no, shipping_address} = req.body;
   const orderId = req.params.orderId;
 
   const updatedOrder = await Order.findByIdAndUpdate(
     orderId,
     {
       order_status,
+      payment_status,
       updated_mobile_no,
       shipping_address,
       updatedAt: Date.now() // Update the timestamp

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getCustomerOrders } from '../redux/productSlice';
 import { Card, CardBody, Typography, Chip } from "@material-tailwind/react";
+import { updateRegister } from '../redux/authSlice';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -21,8 +22,8 @@ const Profile = () => {
   const orders= useSelector((state) => state.product.customer_orders);
   // Fetch user profile and orders on component mount
   useEffect(() => {
-    dispatch(getCustomerOrders(userInfo?.user_id));
-  }, [dispatch]);
+    dispatch(getCustomerOrders(userInfo?._id));
+  }, [dispatch, userInfo?._id]);
 
   // Populate form data when userInfo is loaded
   useEffect(() => {
@@ -45,8 +46,8 @@ const Profile = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
-    //   await dispatch(updateUserProfile(formData));
-      toast.success('Profile updated successfully!');
+      await dispatch(updateRegister({user_id:userInfo?._id,formData}));
+      window.location.reload();
       setIsEditing(false);
     } catch (error) {
       toast.error('Failed to update profile. Please try again.');
@@ -68,7 +69,7 @@ const Profile = () => {
                 <input
                   type="text"
                   name="name"
-                  value={formData.name}
+                  value={formData?.name}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
@@ -78,7 +79,7 @@ const Profile = () => {
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={formData?.email}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
@@ -88,7 +89,7 @@ const Profile = () => {
                 <input
                   type="text"
                   name="phone"
-                  value={formData.phone}
+                  value={formData?.phone}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
@@ -98,7 +99,7 @@ const Profile = () => {
                 <input
                   type="text"
                   name="address"
-                  value={formData.address}
+                  value={formData?.address}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
@@ -138,28 +139,28 @@ const Profile = () => {
 
       {/* Orders Section */}
       <div className="space-y-6 mt-8">
-      {orders.map((order) => (
-        <Card key={order.order_id} className="shadow-md border rounded-xl">
+      {orders?.map((order) => (
+        <Card key={order?._id} className="shadow-md border rounded-xl">
           <CardBody>
             {/* Order Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
                 <Typography variant="h6" className="font-semibold text-gray-800">
-                  Order #{order.order_id}
+                  Order #{order?._id}
                 </Typography>
                 <Typography className="text-sm text-gray-500">
-                  Placed on {new Date(order.created_at).toLocaleDateString()}
+                  Placed on {new Date(order?.created_at).toLocaleDateString()}
                 </Typography>
               </div>
-              <div className="mt-2 sm:mt-0 flex space-x-2">
+              <div className="mt-2 sm:mt-0 flex flex-col md:flex-row gap-3 space-x-2">
                 <Chip
-                  value={`Payment ${order.payment_status}`}
-                  color={order.payment_status === "succeeded" ? "green" : "red"}
+                  value={`Payment ${order?.payment_status}`}
+                  color={order?.payment_status === "succeeded" ? "green" : "red"}
                   size="sm"
                 />
                 <Chip
-                  value={`Order ${order.order_status}`}
-                  color={order.order_status === "pending" ? "amber" : "blue"}
+                  value={`Order ${order?.order_status}`}
+                  color={order?.order_status === "pending" ? "amber" : "blue"}
                   size="sm"
                 />
               </div>
@@ -167,37 +168,37 @@ const Profile = () => {
 
             {/* Items */}
             <div className="divide-y divide-gray-200">
-              {order.items.map((item) => {
-                const images = JSON.parse(item.product_image || "[]");
+              {order?.items?.map((item) => {
+                const images = item?.product?.product_image;
                 return (
                   <div
-                    key={item.order_item_id}
+                    key={item?._id}
                     className="flex items-center py-4 gap-4"
                   >
                     {/* Product Image */}
                     <img
                       src={images[0]}
-                      alt={item.product_name}
+                      alt={item?.product_name}
                       className="w-16 h-16 rounded-lg object-cover border"
                     />
 
                     {/* Product Info */}
                     <div className="flex-1">
                       <Typography className="font-medium text-gray-800">
-                        {item.product_name}
+                        {item?.product_name}
                       </Typography>
                       <Typography className="text-sm text-gray-500">
-                        Qty: {item.quantity}
+                        Qty: {item?.quantity}
                       </Typography>
                     </div>
 
                     {/* Price */}
                     <div className="text-right">
                       <Typography className="font-medium text-gray-800">
-                        ${item.total_price}
+                        ${item?.total_price}
                       </Typography>
                       <Typography className="text-sm text-gray-500">
-                        ${item.price} each
+                        ${item?.product?.price} {item?.product?.product_size}{item?.product?.quantity_measure}
                       </Typography>
                     </div>
                   </div>
@@ -209,10 +210,10 @@ const Profile = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 pt-4 border-t">
               <Typography className="text-gray-700">
                 <span className="font-semibold">Ship to:</span>{" "}
-                {order.shipping_address}
+                {order?.shipping_address}
               </Typography>
               <Typography className="font-semibold text-gray-900 mt-2 sm:mt-0">
-                Total: ${order.total_amount}
+                Total: ${order?.total_amount}
               </Typography>
             </div>
           </CardBody>

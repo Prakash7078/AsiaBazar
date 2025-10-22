@@ -32,10 +32,15 @@ const addCustomerOrder = expressAsyncHandler(async(req,res)=>{
 
     // Map cart items to the embedded structure required by the Order model
     const orderItems = cartItems.map(item => ({
-        product: item.product_id, // Reference to Product ID
-        product_name: item.product_name, // Copy product name for historical record
-        quantity: item.quantity,
-        price: item.product_price, // Unit price at time of purchase
+        product: item?.product?._id, // Reference to Product ID
+        product_name: item?.product?.product_name, // Copy product name for historical record
+        quantity: item?.quantity,
+        total_price: item?.product?.product_price*item?.quantity, // Unit price at time of purchase
+        product_size: item?.product?.product_size, // Available stock at time of purchase
+        quantity_measure: item?.product?.quantity_measure, // Copy quantity measure for historical record
+        product_image: item?.product?.product_image, // Copy product image for historical record
+        product_category: item?.product?.product_category, // Copy category for historical record
+        product_description: item?.product?.product_description, // Copy description for historical record
     }));
 
     try{
@@ -71,6 +76,8 @@ const getUserOrders = expressAsyncHandler(async(req,res)=>{
 
     // Find all orders for the user, sort by creation date
     const orders = await Order.find({ user: userId })
+        .populate('user')
+        .populate('items.product')
         .sort({ createdAt: -1 })
         .lean();
     

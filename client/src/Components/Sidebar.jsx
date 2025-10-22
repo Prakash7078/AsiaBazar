@@ -36,7 +36,7 @@ function Sidebar() {
                 </Link> */}
                
                
-                <Link to={`/admin/${userInfo?.user_id}/addAdmin`}>
+                <Link to={`/admin/${userInfo?._id}/addAdmin`}>
                   <ListItem>
                     <ListItemPrefix>
                       <BsPersonFillAdd className="h-5 w-5" />
@@ -44,7 +44,7 @@ function Sidebar() {
                     Add Admin
                   </ListItem>
                 </Link>
-                <Link to={`/admin/${userInfo?.user_id}/allProducts`}>
+                <Link to={`/admin/${userInfo?._id}/allProducts`}>
                   <ListItem>
                   <ListItemPrefix>
                       <GiHomeGarage className="h-5 w-5" />
@@ -52,7 +52,7 @@ function Sidebar() {
                   All Products
                 </ListItem>
                 </Link>
-                <Link to={`/admin/${userInfo?.user_id}/addProduct`}>
+                <Link to={`/admin/${userInfo?._id}/addProduct`}>
                   <ListItem>
                   <ListItemPrefix>
                       <GiHomeGarage className="h-5 w-5" />
@@ -85,7 +85,7 @@ function Sidebar() {
                 </Link> */}
                
                 
-                <Link to={`/admin/${userInfo?.user_id}/addAdmin`}>
+                <Link to={`/admin/${userInfo?._id}/addAdmin`}>
                   <ListItem>
                     <ListItemPrefix>
                       <BsPersonFillAdd className="h-5 w-5" />
@@ -94,7 +94,7 @@ function Sidebar() {
                   </ListItem>
                 </Link>
                 
-                <Link to={`/admin/${userInfo?.user_id}/addProduct`}>
+                <Link to={`/admin/${userInfo?._id}/addProduct`}>
                   <ListItem>
                   <ListItemPrefix>
                       <GiHomeGarage className="h-5 w-5" />

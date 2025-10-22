@@ -43,12 +43,8 @@ function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
   useEffect(() => {
-    if(userInfo){
-      dispatch(getCartItems({user_id:userInfo?._id}));
-    }else{
-      return;
-    }
-  },[userInfo,dispatch]);
+    dispatch(getCartItems({user_id:userInfo?._id}));
+  },[dispatch,userInfo?._id]);
   const handleSignout = async () => {
     await dispatch(logoutUser());
     navigate("/");

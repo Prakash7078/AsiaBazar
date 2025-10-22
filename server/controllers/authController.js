@@ -71,4 +71,30 @@ const signup = expressAsyncHandler(async (req, res) => {
   res.status(201).json({ token, user: newUser });
 });
 
-module.exports = { signup, login };
+
+const updateProfile = expressAsyncHandler(async (req, res) => {
+  const { user_id } = req.params;  
+  const { name, email, phone, address } = req.body;  
+  try {
+    // Find and update the user
+    const updatedUser = await User.findByIdAndUpdate(
+      user_id,
+      { name, email, mobile_no:phone, address },
+      { new: true, runValidators: true } // new:true returns updated doc
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server error while updating profile" });
+  }
+});
+
+module.exports = { signup, login,updateProfile };

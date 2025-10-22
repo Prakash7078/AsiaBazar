@@ -154,6 +154,7 @@ export const getCustomerOrders=createAsyncThunk("api/getOrders",async(user_id)=>
 
 export const deleteCart=createAsyncThunk("api/deleteCart",async(user_id)=>{
   try{
+    console.log("user_id",user_id);
     const result=await axios.delete(`${BASE_URL}/api/products/deleteCart/${user_id}`,{
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -221,7 +222,7 @@ const productSlice = createSlice({
       .addCase(updateProduct.fulfilled, (state, { payload }) => {
         state.loading = false;
         state.products = state.products.map((product) =>
-          product.product_id === payload.product.product_id ? payload.product : product
+          product._id === payload.product._id ? payload.product : product
         );
       })
       .addCase(updateProduct.rejected, (state) => {
@@ -234,7 +235,7 @@ const productSlice = createSlice({
       })
       .addCase(deleteProduct.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.products = state.products.filter((product) => product.product_id !== payload);
+        state.products = state.products.filter((product) => product._id !== payload);
       })
       .addCase(deleteProduct.rejected, (state) => {
         state.loading = false;

@@ -2,10 +2,9 @@ const expressAsyncHandler = require("express-async-handler");
 const { StatusCodes } = require("http-status-codes");
 const uploadImage = require("../middleware/uploadMiddleware.js");
 const dotenv = require("dotenv");
-
 const Product = require("../models/productModel.js");
 const CartItem = require("../models/cartItemModel.js");
-
+const User = require("../models/userModel.js");
 dotenv.config();
 
 
@@ -13,7 +12,7 @@ dotenv.config();
 // 🔹 Get All Products
 const getAllProducts = expressAsyncHandler(async (req, res) => {
     // Find all products
-    const products = await Product.find({});
+    const products = await Product.find({ isDeleted: false });
     res.status(StatusCodes.OK).json(products);
 });
 
@@ -38,6 +37,7 @@ const getCartItems=expressAsyncHandler(async(req,res)=>{
   // Find cart items for the user and use populate('product') for the JOIN equivalent
   const cartItems = await CartItem.find({ user: userId })
     .populate('product') // Fills the product reference with the actual Product document
+    .populate('user')
     .lean();
     
   res.status(StatusCodes.OK).json(cartItems);
@@ -97,8 +97,10 @@ const updateCartItem=expressAsyncHandler(async(req,res)=>{
 // 🔹 Add Product to Cart
 const addProductCart=expressAsyncHandler(async(req,res)=>{
   const{ user_id, product_id, quantity } = req.body;
-  
+  console.log(user_id, product_id, quantity);
   // Check if item already exists in cart
+ 
+
   const existing = await CartItem.findOne({ 
       user: user_id, 
       product: product_id 

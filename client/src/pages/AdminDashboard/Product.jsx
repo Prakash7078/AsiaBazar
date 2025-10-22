@@ -16,9 +16,9 @@ function ProductForm() {
         product_id: '',
         product_name: '',
         product_price: 0,
-        product_quantity: 0,
+        product_size: 0,
         quantity_measure:'',
-        total_quantity:0,
+        total_products:0,
         product_category: '',
         product_description:'',
         product_images: [], // changed from single file to array
@@ -30,33 +30,31 @@ function ProductForm() {
         toast.success(`${files.length} image(s) uploaded successfully`);
     };
     useEffect(() => {
+        console.log("Products in state:", productId);
         if (productId) {
-          if (products.length === 0) {
             dispatch(getProducts());
-          } else {
-            const selectedProduct = products.find((item) => item.product_id.toString() === productId);
+            const selectedProduct = products.find((item) => item._id.toString() === productId);
             if (selectedProduct) {
               let parsedImages = [];
               try {
-                parsedImages = JSON.parse(selectedProduct.product_image);
+                parsedImages = selectedProduct.product_image;
               } catch (e) {
                 console.warn("Image parsing failed:", e);
               }
     
               setProductData({
-                product_id: selectedProduct.product_id,
+                product_id: selectedProduct._id,
                 product_name: selectedProduct.product_name,
                 product_price: selectedProduct.product_price,
-                product_quantity: selectedProduct.product_quantity,
+                product_size: selectedProduct.product_size,
                 quantity_measure: selectedProduct.quantity_measure,
-                total_quantity: selectedProduct.total_quantity,
+                total_products: selectedProduct.total_products,
                 product_category: selectedProduct.product_category,
                 product_description: selectedProduct?.product_description,
                 product_images: [],
                 existing_images: parsedImages || [],
               });
             }
-          }
         }
       }, [dispatch, productId, products]);
     const handleSubmit = async (e) => {
@@ -64,9 +62,9 @@ function ProductForm() {
         const formData = new FormData();
         formData.append("product_name", productData.product_name);
         formData.append("product_price", productData.product_price === '' ? 0 : Number(productData.product_price));
-        formData.append("product_quantity", productData.product_quantity === '' ? 0 : Number(productData.product_quantity));
+        formData.append("product_size", productData.product_size === '' ? 0 : Number(productData.product_size));
         formData.append("quantity_measure", productData.quantity_measure);
-        formData.append("total_quantity", productData.total_quantity === '' ? 0 : Number(productData.total_quantity));
+        formData.append("total_products", productData.total_products === '' ? 0 : Number(productData.total_products));
         formData.append("product_category", productData.product_category);
         formData.append("product_description", productData.product_description);
         formData.append("existing_images", JSON.stringify(productData.existing_images));
@@ -75,11 +73,20 @@ function ProductForm() {
             formData.append("product_images", img); // backend should handle multiple files
         });
         if (productId) {
-            formData.append("product_id", productData.product_id);
+            formData.append("product_id", productData._id);
             await dispatch(updateProduct({formData,productId}));
             toast.success("Product updated successfully");
         } else {
             await dispatch(addProduct(formData));
+            setProductData({product_id: '',
+                product_name: '',
+                product_price: 0,
+                product_size: 0,
+                quantity_measure:'',
+                total_products:0,
+                product_category: '',
+                product_description:'',
+                product_images: []})
         }
     };
 
@@ -168,8 +175,8 @@ function ProductForm() {
                                 label='Volume eg: 2lb,3oz'
                                 type='number'
                                 placeholder='eg: 2lb,3oz'
-                                value={productData?.product_quantity}
-                                onChange={(e) => setProductData({ ...productData, product_quantity: e.target.value })}
+                                value={productData?.product_size}
+                                onChange={(e) => setProductData({ ...productData, product_size: e.target.value })}
                             />
 
                             <select
@@ -191,8 +198,8 @@ function ProductForm() {
                                 color="brown"
                                 label='No of Items'
                                 type='number'
-                                value={productData?.total_quantity}
-                                onChange={(e) => setProductData({ ...productData, total_quantity: e.target.value })}
+                                value={productData?.total_products}
+                                onChange={(e) => setProductData({ ...productData, total_products: e.target.value })}
                             />
 
                             <select
