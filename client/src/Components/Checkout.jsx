@@ -23,6 +23,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [credittax,setCredittax]=useState(0);
 
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -31,7 +32,7 @@ const Checkout = () => {
   const subtotal = cartItems.reduce((sum, item) => sum + (item?.product?.product_price * item.quantity), 0);
   
   const shipping = 5.99;
-  const total = subtotal + shipping;
+  const total = subtotal + shipping+credittax;
   const [formData, setFormData] = useState({
     // Personal Info
     user_id: userInfo?._id,
@@ -212,7 +213,6 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("An error occurred during payment processing");
     } finally {
       setLoading(false);
     }
@@ -222,7 +222,7 @@ const Checkout = () => {
   const prevStep = () => setCurrentStep(Math.max(1, currentStep - 1));
 
   if (cartItems.length === 0) {
-    navigate("/cart");
+    navigate("/mycart");
     return null;
   }
 
@@ -254,16 +254,16 @@ const Checkout = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">
         {/* Checkout Form */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 mx-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Step 1: Personal Information */}
             {currentStep === 1 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg md:shadow-md md:p-6">
                 <div className="flex items-center mb-6">
                   <User className="h-6 w-6 text-green-600 mr-2" />
-                  <h2 className="text-xl font-bold">Personal Information</h2>
+                  <h2 className="md:text-xl  font-bold">Personal Information</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -324,10 +324,10 @@ const Checkout = () => {
 
             {/* Step 2: Delivery Address */}
             {currentStep === 2 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg md:shadow-md md:p-6">
                 <div className="flex items-center mb-6">
                   <MapPin className="h-6 w-6 text-green-600 mr-2" />
-                  <h2 className="text-xl font-bold">Delivery Address</h2>
+                  <h2 className="md:text-xl font-bold">Delivery Address</h2>
                 </div>
                 <div className="space-y-4">
                   <div>
@@ -409,6 +409,7 @@ const Checkout = () => {
                 <div
                   onClick={() => {
                     setPaymentMethod("CARD");
+                    setCredittax(3.50);
                   }}
                   className={`${
                     paymentMethod === "CARD" && "border-green-500"
@@ -453,7 +454,7 @@ const Checkout = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-16">
+            <div className="flex flex-col gap-4 md:flex-row items-center justify-center md:justify-between mt-16">
               {currentStep > 1 && (
                 <button
                   type="button"
@@ -468,7 +469,7 @@ const Checkout = () => {
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   Next
                 </button>
@@ -476,7 +477,7 @@ const Checkout = () => {
                 <button
                   type="submit"
                   disabled={loading || !stripe || !elements}
-                  className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors ml-auto"
+                  className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   {loading ? "Processing..." : "Place Order"}
                 </button>
@@ -517,6 +518,10 @@ const Checkout = () => {
               <span className="text-gray-600">Shipping</span>
               <span className="font-medium">${shipping.toFixed(2)}</span>
             </div>
+            {paymentMethod==="CARD" && <div className="flex justify-between">
+              <span className="text-gray-600">Credit Card Processing Fee</span>
+              <span className="font-medium">${credittax.toFixed(2)}</span>
+              </div>}
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
               <span className="text-green-600">${total.toFixed(2)}</span>

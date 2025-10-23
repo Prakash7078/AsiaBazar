@@ -133,42 +133,8 @@ function Navbar() {
                 </Route>
               </li>
             )}
-            {userInfo && (
-              <li className="cursor-pointer">
-                <Link
-                  onClick={toggleMenu}
-                  smooth={true}
-                  duration={1000}
-                  to="#category"
-                >
-                  {/* <IconButton
-                    variant="outlined"
-                    color="white"
-                    className="rounded-full mr-3"
-                  >
-                    <img src={clu} alt="clu" />
-                  </IconButton> */}
-                  My Events
-                </Link>
-              </li>
-            )}
-            <li className="cursor-pointer">
-              <Link
-                onClick={toggleMenu}
-                smooth={true}
-                duration={1000}
-                to="#about"
-              >
-                <IconButton
-                  variant="outlined"
-                  color="white"
-                  className="rounded-full mr-3"
-                >
-                  <FcAbout size={25} />
-                </IconButton>
-                About
-              </Link>
-            </li>
+            
+            
             <li className="cursor-pointer">
               <Link
                 onClick={toggleMenu}

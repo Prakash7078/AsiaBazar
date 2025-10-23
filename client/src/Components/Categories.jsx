@@ -209,13 +209,14 @@ function Categories() {
                     }
                   `}</style>
                   </Link>
+                  <div className="p-2">
                   <div className="flex justify-between items-center">
-                  <Typography variant="h5" className="font-semibold text-[#3c3c3c]">
-                    {product?.product_name}
-                  </Typography>
-                  <Typography color="blue-gray" className="mt-2 font-bold text-sm">
-                    {product?.product_category}
-                  </Typography>
+                    <Typography variant="h5" className="font-semibold text-[#3c3c3c]">
+                      {product?.product_name}
+                    </Typography>
+                    <Typography color="blue-gray" className="mt-2 font-bold text-sm">
+                      {product?.product_category}
+                    </Typography>
                   </div>
                  
                   <Typography className="text-sm text-gray-600 font-semibold mt-1">
@@ -233,6 +234,8 @@ function Categories() {
                   <Button onClick={()=>handleCart(product?._id)} className="mt-3" color="red" size="sm" >
                       Add to Cart
                     </Button>
+                  
+                  </div>
                   
                 </Card>
               ))
