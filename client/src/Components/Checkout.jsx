@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreditCard, MapPin, User, Phone } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -67,6 +67,16 @@ const Checkout = () => {
     }))
     await dispatch(getCartItems({ user_id: userInfo?._id }));
   }
+
+  const handleCardPayment=()=>{
+    setPaymentMethod("CARD");
+    setCredittax(3.50); 
+  }
+  useEffect(() => {
+    if(paymentMethod!=="CARD"){
+      setCredittax(0);
+    }
+  },[paymentMethod])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -407,10 +417,7 @@ const Checkout = () => {
                 </div>
 
                 <div
-                  onClick={() => {
-                    setPaymentMethod("CARD");
-                    setCredittax(3.50);
-                  }}
+                  onClick={() => handleCardPayment()}
                   className={`${
                     paymentMethod === "CARD" && "border-green-500"
                   } bg-white rounded-lg shadow-md p-4 transition-all duration-300 flex flex-col gap-4 cursor-pointer border`}
