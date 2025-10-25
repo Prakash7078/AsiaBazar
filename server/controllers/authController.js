@@ -7,8 +7,6 @@ const uploadImage = require("../middleware/uploadMiddleware");
 const dotenv = require("dotenv");
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/userModel");
-const { BASE_URL } = require("../../client/src/config/url");
-const { sendMail } = require("../middleware/sendMail");
 
 // Import the User model
 
@@ -125,9 +123,8 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  const message = `${BASE_URL}/reset-password/${user._id}/${token}`;
-  const emailres=await sendMail(user.email, message);
-  console.log(emailres);
+  const message = `https://asia-bazar-api.vercel.app/reset-password/${user._id}/${token}`;
+  await sendMail(user.email, message);
   return res.status(StatusCodes.OK).json({ message: "mail sent succesfully" });
 });
 
