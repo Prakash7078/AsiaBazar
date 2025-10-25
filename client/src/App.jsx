@@ -24,6 +24,8 @@ import AdminPayments from "./pages/AdminDashboard/AdminPayments";
 import AdminReviews from "./pages/AdminDashboard/AdminReviews";
 import Checkout from "./Components/Checkout";
 import Profile from "./Components/Profile";
+import ResetPassword from "./pages/ResetPassword";
+import PasswordRequest from "./pages/PasswordRequest";
 
 const ProtectedAdminRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
@@ -94,6 +96,8 @@ function App() {
           <Route path="/profile" element={userInfo ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mycart" element={<CartPage />} />
+          <Route path="/passwordrequest" element={<PasswordRequest />} />
+
           <Route 
             path="/checkout" 
             element={

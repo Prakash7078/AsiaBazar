@@ -56,7 +56,7 @@ function ProductForm() {
               });
             }
         }
-      }, [dispatch, productId, products]);
+      }, [dispatch, productId]);
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();

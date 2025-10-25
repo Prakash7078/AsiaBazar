@@ -1,11 +1,11 @@
 const nodemailer=require("nodemailer");
 const User = require("../models/userModel");
-const Notifications = require("../models/notificationModel");
+// const Notifications = require("../models/notificationModel");
 const sendMail=async(email,message)=>{
     try{
         //Create a transporter
         const userInfo=await User.findOne({email:email});
-        await Notifications.create({user: userInfo, text: message});
+        // await Notifications.create({user: userInfo, text: message});
 
         const transporter=nodemailer.createTransport({
             service:"gmail",
@@ -17,7 +17,7 @@ const sendMail=async(email,message)=>{
         const mailOptions={
             from:"vvitclubs7078@gmail.com",
             to:email,
-            subject:"Message from VVIT Clubs",
+            subject:"Message from AsiaBazzar",
             text:`${message}`,
         };
         transporter.sendMail(mailOptions,(error)=>{
