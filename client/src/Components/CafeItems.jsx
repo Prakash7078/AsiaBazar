@@ -9,9 +9,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CategoryScroller from "./CategoryScroller";
 import { TypeAnimation } from "react-type-animation";
-function Categories() {
+function CafeItems() {
   const dispatch = useDispatch();
-  const[selectedCategory,setSelectcategory]=useState('');
+  const[selectedCategory,setSelectcategory]=useState('food');
   const userInfo = useSelector((state) => state.auth.userInfo);
   const { products, loading } = useSelector((state) => state.product);
   const [search, setSearch] = useState("");
@@ -98,7 +98,7 @@ function Categories() {
         <h1 className="text-2xl md:text-4xl font-extrabold text-gray-800  flex flex-col md:flex-row items-center justify-center ">
           Welcome to{" "}
           <TypeAnimation
-            sequence={["ASIA BAZAR", 2000, "STORE", 2000]}
+            sequence={["ASIA BAZAR", 2000, "CAFE", 2000]}
             speed={50}
             wrapper="span"
             repeat={Infinity}
@@ -107,9 +107,9 @@ function Categories() {
         </h1>
         <Link to='/menu'><Button color="red" className="">SEE MENU</Button></Link>
       </div>
-      <CategoryScroller onCategorySelect={setSelectcategory}/>
+      {/* <CategoryScroller onCategorySelect={setSelectcategory}/> */}
       
-      <div className="">
+      <div className="mt-16">
         <h1 className="mb-10 ml-2 font-bold text-3xl">Fresh Items</h1>
         <div className=" mx-auto mb-8">
         <div className="flex justify-evenly md:flex-row flex-col">
@@ -177,16 +177,16 @@ function Categories() {
             className="bg-white"
           />
         </span>
-        <span className="p-2 w-full sm:w-40">
+        {/* <span className="p-2 w-full sm:w-40">
           <Button onClick={()=>setSelectcategory('')} color="red" className="border-b-blue-gray-400 border-2">View All</Button>
-        </span>
+        </span> */}
         </div>
         </div>
         {loading ? (
           <div className="text-center py-20 text-lg font-medium text-gray-700">Loading...</div>
         ) : (
           <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 grid-cols-1">
-            {filteredProducts?.length === 0 ? (
+            {filteredProducts?.filter((product)=>product.product_category?.toLowerCase().includes(selectedCategory.toLowerCase()))?.length === 0 ? (
               <Typography variant="paragraph" className="text-center col-span-full">
                 No products found.
               </Typography>
@@ -261,4 +261,4 @@ function Categories() {
   );
 }
 
-export default Categories;
+export default CafeItems;

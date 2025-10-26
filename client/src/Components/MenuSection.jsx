@@ -3,7 +3,7 @@ import menu from "/Images/abm.jpg";
 
 const MenuSection = () => {
   return (
-    <section className="bg-gray-50 py-12">
+    <section className="bg-gray-50 py-12 mt-32">
       <div className="max-w-5xl mx-auto px-4 text-center">
         {/* Title */}
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">

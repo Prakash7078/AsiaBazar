@@ -113,7 +113,7 @@ function Navbar() {
         ) : (
           <RxCross2 color="brown" size={25} onClick={toggleMenu} />
         )}
-        <div className="bg-gradient-to-r from-yellow-50 to-pink-50 fixed left-0 px-4  w-full top-16 z-50 ">
+        <div className="bg-gradient-to-r from-green-100  to-green-50 fixed left-0 px-4  w-full top-16 z-50 ">
           <ul
             className={`${
               isMenuOpen ? "visible" : "hidden"

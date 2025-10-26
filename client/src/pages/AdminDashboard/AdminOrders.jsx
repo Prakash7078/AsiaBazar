@@ -110,7 +110,7 @@ const AdminOrders = () => {
   }
 
   return (
-    <div className="space-y-6 md:w-3/4 md:p-6">
+    <div className="space-y-6  md:p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

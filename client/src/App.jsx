@@ -26,6 +26,9 @@ import Checkout from "./Components/Checkout";
 import Profile from "./Components/Profile";
 import ResetPassword from "./pages/ResetPassword";
 import PasswordRequest from "./pages/PasswordRequest";
+import MenuSection from "./Components/MenuSection";
+import Cafe from "./Components/Cafe";
+import Store from "./Components/Store";
 
 const ProtectedAdminRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
@@ -96,8 +99,10 @@ function App() {
           <Route path="/profile" element={userInfo ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mycart" element={<CartPage />} />
+          <Route path='/menu' element={<MenuSection />} />
           <Route path="/passwordrequest" element={<PasswordRequest />} />
-
+          <Route path="/store" element={<Store/>} />
+          <Route path="/cafe" element={<Cafe />} />
           <Route 
             path="/checkout" 
             element={
@@ -106,7 +111,7 @@ function App() {
               </Elements>
             } 
           />
-          <Route path="/allitems" element={<Categories />} />
+          {/* <Route path="/allitems" element={<Categories />} /> */}
           <Route path="/product/:productId" element={<ProductScreen />} />
           
           {/* Admin Routes */}

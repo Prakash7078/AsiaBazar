@@ -1,7 +1,6 @@
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const express=require('express');
 const dotenv=require('dotenv');
-const crypto = require('crypto');
 dotenv.config();
 const s3Client = new S3Client({
     region: process.env.AWS_ACCOUNT_REGION,
@@ -14,11 +13,10 @@ const s3Client = new S3Client({
 const uploadImage=async (folderName,file) => {
     try {
       const contentType = file.mimetype;
-      const uniqueName = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}${fileExt}`;
-
+  
       const command =new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key:`${folderName}/${uniqueName}`,
+        Key:`${folderName}/${file.originalname}`,
         Body: file.buffer,
         ContentType: contentType,
       });

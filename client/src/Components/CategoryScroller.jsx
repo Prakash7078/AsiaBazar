@@ -84,7 +84,7 @@ const settings = {
             Choose your clubs based on categories
           </h1> */}
 
-          <div className="md:mx-10 mx-6 mt-16">
+          <div className="md:mx-10 mx-6 md:mt-16">
             <Slider {...settings} className="product-slider-2">
               {data?.categories?.map((product, index) => {
                 return (
