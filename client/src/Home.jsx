@@ -49,7 +49,7 @@ function Home() {
         </motion.p>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-6">
+        <div className="flex flex-col sm:flex-row gap-6 relative z-10">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -70,6 +70,7 @@ function Home() {
             Visit Café
           </motion.button>
         </div>
+
       </section>
 
       
