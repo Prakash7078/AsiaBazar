@@ -56,7 +56,7 @@ function ProductScreen() {
       {/* ---------- PRODUCT MAIN SECTION ---------- */}
       <div className="flex flex-col lg:flex-row gap-10 pb-10">
         {/* Left: Product Images */}
-        <div className="w-full lg:w-1/2">
+        <div className="w-full lg:w-1/2  ">
           {product?.product_image && (
             <div className="sticky top-24">
               <ImageSlider data={product?.product_image} />
@@ -121,83 +121,116 @@ function ProductScreen() {
       {/* ---------- RELATED PRODUCTS SECTION ---------- */}
       <div className="mt-20">
         <h1 className="text-2xl font-bold underline mb-6">Related Products</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products?.length === 0 ? (
-            <Typography variant="paragraph" className="text-center col-span-full">
-              No products found.
-            </Typography>
-          ) : (
-            products
-              ?.filter(
-                (item) =>
-                  item.product_category?.toLowerCase() ===
-                  product?.product_category?.toLowerCase()
-              )
-              .map((item) => (
-                <Card key={item?._id} shadow className="p-4 hover:shadow-xl transition">
-                  <Link to={`/product/${item?._id}`}>
-                    <Slider {...settings} className="product-slider">
-                      {item?.product_image?.map((imgUrl, idx) => (
-                        <div key={idx} className="w-full h-52 sm:h-60">
-                          <img
-                            className="object-cover w-full h-full rounded-md"
-                            src={imgUrl}
-                            alt={`Product Image ${idx + 1}`}
-                          />
-                        </div>
-                      ))}
-                    </Slider>
-                  </Link>
 
-                  <div className="mt-4">
-                    <Typography variant="h6" className="font-semibold text-gray-800">
-                      {item?.product_name}
-                    </Typography>
-                    <Typography className="text-gray-500 text-sm">
-                      {item?.product_category}
-                    </Typography>
-                    <Typography className="text-gray-700 text-sm mt-1">
-                      {item?.product_size}{item?.quantity_measure}
-                    </Typography>
-                    {item?.total_products !== 0 && (
-                      <Typography className="text-gray-600 text-sm">
-                        Total Items: {item?.total_products}
+        {products?.length === 0 ? (
+          <Typography variant="paragraph" className="text-center">
+            No products found.
+          </Typography>
+        ) : (
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-6 min-w-max">
+              {products
+                ?.filter(
+                  (item) =>
+                    item.product_category?.toLowerCase() ===
+                    product?.product_category?.toLowerCase()
+                )
+                .map((item) => (
+                  <Card
+                    key={item?._id}
+                    shadow
+                    className="p-4 w-64 sm:w-72 hover:shadow-xl transition flex-shrink-0"
+                  >
+                    <Link to={`/product/${item?._id}`}>
+                      <Slider {...settings} className="product-slider">
+                        {item?.product_image?.map((imgUrl, idx) => (
+                          <div key={idx} className="w-full h-48 sm:h-56">
+                            <img
+                              className="object-cover w-full h-full rounded-md"
+                              src={imgUrl}
+                              alt={`Product Image ${idx + 1}`}
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    </Link>
+
+                    <div className="mt-4">
+                      <Typography
+                        variant="h6"
+                        className="font-semibold text-gray-800 truncate"
+                      >
+                        {item?.product_name}
                       </Typography>
-                    )}
-                    <Typography className="text-gray-600 text-sm mt-2">
-                      {item?.product_description?.length > 50
-                        ? item?.product_description?.slice(0, 50) + "..."
-                        : item?.product_description}
-                    </Typography>
-                    <Typography className="text-green-600 font-bold text-lg mt-3">
-                      ${item?.product_price}
-                    </Typography>
-                    <Button
-                      onClick={() => handleCart(item?._id)}
-                      color="red"
-                      size="sm"
-                      className="mt-3 w-full"
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                </Card>
-              ))
-          )}
+                      <Typography className="text-gray-500 text-sm">
+                        {item?.product_category}
+                      </Typography>
+                      <Typography className="text-gray-700 text-sm mt-1">
+                        {item?.product_size}
+                        {item?.quantity_measure}
+                      </Typography>
+                      {item?.total_products !== 0 && (
+                        <Typography className="text-gray-600 text-sm">
+                          Total Items: {item?.total_products}
+                        </Typography>
+                      )}
+                      <Typography className="text-gray-600 text-sm mt-2 line-clamp-2">
+                        {item?.product_description?.length > 50
+                          ? item?.product_description?.slice(0, 50) + "..."
+                          : item?.product_description}
+                      </Typography>
+                      <Typography className="text-green-600 font-bold text-lg mt-3">
+                        ${item?.product_price}
+                      </Typography>
+                      <Button
+                        onClick={() => handleCart(item?._id)}
+                        color="red"
+                        size="sm"
+                        className="mt-3 w-full"
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* Optional Scroll Indicator */}
+        <div className="text-center text-gray-500 mt-3 text-sm">
+          Scroll ➡️ to view more
         </div>
+
+        <style>{`
+          .product-slider .slick-prev {
+            left: 5px !important;
+            z-index: 1;
+          }
+          .product-slider .slick-next {
+            right: 5px !important;
+            z-index: 1;
+          }
+
+          /* Smooth horizontal scrolling */
+          .overflow-x-auto {
+            scroll-behavior: smooth;
+          }
+
+          /* Hide scrollbar for modern look */
+          .overflow-x-auto::-webkit-scrollbar {
+            height: 8px;
+          }
+          .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+          }
+          .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: #999;
+          }
+        `}</style>
       </div>
 
-      {/* Slider Button Styling */}
-      <style>{`
-        .product-slider .slick-prev {
-          left: 5px !important;
-          z-index: 1;
-        }
-        .product-slider .slick-next {
-          right: 5px !important;
-          z-index: 1;
-        }
-      `}</style>
     </div>
   );
 }

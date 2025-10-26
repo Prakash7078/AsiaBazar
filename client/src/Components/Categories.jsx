@@ -20,18 +20,20 @@ function Categories() {
     price: "",
     quantity: "",
     total: "",
-    category: "",
+    category: selectedCategory,
   });
   const navigate = useNavigate();
 
   useEffect(() => {
+    setFilters((prev) => ({ ...prev, category: selectedCategory }));
     dispatch(getProducts());
-  }, [dispatch]);
+  }, [dispatch, selectedCategory]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
+
 
   const filteredProducts = products?.filter((item) => {
     return (
@@ -72,7 +74,7 @@ function Categories() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
+    <div className="min-h-screen pb-16">
       {/* Header */}
       <div className="flex flex-col md:flex-row gap-5 items-center mt-24 justify-between px-6">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 flex flex-col md:flex-row items-center justify-center">
@@ -98,7 +100,7 @@ function Categories() {
       </div>
 
       {/* Filters */}
-      <div className="mt-10 mx-auto mb-8 px-4 max-w-6xl">
+      <div className="pt-10 mx-auto mb-8 px-4 max-w-6xl ">
         <h1 className="mb-10 ml-2 font-bold text-3xl">Fresh Items</h1>
         <div className="flex  md:justify-between md:flex-row flex-col items-center">
           <span className="p-2 ">
@@ -157,7 +159,7 @@ function Categories() {
             <Input
               label="Search Category"
               name="category"
-              value={selectedCategory}
+              value={filters.category}
               onChange={handleFilterChange}
               variant="outlined"
               size="sm"
@@ -194,11 +196,6 @@ function Categories() {
             </Typography>
           ) : (
             filteredProducts
-              ?.filter((product) =>
-                product.product_category
-                  ?.toLowerCase()
-                  .includes(selectedCategory.toLowerCase())
-              )
               .map((product) => (
                 <Card
                   key={product._id}
@@ -208,7 +205,7 @@ function Categories() {
                   <Link to={`/product/${product?._id}`}>
                     <Slider {...settings} className="rounded-lg">
                       {product?.product_image?.map((imgUrl, idx) => (
-                        <div key={idx} className="w-full h-48 sm:h-56 lg:h-64">
+                        <div key={idx} className="w-full h-36 sm:h-56 lg:h-64">
                           <img
                             className="object-cover w-full h-full rounded-lg"
                             src={imgUrl}
@@ -244,25 +241,30 @@ function Categories() {
                       className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2"
                       title={product?.product_description}
                     >
-                      {product?.product_description?.length > 50
-                        ? product?.product_description?.slice(0, 50) + "..."
+                      {product?.product_description?.length > 30
+                        ? product?.product_description?.slice(0, 30) + "..."
                         : product?.product_description}
                     </Typography>
 
-                    <div className="flex flex-col md:flex-row gap-3 justify-between items-center mt-3">
-                      <Typography className="text-lg sm:text-xl text-green-600 font-bold">
+                    <div className="mt-3">
+                      <Typography className="text-lg sm:text-xl text-red-600 font-bold">
                         ${product?.product_price}
                       </Typography>
-                      <Button
-                        onClick={() => handleCart(product?._id)}
-                        color="green"
-                        size="sm"
-                        className="font-semibold flex items-center gap-2 px-3"
-                      >
-                        <ShoppingCart size={18} />
-                        Add
-                      </Button>
+                      
                     </div>
+                    <hr className="pt-1"/>
+                    <div className="pt-3 flex justify-center">
+                      <Button
+                          onClick={() => handleCart(product?._id)}
+                          color="green"
+                          size="sm"
+                          className="font-semibold flex items-center gap-2 px-3"
+                        >
+                          <ShoppingCart size={18} />
+                          Add
+                        </Button>
+                    </div>
+                    
                   </div>
                 </Card>
               ))

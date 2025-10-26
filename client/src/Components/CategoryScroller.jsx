@@ -1,127 +1,83 @@
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Rings } from "react-loader-spinner";
-import { Button } from "@material-tailwind/react";
+import { useSelector } from "react-redux";
 import Slider from "react-slick";
 import data from "../data";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-function CategoryScroller({onCategorySelect}) {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const userInfo = useSelector((state) => state.auth.userInfo);
-//   const load = useSelector((state) => state.clubs.load);
-//   const checkLogin = (name) => {
-//     if (!userInfo) {
-//       navigate("/login");
-//     } else {
-//       navigate(`/${name}`);
-//     }
-//   };
- 
-//   if (load) {
-//     return (
-//       <div className="flex justify-center items-center h-screen bg-[#fff3e0]">
-//         <Rings
-//           height="80"
-//           width="80"
-//           color="#21BF73"
-//           radius="6"
-//           wrapperStyle={{}}
-//           wrapperClass=""
-//           visible={true}
-//           ariaLabel="rings-loading"
-//         />
-//       </div>
-//     );
-//   }
-const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 6,
-  slidesToScroll: 6,
-  responsive: [
-    {
-      breakpoint: 1280, // large screens (laptops)
-      settings: {
-        slidesToShow: 4,
-        slidesToScroll: 2,
-      },
-    },
-    {
-      breakpoint: 1024, // tablets
-      settings: {
-        slidesToShow: 3,
-        slidesToScroll: 2,
-      },
-    },
-    {
-      breakpoint: 768, // medium phones
-      settings: {
-        slidesToShow: 3,
-        slidesToScroll: 1,
-      },
-    },
-    {
-      breakpoint: 480, // small phones
-      settings: {
-        slidesToShow: 3,
-        slidesToScroll: 1,
-      },
-    },
-  ],
-};
 
+function CategoryScroller({ onCategorySelect }) {
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 600,
+    autoplay: true,
+    autoplaySpeed: 2500,
+    cssEase: "ease-in-out",
+    slidesToShow: 6,
+    slidesToScroll: 2,
+    pauseOnHover: true,
+    swipeToSlide: true,
+    responsive: [
+      { breakpoint: 1280, settings: { slidesToShow: 4, slidesToScroll: 2 } },
+      { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 2 } },
+      { breakpoint: 768, settings: { slidesToShow: 3, slidesToScroll: 1 } },
+      { breakpoint: 480, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+    ],
+  };
 
   return (
-    // <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay:0.1  }}>
-    <div>
-      {data?.categories?.length > 0 && (
-        <div id="#category" className=" py-20 pt-5 ">
-          {/* <h1 className="font-bold px-2 text-2xl md:text-4xl text-center ">
-            Choose your clubs based on categories
-          </h1> */}
+    <div className="py-10   overflow-hidden">
+      <h2 className="text-xl md:text-3xl font-bold text-center mb-8 text-green-700">
+        Explore Our Categories 🌿
+      </h2>
 
-          <div className="md:mx-10 mx-6 md:mt-16">
-            <Slider {...settings} className="product-slider-2">
-              {data?.categories?.map((product, index) => {
-                return (
-                    <div
-                      key={index}
-                    //   onClick={() => checkLogin(product.name)}
-                      className="m-3 flex flex-col items-center justify-center text-center cursor-pointer"
-                    >
-                    <div onClick={()=>onCategorySelect(product?.name)} className="m-3 flex flex-col cursor-pointer items-center justify-center">
-                    <img
-                        src={product?.image}
-                        className="h-20 w-20 sm:h-20 sm:w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 rounded-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                        <h1 className="font-semibold text-sm sm:text-base mt-2">{product.name}</h1>
-                    </div>
-                    </div>
-                );
-              })}
-            </Slider>
-            <style>{`
-            
-                  /* Left Arrow */
-                  .product-slider-2 .slick-prev:before {
-                    color: #9C1137;
-                  }
+      <div className="mx-6 md:mx-10">
+        <Slider {...settings} className="category-slider">
+          {data?.categories?.map((category, index) => (
+            <div
+              key={index}
+              onClick={() => onCategorySelect(category?.name)}
+              className="flex flex-col items-center justify-center text-center cursor-pointer transition-transform duration-500 hover:scale-105 hover:drop-shadow-md"
+            >
+              <div className="relative group">
+                <img
+                  src={category?.image}
+                  alt={category?.name}
+                  className="h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-full object-cover border-4 border-green-200 group-hover:border-green-400 shadow-none transition-all duration-300"
+                />
+              </div>
 
-                  /* Right Arrow */
-                  .product-slider-2 .slick-next:before {
-                    color: #9C1137;
-                  }
-                `}</style>
-          </div>
-        </div>
-      )}
+              </div>
+          ))}
+        </Slider>
+      </div>
+
+      {/* Custom Styles */}
+      <style>{`
+        .category-slider .slick-prev, .category-slider .slick-next {
+          z-index: 10;
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          background: rgba(34, 197, 94, 0.15);
+          backdrop-filter: blur(5px);
+          transition: all 0.3s ease;
+        }
+        .category-slider .slick-prev:hover, .category-slider .slick-next:hover {
+          background: rgba(34, 197, 94, 0.35);
+        }
+        .category-slider .slick-prev::before,
+        .category-slider .slick-next::before {
+          color: #16a34a;
+          font-size: 20px;
+        }
+        /* Smooth scrolling feel */
+        .category-slider {
+          scroll-behavior: smooth;
+        }
+      `}</style>
     </div>
-
-    // </motion.div>
   );
 }
 

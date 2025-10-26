@@ -17,7 +17,7 @@ function Store() {
   }, [pathname]);
   // const[selectcategory,setSelectcategory]=useState('');
   return (
-    <div>
+    <div className="">
       {/* <ABCarousel/> */}
       {/* <CategoryScroller onCategorySelect={setSelectcategory}/> */}
       <Categories/>
