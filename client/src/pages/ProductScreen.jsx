@@ -99,14 +99,14 @@ function ProductScreen() {
             <li>
               <span className="font-semibold text-gray-800">Size:</span> {product?.product_size} {product?.quantity_measure}
             </li>
-            <li>
+            {/* <li>
               <span className="font-semibold text-gray-800">Availability:</span>{" "}
-              {product?.total_products > 0 ? (
+              {product?.total_products >=0 ? (
                 <span className="text-green-600 font-semibold">In Stock ({product?.total_products})</span>
               ) : (
                 <span className="text-red-500 font-semibold">Sold Out</span>
               )}
-            </li>
+            </li> */}
           </ul>
 
           <Button
