@@ -40,12 +40,13 @@ function CategoryScroller({ onCategorySelect }) {
               onClick={() => onCategorySelect(category?.name)}
               className="flex flex-col items-center justify-center text-center cursor-pointer transition-transform duration-500 hover:scale-105 hover:drop-shadow-md"
             >
-              <div className="relative group">
+              <div className="flex flex-col gap-2 justify-center items-center">
                 <img
                   src={category?.image}
                   alt={category?.name}
                   className="h-20 w-20 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-full object-cover border-4 border-green-200 group-hover:border-green-400 shadow-none transition-all duration-300"
                 />
+                <h1 className="text-sm md:text-lg">{category?.name}</h1>
               </div>
 
               </div>
