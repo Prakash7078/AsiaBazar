@@ -22,7 +22,7 @@ function CategoryScroller({ onCategorySelect }) {
       { breakpoint: 1280, settings: { slidesToShow: 4, slidesToScroll: 2 } },
       { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 2 } },
       { breakpoint: 768, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-      { breakpoint: 480, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+      { breakpoint: 480, settings: { slidesToShow: 3, slidesToScroll: 1 } },
     ],
   };
 
@@ -44,7 +44,7 @@ function CategoryScroller({ onCategorySelect }) {
                 <img
                   src={category?.image}
                   alt={category?.name}
-                  className="h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-full object-cover border-4 border-green-200 group-hover:border-green-400 shadow-none transition-all duration-300"
+                  className="h-20 w-20 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-full object-cover border-4 border-green-200 group-hover:border-green-400 shadow-none transition-all duration-300"
                 />
               </div>
 

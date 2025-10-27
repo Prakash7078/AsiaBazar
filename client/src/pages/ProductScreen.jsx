@@ -8,6 +8,7 @@ import ImageSlider from '../Components/ImageSlider';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { ShoppingCart } from 'lucide-react';
 
 function ProductScreen() {
   const dispatch = useDispatch();
@@ -77,7 +78,7 @@ function ProductScreen() {
 
           <div className="flex items-center gap-2">
             <Rating value={5} />
-            <span className="text-gray-600 text-sm">604 Reviews</span>
+            <span className="text-gray-600 text-sm">10 Reviews</span>
           </div>
 
           <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
@@ -108,13 +109,18 @@ function ProductScreen() {
               )}
             </li> */}
           </ul>
-
-          <Button
+          <div className="pt-3 flex justify-center text-center ">
+            <Button
             onClick={handleCart}
-            className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white mt-6 py-2 px-6"
-          >
-            Add to Cart
+            color="red"
+            size="sm"
+            className="font-semibold w-full justify-center flex items-center gap-2 px-3"
+            >
+            <ShoppingCart size={18} />
+            Add to cart
           </Button>
+          </div>
+          
         </div>
       </div>
 
@@ -179,17 +185,21 @@ function ProductScreen() {
                           ? item?.product_description?.slice(0, 50) + "..."
                           : item?.product_description}
                       </Typography>
-                      <Typography className="text-green-600 font-bold text-lg mt-3">
+                      <Typography className="text-red-600 font-bold text-lg mt-3">
                         ${item?.product_price}
                       </Typography>
-                      <Button
-                        onClick={() => handleCart(item?._id)}
-                        color="red"
-                        size="sm"
-                        className="mt-3 w-full"
-                      >
-                        Add to Cart
-                      </Button>
+                      <hr/>
+                      <div className="pt-3 flex justify-center">
+                        <Button
+                          onClick={() => handleCart(item?._id)}
+                          color="green"
+                            size="sm"
+                            className="font-semibold flex items-center gap-2 px-3"
+                          >
+                            <ShoppingCart size={18} />
+                            Add to cart
+                          </Button>
+                    </div>
                     </div>
                   </Card>
                 ))}
