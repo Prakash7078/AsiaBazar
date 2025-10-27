@@ -197,12 +197,13 @@ function Categories() {
           ) : (
             filteredProducts
               .map((product) => (
+                <Link to={`/product/${product?._id}`}  
+                key={product._id}>
                 <Card
-                  key={product._id}
                   shadow
                   className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
                 >
-                  <Link to={`/product/${product?._id}`}>
+                  
                     <Slider {...settings} className="rounded-lg">
                       {product?.product_image?.map((imgUrl, idx) => (
                         <div key={idx} className="w-full h-36 sm:h-56 lg:h-64">
@@ -214,7 +215,6 @@ function Categories() {
                         </div>
                       ))}
                     </Slider>
-                  </Link>
 
                   <div className="pt-3">
                     <div className="flex flex-col md:flex-row justify-between ">
@@ -267,6 +267,8 @@ function Categories() {
                     
                   </div>
                 </Card>
+                </Link>
+
               ))
           )}
         </div>
