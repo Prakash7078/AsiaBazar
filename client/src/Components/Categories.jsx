@@ -102,82 +102,72 @@ function Categories() {
       {/* Filters */}
       <div className="pt-10 mx-auto mb-8 px-4 max-w-6xl ">
         <h1 className="mb-10 ml-2 font-bold text-3xl">Fresh Items</h1>
-        <div className="flex  md:justify-between md:flex-row flex-col items-center">
-          <span className="p-2 ">
-            <Input
-              label="Search Name"
-              name="name"
-              value={filters.name}
-              onChange={handleFilterChange}
-              variant="outlined"
-              size="sm"
-              color="brown"
-              className="bg-white"
-            />
-          </span>
+        <div className="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-4 bg-gray-50 p-4 rounded-xl shadow-sm">
+          <Input
+            label="Search Name"
+            name="name"
+            value={filters.name}
+            onChange={handleFilterChange}
+            variant="outlined"
+            size="md"
+            color="green"
+            className="bg-white w-full sm:w-48"
+          />
 
-          <span className="p-2">
-            <Input
-              label="Search Price"
-              name="price"
-              value={filters.price}
-              onChange={handleFilterChange}
-              variant="outlined"
-              size="sm"
-              color="brown"
-              className="bg-white"
-            />
-          </span>
+          <Input
+            label="Search Price"
+            name="price"
+            value={filters.price}
+            onChange={handleFilterChange}
+            variant="outlined"
+            size="md"
+            color="green"
+            className="bg-white w-full sm:w-48"
+          />
 
-          <span className="p-2 ">
-            <Input
-              label="Search Quantity"
-              name="quantity"
-              value={filters.quantity}
-              onChange={handleFilterChange}
-              variant="outlined"
-              size="sm"
-              color="brown"
-              className="bg-white"
-            />
-          </span>
+          <Input
+            label="Search Quantity"
+            name="quantity"
+            value={filters.quantity}
+            onChange={handleFilterChange}
+            variant="outlined"
+            size="md"
+            color="green"
+            className="bg-white w-full sm:w-48"
+          />
 
-          <span className="p-2 ">
-            <Input
-              label="Search Total"
-              name="total"
-              value={filters.total}
-              onChange={handleFilterChange}
-              variant="outlined"
-              size="sm"
-              color="brown"
-              className="bg-white"
-            />
-          </span>
+          <Input
+            label="Search Total"
+            name="total"
+            value={filters.total}
+            onChange={handleFilterChange}
+            variant="outlined"
+            size="md"
+            color="green"
+            className="bg-white w-full sm:w-48"
+          />
 
-          <span className="p-2 ">
-            <Input
-              label="Search Category"
-              name="category"
-              value={filters.category}
-              onChange={handleFilterChange}
-              variant="outlined"
-              size="sm"
-              color="brown"
-              className="bg-white"
-            />
-          </span>
+          <Input
+            label="Search Category"
+            name="category"
+            value={filters.category}
+            onChange={handleFilterChange}
+            variant="outlined"
+            size="md"
+            color="green"
+            className="bg-white w-full sm:w-48"
+          />
 
-          <span className="p-2 ">
-            <Button
-              onClick={() => setSelectcategory("")}
-              color="red"
-              className="border-b-blue-gray-400 border-2"
-            >
-              All
-            </Button>
-          </span>
+          <Button
+            onClick={() => setSelectcategory("")}
+            color="red"
+            size="md"
+            className="w-full sm:w-32 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+          >
+            All
+          </Button>
         </div>
+
       </div>
 
       {/* Product Grid */}
@@ -197,13 +187,12 @@ function Categories() {
           ) : (
             filteredProducts
               .map((product) => (
-                <Link to={`/product/${product?._id}`}  
-                key={product._id}>
                 <Card
+                  key={product._id}
                   shadow
                   className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
                 >
-                  
+                  <Link to={`/product/${product?._id}`} key={product._id}>
                     <Slider {...settings} className="rounded-lg">
                       {product?.product_image?.map((imgUrl, idx) => (
                         <div key={idx} className="w-full h-36 sm:h-56 lg:h-64">
@@ -216,7 +205,7 @@ function Categories() {
                       ))}
                     </Slider>
 
-                  <div className="pt-3">
+                    <div className="pt-3">
                     <div className="flex flex-col md:flex-row justify-between ">
                       <Typography className="font-semibold text-gray-800 text-sm sm:text-base ">
                         {product?.product_name}
@@ -252,7 +241,10 @@ function Categories() {
                       </Typography>
                       
                     </div>
-                    <hr className="pt-1"/>
+                    </div>
+                  </Link>
+
+                  <hr className="pt-1"/>
                     <div className="pt-3 flex justify-center">
                       <Button
                           onClick={() => handleCart(product?._id)}
@@ -265,9 +257,7 @@ function Categories() {
                         </Button>
                     </div>
                     
-                  </div>
                 </Card>
-                </Link>
 
               ))
           )}
