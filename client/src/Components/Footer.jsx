@@ -3,7 +3,7 @@ import {BsTwitter,BsBrowserChrome} from 'react-icons/bs';
 import ab from '/Images/asiabazar.png'
 function Footer() {
   return (
-    <footer className=" bg-blue-gray-100 ">
+    <footer className=" bg-gradient-to-br from-green-50 via-white to-green-100">
       <div className="container mx-auto px-4 py-10">
         <div className="flex flex-wrap justify-between">
           <div className="w-full md:w-1/4 mb-8 md:mb-0">

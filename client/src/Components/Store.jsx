@@ -22,7 +22,7 @@ function Store() {
       {/* <CategoryScroller onCategorySelect={setSelectcategory}/> */}
       <Categories/>
       {/* <AllItems selectedCategory={selectcategory} onCategorySelect={setSelectcategory}/> */}
-      <SpecialOrder/>
+      {/* <SpecialOrder/> */}
 
       <Contact />
       <Footer/>

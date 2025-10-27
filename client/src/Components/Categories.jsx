@@ -9,6 +9,8 @@ import "slick-carousel/slick/slick-theme.css";
 import CategoryScroller from "./CategoryScroller";
 import { TypeAnimation } from "react-type-animation";
 import { ShoppingCart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link as ScrollLink } from "react-scroll";
 
 function Categories() {
   const dispatch = useDispatch();
@@ -72,37 +74,101 @@ function Categories() {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+  const images = [
+    "/Images/borcelle.jpeg",
+    "/Images/cheese.jpeg",
+    "/Images/chickenrice.jpeg",
+    "/Images/cold_drinks.jpeg",
+    "/Images/dryfruits.jpeg",
+    "/Images/fish.jpeg",
+    "/Images/freshmutton.jpeg",
+    "/Images/frozen_veg.jpeg",
+    "/Images/gulab.jpeg",
+    "/Images/meals.jpeg",
+    "/Images/meat.jpeg",
+    "/Images/meat1.jpeg",
+    "/Images/ogveg.jpeg",
+    "/Images/parata.jpeg",
+    "/Images/pulses.jpeg",
+    "/Images/rasa.jpeg",
+    "/Images/snacks.jpeg",
+    "/Images/species.jpeg",
+    "/Images/sweets1.jpeg",
+    "/Images/vege1.jpeg",
+  ];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [images.length]);
+
+  const variants = {
+    initial: { z: -200, opacity: 0, scale: 0.9 },
+    animate: { z: 0, opacity: 1, scale: 1 },
+    exit: { z: 200, opacity: 0, scale: 0.9 },
+  };
 
   return (
     <div className="min-h-screen pb-16">
       {/* Header */}
-      <div className="flex flex-col md:flex-row gap-5 items-center mt-24 justify-between px-6">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 flex flex-col md:flex-row items-center justify-center">
-          Welcome to{" "}
-          <TypeAnimation
-            sequence={["ASIA BAZAR", 2000, "STORE", 2000]}
-            speed={50}
-            wrapper="span"
-            repeat={Infinity}
-            className="inline-block ml-2 text-green-600"
-          />
-        </h1>
-        <Link to="/menu">
-          <Button color="green" className="mt-4 md:mt-0 font-semibold">
-            SEE MENU
-          </Button>
-        </Link>
-      </div>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-12 bg-gradient-to-br from-green-50 via-white to-green-50 rounded-3xl shadow-md md:mt-24 mt-16 ">
+  {/* Text Section */}
+        <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          <h1 className="text-2xl md:text-4xl h-16 font-extrabold text-gray-800 leading-tight">
+            Welcome to{" "}
+            <TypeAnimation
+              sequence={["ASIA BAZAR", 2000, "YOUR STORE", 2000]}
+              speed={60}
+              wrapper="span"
+              repeat={Infinity}
+              className="inline-block text-green-600 drop-shadow-md"
+            />
+          </h1>
+          <p className="mt-4 text-gray-600 md:text-lg text-md max-w-md">
+            Discover fresh vegetables, food, fruits, meat and groceries — delivered straight from our store to your home.
+          </p>
+
+          <ScrollLink to="grocery" smooth={true} duration={800}>
+            <Button
+              color="green"
+              className="mt-6 font-semibold text-white px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
+            >
+              Explore Menu
+            </Button>
+          </ScrollLink>
+        </div>
+
+        {/* Animated Image Section */}
+        <div className="relative z-0 w-40 h-40 md:w-56 md:h-56 flex justify-center items-center">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={index}
+              src={images[index]}
+              alt={`Slide ${index + 1}`}
+              variants={variants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="absolute w-full h-full object-cover rounded-xl shadow-2xl border-4 border-white"
+            />
+          </AnimatePresence>
+        </div>
+    </div>
+
 
       {/* Category Scroller */}
-      <div className="mt-8">
+      <div className="md:mt-8">
         <CategoryScroller onCategorySelect={setSelectcategory} />
       </div>
 
       {/* Filters */}
       <div className="pt-10 mx-auto mb-8 px-4 max-w-6xl ">
         <h1 className="mb-10 ml-2 font-bold text-3xl">Fresh Items</h1>
-        <div className="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-4 bg-gray-50 p-4 rounded-xl shadow-sm">
+        <div className="flex flex-col md:flex-row  items-center justify-center gap-4 bg-gray-50 p-4 rounded-xl shadow-sm">
           <Input
             label="Search Name"
             name="name"
@@ -190,6 +256,7 @@ function Categories() {
                 <Card
                   key={product._id}
                   shadow
+                  id="grocery"
                   className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
                 >
                   <Link to={`/product/${product?._id}`} key={product._id}>

@@ -209,8 +209,8 @@ function ProductForm() {
                                 >
                                 <option value="">Select Category</option>
                                 <option value="vegetables">Vegetables</option>
+                                <option value="cafe">Cafe</option>
                                 <option value="food">Food</option>
-                                <option value="dals">Dals</option>
                                 <option value="meat">Meat</option>
                             </select>
                             <Textarea rows={5} placeholder='description of product' value={productData?.product_description} onChange={(e)=>setProductData({...productData,product_description:e.target.value})}>
