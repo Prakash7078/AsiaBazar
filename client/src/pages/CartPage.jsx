@@ -49,7 +49,7 @@ function CartPage() {
   };
   
   return (
-    <div className="mt-32 px-6 md:px-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="my-32 px-6 md:px-20 grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className='lg:col-span-2 space-y-4'>
 
       <h1 className="text-3xl font-bold mb-6 text-[#9C1137]">🛒 My Cart</h1>

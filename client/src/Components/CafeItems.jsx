@@ -1,70 +1,74 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addproducttoCart, getCartItems, getProducts } from "../redux/productSlice";
+import {
+  addproducttoCart,
+  getCafeItems,
+  getCartItems,
+} from "../redux/productSlice";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import CategoryScroller from "./CategoryScroller";
 import { TypeAnimation } from "react-type-animation";
 import { ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link as ScrollLink } from "react-scroll";
 
 function CafeItems() {
   const dispatch = useDispatch();
-  const [selectedCategory, setSelectcategory] = useState("cafe");
-  const userInfo = useSelector((state) => state.auth.userInfo);
-  const { products, loading } = useSelector((state) => state.product);
-  const [filters, setFilters] = useState({
-    name: "",
-    price: "",
-    quantity: "",
-    total: "",
-    category: selectedCategory,
-  });
   const navigate = useNavigate();
+  const { cafeItems, loading } = useSelector((state) => state.product);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [index, setIndex] = useState(0);
+  const images = [
+    "/Images/chickenrice.jpeg",
+    "/Images/cold_drinks.jpeg",
+    "/Images/gulab.jpeg",
+    "/Images/meals.jpeg",
+    "/Images/parata.jpeg",
+    "/Images/rasa.jpeg",
+    "/Images/sweets1.jpeg",
+  ];
 
   useEffect(() => {
-    setFilters((prev) => ({ ...prev, category: selectedCategory }));
-    dispatch(getProducts());
-  }, [dispatch, selectedCategory]);
+    dispatch(getCafeItems());
+  }, [dispatch]);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-
-  const filteredProducts = products?.filter((item) => {
-    return (
-      item.product_name.toLowerCase().includes(filters.name.toLowerCase()) &&
-      item.product_price.toString().includes(filters.price) &&
-      `${item.product_size}${item.quantity_measure}`
-        .toLowerCase()
-        .includes(filters.quantity.toLowerCase()) &&
-      item.total_products.toString().includes(filters.total) &&
-      item.product_category.toLowerCase().includes(filters.category.toLowerCase())
-    );
-  });
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [images.length]);
 
   const handleCart = async (productId) => {
     if (!userInfo) {
       navigate("/login");
-    } else {
-      await dispatch(
-        addproducttoCart({
-          user_id: userInfo?._id,
-          product_id: productId,
-          quantity: 1,
-        })
-      );
-      await dispatch(getCartItems({ user_id: userInfo?._id }));
+      return;
     }
+    await dispatch(
+      addproducttoCart({
+        user_id: userInfo._id,
+        product_id: productId,
+        quantity: 1,
+      })
+    );
+    await dispatch(getCartItems({ user_id: userInfo._id }));
   };
 
-  const settings = {
+  const filteredProducts = cafeItems?.filter((item) =>
+    item.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const variants = {
+    initial: { z: -200, opacity: 0, scale: 0.9 },
+    animate: { z: 0, opacity: 1, scale: 1 },
+    exit: { z: 200, opacity: 0, scale: 0.9 },
+  };
+
+  const sliderSettings = {
     dots: false,
     infinite: true,
     arrows: false,
@@ -74,75 +78,37 @@ function CafeItems() {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  const images = [
-    "/Images/borcelle.jpeg",
-    "/Images/cheese.jpeg",
-    "/Images/chickenrice.jpeg",
-    "/Images/cold_drinks.jpeg",
-    "/Images/dryfruits.jpeg",
-    "/Images/fish.jpeg",
-    "/Images/freshmutton.jpeg",
-    "/Images/frozen_veg.jpeg",
-    "/Images/gulab.jpeg",
-    "/Images/meals.jpeg",
-    "/Images/meat.jpeg",
-    "/Images/meat1.jpeg",
-    "/Images/ogveg.jpeg",
-    "/Images/parata.jpeg",
-    "/Images/pulses.jpeg",
-    "/Images/rasa.jpeg",
-    "/Images/snacks.jpeg",
-    "/Images/species.jpeg",
-    "/Images/sweets1.jpeg",
-    "/Images/vege1.jpeg",
-  ];
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
-    }, 3500);
-    return () => clearInterval(timer);
-  }, [images.length]);
-
-  const variants = {
-    initial: { z: -200, opacity: 0, scale: 0.9 },
-    animate: { z: 0, opacity: 1, scale: 1 },
-    exit: { z: 200, opacity: 0, scale: 0.9 },
-  };
 
   return (
-    <div className="min-h-screen pb-16">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-12 bg-gradient-to-br from-green-50 via-white to-green-50 rounded-3xl shadow-md md:mt-24 mt-16 ">
-  {/* Text Section */}
+    <div className="min-h-screen pb-16 ">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-14 bg-white/80 backdrop-blur-md rounded-3xl shadow-sm md:mt-24 mt-20 max-w-6xl mx-auto">
+        {/* Text Section */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
-          <h1 className="text-2xl md:text-4xl h-16 font-extrabold text-gray-800 leading-tight">
+          <h1 className="text-3xl md:text-5xl h-16 font-extrabold text-gray-800 leading-tight">
             Welcome to{" "}
             <TypeAnimation
-              sequence={["ASIA BAZAR", 2000, "YOUR STORE", 2000]}
+              sequence={["ASIA BAZAR", 2000, "CAFÉ", 2000]}
               speed={60}
               wrapper="span"
               repeat={Infinity}
-              className="inline-block text-green-600 drop-shadow-md"
+              className="inline-block text-green-600 drop-shadow-md "
             />
           </h1>
-          <p className="mt-4 text-gray-600 md:text-lg text-md max-w-md">
-            Discover fresh vegetables, food, fruits, meat and groceries — delivered straight from our store to your home.
+          <p className="mt-4 text-gray-600 md:text-lg max-w-md">
+            Experience freshly cooked meals, drinks, and sweets — crafted with love and delivered with care.
           </p>
 
-          <ScrollLink to="grocery" smooth={true} duration={800}>
-            <Button
-              color="green"
-              className="mt-6 font-semibold text-white px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
-            >
-              Explore Menu
-            </Button>
-          </ScrollLink>
+          <Button
+            color="green"
+            className="mt-6 font-semibold text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+          >
+            Explore Menu
+          </Button>
         </div>
 
         {/* Animated Image Section */}
-        <div className="relative z-0 w-40 h-40 md:w-56 md:h-56 flex justify-center items-center">
+        <div className="relative z-0 w-48 h-48 md:w-64 md:h-64 flex justify-center items-center">
           <AnimatePresence mode="wait">
             <motion.img
               key={index}
@@ -153,105 +119,38 @@ function CafeItems() {
               animate="animate"
               exit="exit"
               transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="absolute w-full h-full object-cover rounded-xl shadow-2xl border-4 border-white"
+              className="absolute w-full h-full object-cover rounded-2xl shadow-xl border-4 border-white"
             />
           </AnimatePresence>
         </div>
-    </div>
-
-
-      {/* Category Scroller */}
-      <div className="md:mt-8">
-        <CategoryScroller onCategorySelect={setSelectcategory} />
       </div>
 
-      {/* Filters */}
-      <div className="pt-10 mx-auto mb-8 px-4 max-w-6xl ">
-        <h1 className="mb-10 ml-2 font-bold text-3xl">Fresh Items</h1>
-        <div className="flex flex-col md:flex-row  items-center justify-center gap-4 bg-gray-50 p-4 rounded-xl shadow-sm">
-          <Input
-            label="Search Name"
-            name="name"
-            value={filters.name}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Input
-            label="Search Price"
-            name="price"
-            value={filters.price}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Input
-            label="Search Quantity"
-            name="quantity"
-            value={filters.quantity}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Input
-            label="Search Total"
-            name="total"
-            value={filters.total}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Input
-            label="Search Category"
-            name="category"
-            value={filters.category}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Button
-            onClick={() => setSelectcategory("")}
-            color="red"
-            size="md"
-            className="w-full sm:w-32 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-          >
-            All
-          </Button>
-        </div>
-
+      {/* Search Section */}
+      <div className="mt-12 px-6 max-w-4xl mx-auto">
+        <Input
+          label="Search for your favorite item..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          color="green"
+          variant="outlined"
+          size="lg"
+          className="bg-white shadow-sm rounded-lg"
+        />
       </div>
 
       {/* Product Grid */}
-      {loading ? (
-        <div className="text-center py-20 text-lg font-medium text-gray-700">
-          Loading...
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-3 md:px-8">
-          {filteredProducts?.length === 0 ? (
-            <Typography
-              variant="paragraph"
-              className="text-center col-span-full text-gray-600 mt-6"
-            >
-              No products found.
-            </Typography>
-          ) : (
-            filteredProducts
+      <div className="mt-10 px-4 md:px-10 max-w-7xl mx-auto">
+        <h2 className="font-bold text-3xl mb-6 text-gray-800">Our Café Specials</h2>
+
+        {loading ? (
+          <p className="text-center py-20 text-gray-600 text-lg">Loading...</p>
+        ) : filteredProducts?.length === 0 ? (
+          <p className="text-center py-20 text-gray-600 text-lg">
+            No items found.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {filteredProducts
               .map((product) => (
                 <Card
                   key={product._id}
@@ -260,7 +159,7 @@ function CafeItems() {
                   className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
                 >
                   <Link to={`/product/${product?._id}`} key={product._id}>
-                    <Slider {...settings} className="rounded-lg">
+                    <Slider {...sliderSettings} className="rounded-lg">
                       {product?.product_image?.map((imgUrl, idx) => (
                         <div key={idx} className="w-full h-36 sm:h-56 lg:h-64">
                           <img
@@ -326,10 +225,10 @@ function CafeItems() {
                     
                 </Card>
 
-              ))
-          )}
-        </div>
-      )}
+              ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

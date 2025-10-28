@@ -1,9 +1,11 @@
 const express=require('express');
 const isAuth=require('../middleware/auth');
-const { getAllProducts, getSingleProduct, getCartItems, addProductCart, deleteCartItem, updateCartItem, deleteCart } = require('../controllers/categoryController');
+const { getAllProducts, getSingleProduct, getCartItems, addProductCart, deleteCartItem, updateCartItem, deleteCart, getStoreItems, getCafeItems } = require('../controllers/categoryController');
 const { addCustomerOrder, getUserOrders } = require('../controllers/checkoutController');
 const router=express.Router();
 router.get("/getProducts", getAllProducts);
+router.get("/getStore", getStoreItems);
+router.get("/getCafe", getCafeItems);
 router.get("/getSingleProduct/:id",getSingleProduct);
 router.get("/getCartItems/:userId",isAuth,getCartItems);
 router.delete("/deleteCart/:user_id",isAuth,deleteCart);

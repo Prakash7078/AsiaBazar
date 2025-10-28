@@ -14,6 +14,27 @@ export const getProducts = createAsyncThunk("api/getProducts", async () => {
   }
 });
 
+//get store items
+export const getStoreItems = createAsyncThunk("api/getStore", async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/api/products/getStore`);
+    console.log(res);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
+});
+//get cafe items
+export const getCafeItems = createAsyncThunk("api/getCafe", async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/api/products/getCafe`);
+    console.log(res);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // Add a new product
 export const addProduct = createAsyncThunk("api/addProduct", async (productData) => {
   try {
@@ -171,6 +192,8 @@ const productSlice = createSlice({
   name: "products",
   initialState: {
     products: [],
+    storeItems:[],
+    cafeItems:[],
     cartItems:[],
     customer_orders:[],
     loading: false,
@@ -187,6 +210,30 @@ const productSlice = createSlice({
         state.products = payload;
       })
       .addCase(getProducts.rejected, (state) => {
+        state.loading = false;
+        toast.error("Network error while fetching products");
+      });
+    builder
+      .addCase(getStoreItems.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getStoreItems.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.storeItems = payload;
+      })
+      .addCase(getStoreItems.rejected, (state) => {
+        state.loading = false;
+        toast.error("Network error while fetching products");
+      });
+    builder
+      .addCase(getCafeItems.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getCafeItems.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.cafeItems = payload;
+      })
+      .addCase(getCafeItems.rejected, (state) => {
         state.loading = false;
         toast.error("Network error while fetching products");
       });

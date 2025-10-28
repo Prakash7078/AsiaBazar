@@ -12,9 +12,22 @@ dotenv.config();
 // 🔹 Get All Products
 const getAllProducts = expressAsyncHandler(async (req, res) => {
     // Find all products
-    const products = await Product.find({ isDeleted: false });
+    const products = await Product.find({ isDeleted: false }).sort({ createdAt: -1 });
     res.status(StatusCodes.OK).json(products);
 });
+
+const getStoreItems = expressAsyncHandler(async (req, res) => {
+    // Find all products
+    const storeitems = await Product.find({ isDeleted: false, product_category: { $ne: 'cafe' } }).sort({ createdAt: -1 });
+    res.status(StatusCodes.OK).json(storeitems);
+}) 
+
+const getCafeItems = expressAsyncHandler(async (req, res) => {
+    // Find all products
+    const cafeitems = await Product.find({ isDeleted: false, product_category: 'cafe' }).sort({ createdAt: -1 });
+    res.status(StatusCodes.OK).json(cafeitems);
+})
+
 
 // 🔹 Get Single Product
 const getSingleProduct = expressAsyncHandler(async (req, res) => {
@@ -137,6 +150,8 @@ module.exports = {
   deleteCartItem,
   updateCartItem,
   deleteCart,
+  getStoreItems,
+  getCafeItems,
 
 };
 

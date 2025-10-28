@@ -138,7 +138,7 @@ function App() {
       
       <ToastContainer
         position="bottom-center"
-        bodyClassName="font-bold text-blue-900 text-center"
+        bodyClassName="font-bold text-black text-center"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}

@@ -25,7 +25,7 @@ function SpecialOrder() {
                 <li>Mutton Curry</li>
                 <li>Tandoori Chicken</li>
             </ul>
-            <a href="tel:+1234567890" className="text-blue-300 ">
+            <a href="tel:+1234567890" className="text-green-300 ">
                   +1 (316) 612-2700
             </a>
             <p className=''>6100 E 21st St N Ste 300

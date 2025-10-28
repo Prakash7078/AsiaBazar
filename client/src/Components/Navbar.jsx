@@ -38,8 +38,8 @@ function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50  backdrop-blur-md shadow-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
+    <nav className="max-w-7xl mx-auto fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+      <div className=" flex items-center justify-between px-4 sm:px-6 py-3">
         
         {/* --- Logo --- */}
         <Route to="/">
@@ -66,10 +66,10 @@ function Navbar() {
           {/* Cart */}
           <Route to="/mycart">
             <Badge
-              content={cartItems?.length}
+              content={cartItems?.length>0? cartItems.length : null}
               overlap="circular"
-              className="bg-red-500 text-white"
-            >
+              className={`${cartItems?.length > 0 ? 'bg-red-500' : 'bg-transaparent'} text-white`}
+              >
               <MdShoppingCart size={25} className="cursor-pointer text-gray-700" />
             </Badge>
           </Route>
@@ -103,9 +103,9 @@ function Navbar() {
         <div className="md:hidden flex items-center gap-3">
           <Route to="/mycart">
             <Badge
-              content={cartItems?.length}
+              content={cartItems?.length>0? cartItems.length : null}
               overlap="circular"
-              className="bg-red-500 text-white"
+              className={`${cartItems?.length > 0 ? 'bg-red-500' : ''} text-white`}
             >
               <MdShoppingCart size={25} className="text-gray-700" />
             </Badge>
@@ -130,7 +130,7 @@ function Navbar() {
 
       {/* --- Mobile Menu --- */}
       {isMenuOpen && (
-        <div className="md:hidden bg-gradient-to-br from-green-100 via-white to-green-100 border-t border-gray-200 shadow-lg absolute top-16 left-0 w-full animate-slideDown z-40">
+        <div className="md:hidden bg-gradient-to-br bg-white border-t border-gray-200 shadow-lg absolute top-16 left-0 w-full animate-slideDown z-40">
           <ul className="flex flex-col items-start gap-4 p-6 text-lg font-medium text-gray-700">
             {userInfo?.admin && (
               <Route

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addproducttoCart, getCartItems, getProducts } from "../redux/productSlice";
+import { addproducttoCart, getCartItems, getStoreItems } from "../redux/productSlice";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
@@ -16,7 +16,7 @@ function Categories() {
   const dispatch = useDispatch();
   const [selectedCategory, setSelectcategory] = useState("");
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const { products, loading } = useSelector((state) => state.product);
+  const { storeItems, loading } = useSelector((state) => state.product);
   const [filters, setFilters] = useState({
     name: "",
     price: "",
@@ -28,7 +28,7 @@ function Categories() {
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, category: selectedCategory }));
-    dispatch(getProducts());
+    dispatch(getStoreItems());
   }, [dispatch, selectedCategory]);
 
   const handleFilterChange = (e) => {
@@ -37,7 +37,7 @@ function Categories() {
   };
 
 
-  const filteredProducts = products?.filter((item) => {
+  const filteredProducts = storeItems?.filter((item) => {
     return (
       item.product_name.toLowerCase().includes(filters.name.toLowerCase()) &&
       item.product_price.toString().includes(filters.price) &&
