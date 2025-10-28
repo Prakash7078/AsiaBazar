@@ -114,7 +114,7 @@ function Categories() {
   return (
     <div className="min-h-screen pb-16">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-12 bg-gradient-to-br from-green-50 via-white to-green-50 rounded-3xl shadow-md md:mt-24 mt-16 ">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-12 bg-gradient-to-br from-green-50 via-white to-green-50 rounded-3xl md:shadow-md md:mt-24 mt-16 ">
   {/* Text Section */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
           <h1 className="text-2xl md:text-4xl h-16 font-extrabold text-gray-800 leading-tight">

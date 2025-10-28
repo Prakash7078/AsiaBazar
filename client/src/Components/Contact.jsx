@@ -50,7 +50,7 @@ function Contact() {
                 Contact Us
               </h1>
             </div >
-            <div className="lg:w-3/4 md:w-2/3 mx-auto ">
+            <div className="lg:w-3/4 md:w-2/3 ">
               <form
                 // ref={form}
                 onSubmit={msgHandler}
@@ -126,12 +126,12 @@ function Contact() {
             </form>
             </div>
           </div>
-          <div className='hidden lg:flex justify-center items-center'>
+          <div className='hidden lg:flex justify-center items-center mt-16'>
 
             <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7636.874584547074!2d-97.26748190551814!3d37.72556995515711!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87bafd32b21326d5%3A0x8eaa6c19f7730eb9!2sAsia%20Bazaar%20grocery%20%26%20cafe!5e0!3m2!1sen!2sus!4v1751663012014!5m2!1sen!2sus"
             width="500"
-            height="450"
+            height="500"
             allowfullscreen=""
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
