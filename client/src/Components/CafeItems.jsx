@@ -101,6 +101,7 @@ function CafeItems() {
 
           <Button
             color="green"
+            onClick={() => navigate("/menu")}
             className="mt-6 font-semibold text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
           >
             Explore Menu

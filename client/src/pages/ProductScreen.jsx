@@ -109,12 +109,12 @@ function ProductScreen() {
               )}
             </li> */}
           </ul>
-          <div className="pt-3 flex justify-center text-center ">
+          <div className="pt-3 flex justify-center sm:justify-start text-center ">
             <Button
             onClick={handleCart}
             color="red"
             size="sm"
-            className="font-semibold w-full justify-center flex items-center gap-2 px-3"
+            className="font-semibold  justify-center w-full sm:w-fit   flex items-center gap-2 px-3"
             >
             <ShoppingCart size={18} />
             Add to cart

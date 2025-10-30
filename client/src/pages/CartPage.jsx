@@ -60,18 +60,18 @@ function CartPage() {
           {cartItems.map((item) => (
               <div
                 key={item?._id}
-                className="flex flex-col md:flex-row gap-6 items-center bg-white rounded-lg shadow-md p-4 border"
+                className="flex md:flex-row flex-col gap-6 items-center bg-white rounded-lg shadow-md p-4 border"
               >
                 <img
                   src={item?.product?.product_image[0]}
                   alt="product"
-                  className="w-40 h-40 rounded-md object-cover border"
+                  className="sm:w-40 sm:h-40 w-20 h-20 rounded-md object-cover border"
                 />
 
                 <div className="flex-1 space-y-2">
                   <p className="text-gray-600 text-sm">🛍️ Cart Item </p>
                   <h2 className="text-xl font-bold text-gray-800">{item?.product.product_name}</h2>
-                  <p className="text-sm text-gray-600">{item?.product.product_description}</p>
+                  {/* <p className="text-sm text-gray-600">{item?.product.product_description}</p> */}
                   <p className="text-sm">
                     <span className="font-semibold">Category:</span> {item?.product.product_category}
                   </p>
@@ -84,7 +84,7 @@ function CartPage() {
                     Total Items: {item?.product?.total_products}
                   </Typography>}
                   <p className="text-sm">
-                    <span className="font-semibold">Price:</span> ${item?.product.product_price}
+                    <span className="font-semibold">Price:</span> <span className='text-red-400 font-bold px-1'>${item?.product.product_price}</span>
                   </p>
                 </div>
                 <div className="flex items-center gap-4 mt-2">
