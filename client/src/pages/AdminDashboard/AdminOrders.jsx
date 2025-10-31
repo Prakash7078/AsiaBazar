@@ -251,7 +251,13 @@ const AdminOrders = () => {
                     <td>
                       <div className="text-xs text-gray-500">{order.shipping_address}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm">{new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td className="px-3 py-4 text-sm">{new Date(order?.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}</td>
                     <td className="px-6 py-4 font-medium">${parseFloat(order.total_amount).toFixed(2)}</td>
 
                     {/* Order Status */}

@@ -151,10 +151,12 @@ const AdminPayments = () => {
                     <td className="px-4 py-3">{order?.updated_mobile_no}</td>
                     <td className="px-4 py-3">{order?.shipping_address}</td>
                     <td className="px-4 py-3 text-gray-500">
-                      {new Date(order?.createdAt).toLocaleDateString('en-US', {
+                      {new Date(order?.createdAt).toLocaleString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </td>
                     <td className="px-4 py-3">

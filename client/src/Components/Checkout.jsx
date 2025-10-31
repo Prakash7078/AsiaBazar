@@ -80,15 +80,6 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !formData.address ||
-      !formData.city ||
-      !formData.state ||
-      !formData.zipCode
-    ) {
-      toast.error("Please fill all the required fields");
-      return;
-    }
 
     if (paymentMethod === "CASH_ON_DELIVERY") {
       setLoading(true);
@@ -118,15 +109,16 @@ const Checkout = () => {
     }
 
     if (!stripe || !elements) {
+      setLoading(false);
       setMessage("Stripe has not loaded yet.");
       return;
     }
 
-    setLoading(true);
 
     const { error: submitError } = await elements.submit();
     if (submitError) {
       // handleError(submitError);
+      setLoading(false);
       return;
     }
 
@@ -228,7 +220,18 @@ const Checkout = () => {
     }
   };
 
-  const nextStep = () => setCurrentStep(Math.min(3, currentStep + 1));
+  const nextStep = () => {
+    if (
+      (!formData.address ||
+      !formData.city ||
+      !formData.state ||
+      !formData.zipCode) && currentStep === 2
+    ) {
+      toast.error("Please fill all the required fields");
+      return;
+    }
+    setCurrentStep(Math.min(3, currentStep + 1));
+  }
   const prevStep = () => setCurrentStep(Math.max(1, currentStep - 1));
 
   if (cartItems.length === 0) {
@@ -364,7 +367,7 @@ const Checkout = () => {
                         required
                         value={formData.city}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        className="invalid:border-red-500 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
 
@@ -378,7 +381,7 @@ const Checkout = () => {
                         required
                         value={formData.state}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        className="w-full border invalid:border-red-500  border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -391,7 +394,7 @@ const Checkout = () => {
                         required
                         value={formData.zipCode}
                         onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        className="w-full border invalid:border-red-500  border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -483,7 +486,7 @@ const Checkout = () => {
               ) : (
                 <button
                   type="submit"
-                  disabled={loading || !stripe || !elements}
+                  disabled={loading}
                   className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   {loading ? "Processing..." : "Place Order"}

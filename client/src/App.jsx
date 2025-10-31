@@ -140,7 +140,7 @@ function App() {
         position="bottom-center"
         bodyClassName="font-bold text-black text-center"
         autoClose={3000}
-        hideProgressBar={false}
+        hideProgressBar={true}
         newestOnTop={false}
         closeOnClick
         rtl={false}

@@ -149,7 +149,13 @@ const Profile = () => {
                   Order #{order?._id}
                 </Typography>
                 <Typography className="text-sm text-gray-500">
-                  Placed on {new Date(order?.created_at).toLocaleDateString()}
+                  Placed on {new Date(order?.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                 </Typography>
               </div>
               <div className="mt-2 sm:mt-0 flex flex-col md:flex-row gap-3 space-x-2">
