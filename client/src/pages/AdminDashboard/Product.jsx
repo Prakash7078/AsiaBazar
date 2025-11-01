@@ -20,6 +20,7 @@ function ProductForm() {
         quantity_measure:'',
         total_products:0,
         product_category: '',
+        outOfStock:false,
         product_description:'',
         product_images: [], // changed from single file to array
     });
@@ -49,6 +50,7 @@ function ProductForm() {
                 product_size: selectedProduct.product_size,
                 quantity_measure: selectedProduct.quantity_measure,
                 total_products: selectedProduct.total_products,
+                outOfStock: selectedProduct.outOfStock,
                 product_category: selectedProduct.product_category,
                 product_description: selectedProduct?.product_description,
                 product_images: [],
@@ -66,6 +68,7 @@ function ProductForm() {
         formData.append("quantity_measure", productData.quantity_measure);
         formData.append("total_products", productData.total_products === '' ? 0 : Number(productData.total_products));
         formData.append("product_category", productData.product_category);
+        formData.append("outOfStock", productData.outOfStock);
         formData.append("product_description", productData.product_description);
         formData.append("existing_images", JSON.stringify(productData.existing_images));
 
@@ -85,6 +88,7 @@ function ProductForm() {
                 quantity_measure:'',
                 total_products:0,
                 product_category: '',
+                outOfStock:'',
                 product_description:'',
                 product_images: []})
         }
@@ -212,6 +216,16 @@ function ProductForm() {
                                 <option value="cafe">Cafe</option>
                                 <option value="food">Food</option>
                                 <option value="meat">Meat</option>
+                            </select>
+                            <select
+                                className="border border-gray-400 rounded-md p-2 text-sm"
+                                value={productData?.outOfStock}
+                                onChange={(e) => setProductData({ ...productData, outOfStock: e.target.value })}
+                                >
+                                <option value="">Select Product</option>
+                                <option value="false">Active</option>
+                                <option value="true">outOfStock</option>
+                                
                             </select>
                             <Textarea rows={5} placeholder='description of product' value={productData?.product_description} onChange={(e)=>setProductData({...productData,product_description:e.target.value})}>
                             </Textarea>

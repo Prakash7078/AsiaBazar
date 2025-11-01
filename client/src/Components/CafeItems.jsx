@@ -215,12 +215,15 @@ function CafeItems() {
                     <div className="pt-3 flex justify-center">
                       <Button
                           onClick={() => handleCart(product?._id)}
-                          color="green"
+                          color={product?.outOfStock?'red':'green'}
+                          disabled={product?.outOfStock}
                           size="sm"
-                          className="font-semibold flex items-center gap-2 px-3"
+                          className=""
                         >
-                          <ShoppingCart size={18} />
-                          Add
+                          {product?.outOfStock ? "Out of Stock" : <span className="font-semibold flex items-center gap-2 px-3">
+                            <ShoppingCart size={18} />
+                          Add</span>}
+                          
                         </Button>
                     </div>
                     

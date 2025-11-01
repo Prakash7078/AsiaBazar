@@ -6,6 +6,7 @@ const authRouter=require('./routes/authRoutes');
 const adminRouter = require('./routes/adminRoutes');
 const productRouter=require('./routes/productRoutes');
 const connectDB=require('./db/connectDB');
+const Product = require('./models/productModel');
 const app = express();
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -67,3 +68,4 @@ const start = async () => {
 };
 
 start();
+

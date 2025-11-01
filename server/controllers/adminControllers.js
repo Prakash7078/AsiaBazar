@@ -79,9 +79,10 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
     quantity_measure,
     total_products,
     product_category,
-    product_description
+    product_description,
+    outOfStock
   } = req.body;
-  
+
   const productId = req.params.id;
   // Parse existing image URLs from the stringified body data
   const existingImages = JSON.parse(req.body.existing_images || "[]");
@@ -97,6 +98,8 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
     }
   }
 
+
+
   const allImages = [...existingImages, ...newImageUrls];
 
   const updateFields = {
@@ -108,7 +111,9 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
     product_category,
     product_description,
     product_image: allImages,
+    outOfStock,
   };
+  console.log("Update Fields:", updateFields);
 
   const updatedProduct = await Product.findByIdAndUpdate(
     productId,

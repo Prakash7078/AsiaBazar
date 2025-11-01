@@ -168,7 +168,11 @@ function AdminProducts() {
                     {item.product_size}
                     {item.quantity_measure}
                   </td>
-                  <td className="p-4">{item.total_products}</td>
+                  <td>
+                    <div className={`rounded-lg px-3 py-2  ${item?.outOfStock?' text-red-800':' text-green-800'}`}>
+                      {item?.outOfStock?'Out of Stock':'In Stock'}
+                  </div>
+                  </td>
                   <td className="p-4">{item.product_category}</td>
 
                   {/* Edit Button */}

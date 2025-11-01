@@ -36,6 +36,10 @@ const ProductSchema = new mongoose.Schema({
         default: Date.now
     },
     isDeleted: { type: Boolean, default: false },
+    outOfStock: { 
+        type: Boolean, 
+        default: false 
+    }
 
 });
 

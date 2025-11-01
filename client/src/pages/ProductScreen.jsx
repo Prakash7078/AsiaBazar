@@ -110,14 +110,17 @@ function ProductScreen() {
             </li> */}
           </ul>
           <div className="pt-3 flex justify-center sm:justify-start text-center ">
-            <Button
-            onClick={handleCart}
-            color="red"
+          <Button
+            onClick={() => handleCart(product?._id)}
+            color={product?.outOfStock?'red':'green'}
+            disabled={product?.outOfStock}
             size="sm"
-            className="font-semibold  justify-center w-full sm:w-fit   flex items-center gap-2 px-3"
-            >
-            <ShoppingCart size={18} />
-            Add to cart
+            className=""
+          >
+            {product?.outOfStock ? "Out of Stock" : <span className="font-semibold flex items-center gap-2 px-3">
+              <ShoppingCart size={18} />
+            Add</span>}
+                          
           </Button>
           </div>
           
@@ -190,15 +193,18 @@ function ProductScreen() {
                       </Typography>
                       <hr/>
                       <div className="pt-3 flex justify-center">
-                        <Button
+                      <Button
                           onClick={() => handleCart(item?._id)}
-                          color="green"
-                            size="sm"
-                            className="font-semibold flex items-center gap-2 px-3"
-                          >
+                          color={item?.outOfStock?'red':'green'}
+                          disabled={item?.outOfStock}
+                          size="sm"
+                          className=""
+                        >
+                        {item?.outOfStock ? "Out of Stock" : <span className="font-semibold flex items-center gap-2 px-3">
                             <ShoppingCart size={18} />
-                            Add to cart
-                          </Button>
+                          Add</span>}
+                          
+                        </Button>
                     </div>
                     </div>
                   </Card>
