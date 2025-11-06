@@ -460,7 +460,11 @@ const Checkout = () => {
                     </div>
                   )}
                 </div>
+                <div>
+                  <h1 className="text-red-300">Credit card payments are temporarily unavailable. </h1>
+                </div>
               </div>
+              
             )}
 
             {/* Navigation Buttons */}
@@ -493,6 +497,7 @@ const Checkout = () => {
                 </button>
               )}
             </div>
+
           </form>
         </div>
 

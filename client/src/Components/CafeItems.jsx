@@ -11,7 +11,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { TypeAnimation } from "react-type-animation";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 function CafeItems() {
@@ -22,6 +22,9 @@ function CafeItems() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [index, setIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [open, setOpen] = useState(false);
+
   const images = [
     "/Images/chickenrice.jpeg",
     "/Images/cold_drinks.jpeg",
@@ -30,6 +33,15 @@ function CafeItems() {
     "/Images/parata.jpeg",
     "/Images/rasa.jpeg",
     "/Images/sweets1.jpeg",
+  ];
+
+  const categories = [
+    "All",
+    "Appetizers",
+    "Deserts",
+    "Drinks & Juices",
+    "Shawarmas & Gros",
+    "Specialities",
   ];
 
   useEffect(() => {
@@ -58,9 +70,16 @@ function CafeItems() {
     await dispatch(getCartItems({ user_id: userInfo._id }));
   };
 
-  const filteredProducts = cafeItems?.filter((item) =>
-    item.product_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ✅ Filtering by name + category
+  const filteredProducts = cafeItems?.filter((item) => {
+    const matchSearch = item.product_name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchCategory =
+      selectedCategory === "All" ||
+      item.product_name?.toLowerCase().includes(selectedCategory.toLowerCase());
+    return matchSearch && matchCategory;
+  });
 
   const variants = {
     initial: { z: -200, opacity: 0, scale: 0.9 },
@@ -80,7 +99,7 @@ function CafeItems() {
   };
 
   return (
-    <div className="min-h-screen pb-16 ">
+    <div className="min-h-screen pb-16">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-14 bg-white/80 backdrop-blur-md rounded-3xl shadow-sm md:mt-24 mt-20 max-w-6xl mx-auto">
         {/* Text Section */}
@@ -92,11 +111,12 @@ function CafeItems() {
               speed={60}
               wrapper="span"
               repeat={Infinity}
-              className="inline-block text-green-600 drop-shadow-md "
+              className="inline-block text-green-600 drop-shadow-md"
             />
           </h1>
           <p className="mt-4 text-gray-600 md:text-lg max-w-md">
-            Experience freshly cooked meals, drinks, and sweets — crafted with love and delivered with care.
+            Experience freshly cooked meals, drinks, and sweets — crafted with
+            love and delivered with care.
           </p>
 
           <Button
@@ -126,8 +146,47 @@ function CafeItems() {
         </div>
       </div>
 
-      {/* Search Section */}
-      <div className="mt-12 px-6 max-w-4xl mx-auto">
+      {/* ✅ Filter + Search Section */}
+      <div className="mt-12 px-6 max-w-4xl mx-auto flex flex-col sm:flex-row-reverse items-center gap-4">
+        {/* Dropdown Filter */}
+        <div className="relative w-full sm:w-1/2">
+          <button
+            onClick={() => setOpen(!open)}
+            className="flex items-center justify-between w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-3 rounded-xl shadow-md focus:outline-none hover:shadow-lg transition-all duration-200"
+          >
+            <span className="font-semibold text-base">
+              {selectedCategory}
+            </span>
+            <ChevronDown
+              className={`w-5 h-5 transform transition-transform ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {open && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-10 animate-fadeIn">
+              {categories.map((cat, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setOpen(false);
+                  }}
+                  className={`block w-full text-left px-4 py-3 text-gray-700 hover:bg-green-100 hover:text-green-600 ${
+                    cat === selectedCategory
+                      ? "bg-green-50 font-semibold text-green-600"
+                      : ""
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Search Input */}
         <Input
           label="Search for your favorite item..."
           value={searchTerm}
@@ -135,13 +194,15 @@ function CafeItems() {
           color="green"
           variant="outlined"
           size="lg"
-          className="bg-white shadow-sm rounded-lg"
+          className="bg-white shadow-sm rounded-lg "
         />
       </div>
 
       {/* Product Grid */}
       <div className="mt-10 px-4 md:px-10 max-w-7xl mx-auto">
-        <h2 className="font-bold text-3xl mb-6 text-gray-800">Our Café Specials</h2>
+        <h2 className="font-bold text-3xl mb-6 text-gray-800">
+          Our Café Specials
+        </h2>
 
         {loading ? (
           <p className="text-center py-20 text-gray-600 text-lg">Loading...</p>
@@ -151,31 +212,29 @@ function CafeItems() {
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {filteredProducts
-              .map((product) => (
-                <Card
-                  key={product._id}
-                  shadow
-                  id="grocery"
-                  className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
-                >
-                  <Link to={`/product/${product?._id}`} key={product._id}>
-                    <Slider {...sliderSettings} className="rounded-lg">
-                      {product?.product_image?.map((imgUrl, idx) => (
-                        <div key={idx} className="w-full h-36 sm:h-56 lg:h-64">
-                          <img
-                            className="object-cover w-full h-full rounded-lg"
-                            src={imgUrl}
-                            alt={`Product ${idx + 1}`}
-                          />
-                        </div>
-                      ))}
-                    </Slider>
+            {filteredProducts.map((product) => (
+              <Card
+                key={product._id}
+                shadow
+                className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
+              >
+                <Link to={`/product/${product?._id}`}>
+                  <Slider {...sliderSettings} className="rounded-lg">
+                    {product?.product_image?.map((imgUrl, idx) => (
+                      <div key={idx} className="w-full h-36 sm:h-56 lg:h-64">
+                        <img
+                          className="object-cover w-full h-full rounded-lg"
+                          src={imgUrl}
+                          alt={`Product ${idx + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </Slider>
 
-                    <div className="pt-3">
+                  <div className="pt-3">
                     <div className="flex flex-col md:flex-row justify-between ">
                       <Typography className="font-semibold text-gray-800 text-sm sm:text-base ">
-                        {product?.product_name}
+                        {product?.product_name?.split("#")[0]}
                       </Typography>
                       <Typography className="text-xs sm:text-sm text-green-700 font-medium">
                         {product?.product_category}
@@ -206,30 +265,29 @@ function CafeItems() {
                       <Typography className="text-lg sm:text-xl text-red-600 font-bold">
                         ${product?.product_price}
                       </Typography>
-                      
                     </div>
-                    </div>
-                  </Link>
+                  </div>
+                </Link>
 
-                  <hr className="pt-1"/>
-                    <div className="pt-3 flex justify-center">
-                      <Button
-                          onClick={() => handleCart(product?._id)}
-                          color={product?.outOfStock?'red':'green'}
-                          disabled={product?.outOfStock}
-                          size="sm"
-                          className=""
-                        >
-                          {product?.outOfStock ? "Out of Stock" : <span className="font-semibold flex items-center gap-2 px-3">
-                            <ShoppingCart size={18} />
-                          Add</span>}
-                          
-                        </Button>
-                    </div>
-                    
-                </Card>
-
-              ))}
+                <hr className="pt-1" />
+                <div className="pt-3 flex justify-center">
+                  <Button
+                    onClick={() => handleCart(product?._id)}
+                    color={product?.outOfStock ? "red" : "green"}
+                    disabled={product?.outOfStock}
+                    size="sm"
+                  >
+                    {product?.outOfStock ? (
+                      "Out of Stock"
+                    ) : (
+                      <span className="font-semibold flex items-center gap-2 px-3">
+                        <ShoppingCart size={18} /> Add
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </Card>
+            ))}
           </div>
         )}
       </div>

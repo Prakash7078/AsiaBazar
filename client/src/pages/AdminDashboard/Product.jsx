@@ -20,6 +20,7 @@ function ProductForm() {
         quantity_measure:'',
         total_products:0,
         product_category: '',
+        cafe_category: '',
         outOfStock:false,
         product_description:'',
         product_images: [], // changed from single file to array
@@ -42,6 +43,7 @@ function ProductForm() {
               } catch (e) {
                 console.warn("Image parsing failed:", e);
               }
+              console.log("Selected Product:", selectedProduct);
     
               setProductData({
                 product_id: selectedProduct._id,
@@ -51,7 +53,8 @@ function ProductForm() {
                 quantity_measure: selectedProduct.quantity_measure,
                 total_products: selectedProduct.total_products,
                 outOfStock: selectedProduct.outOfStock,
-                product_category: selectedProduct.product_category,
+                product_category: selectedProduct?.product_category,
+                cafe_category: selectedProduct?.product_name?.split('#')[1],
                 product_description: selectedProduct?.product_description,
                 product_images: [],
                 existing_images: parsedImages || [],
@@ -62,7 +65,7 @@ function ProductForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append("product_name", productData.product_name);
+        formData.append("product_name", productData.product_name.split('#')[0]+'#'+productData.cafe_category);
         formData.append("product_price", productData.product_price === '' ? 0 : Number(productData.product_price));
         formData.append("product_size", productData.product_size === '' ? 0 : Number(productData.product_size));
         formData.append("quantity_measure", productData.quantity_measure);
@@ -75,6 +78,7 @@ function ProductForm() {
         productData.product_images.forEach((img, idx) => {
             formData.append("product_images", img); // backend should handle multiple files
         });
+        console.log("form_data",formData);
         if (productId) {
             formData.append("product_id", productData._id);
             await dispatch(updateProduct({formData,productId}));
@@ -161,15 +165,19 @@ function ProductForm() {
                             <Input
                                 color="brown"
                                 label='Product Name'
+                                required
                                 type='text'
                                 value={productData?.product_name}
+                                className='invalid:border-red-500'
                                 onChange={(e) => setProductData({ ...productData, product_name: e.target.value })}
                             />
 
                             <Input
                                 color="brown"
+                                required
                                 label='Price'
                                 type='number'
+                                className='invalid:border-red-500'
                                 value={productData?.product_price}
                                 onChange={(e) => setProductData({ ...productData, product_price: e.target.value })}
                             />
@@ -178,14 +186,17 @@ function ProductForm() {
                                 color="brown"
                                 label='Volume eg: 2lb,3oz'
                                 type='number'
+                                required
+                                className='invalid:border-red-500'
                                 placeholder='eg: 2lb,3oz'
                                 value={productData?.product_size}
                                 onChange={(e) => setProductData({ ...productData, product_size: e.target.value })}
                             />
 
                             <select
-                                className="border border-gray-400 rounded-md p-2 text-sm"
+                                className="border border-gray-400 rounded-md p-2 text-sm invalid:border-red-500"
                                 value={productData?.quantity_measure}
+                                required
                                 onChange={(e) => setProductData({ ...productData, quantity_measure: e.target.value })}
                             >
                                 <option value="">Select Quantity Measure</option>
@@ -207,8 +218,9 @@ function ProductForm() {
                             />
 
                             <select
-                                className="border border-gray-400 rounded-md p-2 text-sm"
+                                className="border border-gray-400 rounded-md p-2 text-sm invalid:border-red-500"
                                 value={productData?.product_category}
+                                required
                                 onChange={(e) => setProductData({ ...productData, product_category: e.target.value })}
                                 >
                                 <option value="">Select Category</option>
@@ -217,9 +229,24 @@ function ProductForm() {
                                 <option value="food">Food</option>
                                 <option value="meat">Meat</option>
                             </select>
+                            {productData?.product_category==='cafe' && <select
+                                className="border border-gray-400 rounded-md p-2 text-sm invalid:border-red-500"
+                                required
+                                value={productData?.cafe_category}
+                                onChange={(e) => setProductData({ ...productData, cafe_category: e.target.value })}
+                                >
+                                <option value="">Cafe Category</option>
+                                <option value="Appetizers">Appetizers</option>
+                                <option value="Deserts">Deserts</option>
+                                <option value="Drinks">Drinks & Juices</option>
+                                <option value="Shawarmas & Gros">Shawarmas & Gros</option>
+                                <option value="Specialities">Specialities</option>
+                            </select>}
+
                             <select
-                                className="border border-gray-400 rounded-md p-2 text-sm"
+                                className="border border-gray-400 rounded-md p-2 text-sm invalid:border-red-500"
                                 value={productData?.outOfStock}
+                                required
                                 onChange={(e) => setProductData({ ...productData, outOfStock: e.target.value })}
                                 >
                                 <option value="">Select Product</option>
