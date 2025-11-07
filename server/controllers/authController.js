@@ -106,7 +106,7 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
     }
   });
   const hash = bcrypt.hashSync(password);
-  console.log("hash", hash);
+  // console.log("hash", hash);
   await User.findByIdAndUpdate(id, { password: hash });
   return res
     .status(StatusCodes.OK)
@@ -123,7 +123,13 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
     expiresIn: "1d",
   });
   const message = `https://asiabazar.vercel.app/reset-password/${user._id}/${token}`;
-  await sendMail(user.email, message);
+  try{
+    await sendMail(user.email, message);
+  }catch(err){
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Error sending email" });
+  }
   return res.status(StatusCodes.OK).json({ message: "mail sent succesfully" });
 });
 
