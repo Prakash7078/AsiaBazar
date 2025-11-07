@@ -99,8 +99,8 @@ function Login(props) {
           </div>
 
           <div className="-ml-2.5 ">
-            <Link to="/passwordrequest">
-              <Checkbox label="Forget Password ?" onClick={value} />
+            <Link to="/passwordrequest" onClick={value}>
+              <Checkbox label="Forget Password ?"  />
             </Link>
           </div>
         </CardBody>

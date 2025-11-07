@@ -34,6 +34,7 @@ function Navbar() {
 
   const handleSignout = async () => {
     await dispatch(logoutUser());
+    window.location.reload();
     navigate("/");
   };
 

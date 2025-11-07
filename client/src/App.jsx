@@ -101,6 +101,10 @@ function App() {
           <Route path="/mycart" element={<CartPage />} />
           <Route path='/menu' element={<MenuSection />} />
           <Route path="/passwordrequest" element={<PasswordRequest />} />
+          <Route
+            path="/reset-password/:id/:token"
+            element={<ResetPassword />}
+          />          
           <Route path="/store" element={<Store/>} />
           <Route path="/cafe" element={<Cafe />} />
           <Route 
