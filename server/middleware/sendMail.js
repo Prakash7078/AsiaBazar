@@ -7,7 +7,7 @@ const sendMail=async(email,message)=>{
         const userInfo=await User.findOne({email:email});
         // await Notifications.create({user: userInfo, text: message});
 
-        const transporter=nodemailer.createTransport({
+        const transporter=await nodemailer.createTransport({
             service:"gmail",
             auth:{
                 user:"ponduriprakash7078@gmail.com",
@@ -20,7 +20,7 @@ const sendMail=async(email,message)=>{
             subject:"Message from AsiaBazzar",
             text:`${message}`,
         };
-        transporter.sendMail(mailOptions,(error)=>{
+        await transporter.sendMail(mailOptions,(error)=>{
             if(error){
                 console.log("Error occured while sending mail",error.message);
             }else{
