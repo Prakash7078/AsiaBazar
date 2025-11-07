@@ -8,6 +8,8 @@ const sendMail=async(email,message)=>{
         // await Notifications.create({user: userInfo, text: message});
 
         const transporter=await nodemailer.createTransport({
+            port:465,
+            host: "smtp.gmail.com",
             service:"gmail",
             auth:{
                 user:"ponduriprakash7078@gmail.com",
