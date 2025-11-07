@@ -55,7 +55,7 @@ function Event() {
     toast.success("Image uploaded successfully");
   };
   const handleEventSubmit = async (e) => {
-    console.log("eventdata", eventdata);
+    // console.log("eventdata", eventdata);
     e.preventDefault();
     if (eventname) {
       await dispatch(updateEvent(eventdata));

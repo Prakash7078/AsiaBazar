@@ -173,10 +173,10 @@ const Checkout = () => {
         redirect: "if_required", // This prevents automatic redirect for card payments
       });
 
-      console.log("result after payment", result);
+      // console.log("result after payment", result);
 
       if (result.error) {
-        console.log(result.error);
+        // console.log(result.error);
         toast.dismiss();
         toast.error(result.error.message);
         setLoading(false);
@@ -214,7 +214,7 @@ const Checkout = () => {
         navigate('/');
       }
     } catch (error) {
-      console.error("Payment error:", error);
+      console.error("Payment error:");
     } finally {
       setLoading(false);
     }

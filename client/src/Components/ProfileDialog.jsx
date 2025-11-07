@@ -13,7 +13,7 @@ function ProfileDialog({ rollno, handle }) {
         .then((data) => setUserInfo(data))
         .finally(setIsLoad(false));
       setUserInfo(user.data);
-      console.log("user", user.data);
+      // console.log("user", user.data);
     };
     fetchData();
   }, []);

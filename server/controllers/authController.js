@@ -7,13 +7,12 @@ const uploadImage = require("../middleware/uploadMiddleware");
 const dotenv = require("dotenv");
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/userModel");
-
+const {sendMail} = require("../middleware/sendMail");
 // Import the User model
 
 dotenv.config();
 
 const login = expressAsyncHandler(async (req, res) => {
-  console.log("login", req.body.data.email.toLowerCase());
   
   // Find user by email
   const user = await User.findOne({ 

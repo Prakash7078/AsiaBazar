@@ -10,12 +10,12 @@ const sendMail=async(email,message)=>{
         const transporter=nodemailer.createTransport({
             service:"gmail",
             auth:{
-                user:"vvitclubs7078@gmail.com",
+                user:"ponduriprakash7078@gmail.com",
                 pass:process.env.PASS,
             },
         });
         const mailOptions={
-            from:"vvitclubs7078@gmail.com",
+            from:"ponduriprakash7078@gmail.com",
             to:email,
             subject:"Message from AsiaBazzar",
             text:`${message}`,
@@ -25,7 +25,7 @@ const sendMail=async(email,message)=>{
                 console.log("Error occured while sending mail",error.message);
             }else{
                 console.log("email sent");
-                res.status(200).json({ message: "Email sent successfully from atoms" });
+                res.status(200).json({ message: "Email sent successfully from asiabazar" });
             }
         })
     } catch (err) {

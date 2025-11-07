@@ -40,7 +40,7 @@ export const resetPassword=createAsyncThunk(
 export const forgotPassword=createAsyncThunk(
   "api/forgotpassword",
   async({email})=>{
-    console.log("email",email);
+    // console.log("email",email);
     try{
       const res=await axios.post(`${BASE_URL}/api/auth/forgotpassword`,{email});
       return res.data;
@@ -74,7 +74,7 @@ export const signupUser = createAsyncThunk(
     try {
       // console.log("Payload in frontend : ", payload);
       const response = await axios.post(`${BASE_URL}/api/auth/signup`, payload);
-      console.log("response",response.data);
+      // console.log("response",response.data);
       return response.data;
     } catch (error) {
       console.log("error",error);

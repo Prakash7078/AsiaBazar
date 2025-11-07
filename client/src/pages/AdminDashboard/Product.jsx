@@ -32,7 +32,6 @@ function ProductForm() {
         toast.success(`${files.length} image(s) uploaded successfully`);
     };
     useEffect(() => {
-        console.log("Products in state:", productId);
         if (productId) {
             dispatch(getProducts());
             const selectedProduct = products.find((item) => item._id.toString() === productId);
@@ -41,9 +40,9 @@ function ProductForm() {
               try {
                 parsedImages = selectedProduct.product_image;
               } catch (e) {
-                console.warn("Image parsing failed:", e);
+                console.warn("Image parsing failed:");
               }
-              console.log("Selected Product:", selectedProduct);
+            //   console.log("Selected Product:", selectedProduct);
     
               setProductData({
                 product_id: selectedProduct._id,
@@ -78,7 +77,7 @@ function ProductForm() {
         productData.product_images.forEach((img, idx) => {
             formData.append("product_images", img); // backend should handle multiple files
         });
-        console.log("form_data",formData);
+        // console.log("form_data",formData);
         if (productId) {
             formData.append("product_id", productData._id);
             await dispatch(updateProduct({formData,productId}));

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 export const getProducts = createAsyncThunk("api/getProducts", async () => {
   try {
     const res = await axios.get(`${BASE_URL}/api/products/getProducts`);
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -18,7 +18,7 @@ export const getProducts = createAsyncThunk("api/getProducts", async () => {
 export const getStoreItems = createAsyncThunk("api/getStore", async () => {
   try {
     const res = await axios.get(`${BASE_URL}/api/products/getStore`);
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -28,7 +28,7 @@ export const getStoreItems = createAsyncThunk("api/getStore", async () => {
 export const getCafeItems = createAsyncThunk("api/getCafe", async () => {
   try {
     const res = await axios.get(`${BASE_URL}/api/products/getCafe`);
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -98,7 +98,7 @@ export const getCartItems=createAsyncThunk("api/getCartItems", async ({user_id})
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       }}
     );
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -111,7 +111,7 @@ export const deleteCartItem=createAsyncThunk("api/deleteCartItem", async ({user_
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       }}
     );
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (err) {
     console.log(err);
