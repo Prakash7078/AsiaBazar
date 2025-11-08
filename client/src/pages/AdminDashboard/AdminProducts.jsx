@@ -162,7 +162,7 @@ function AdminProducts() {
                   </td>
 
                   {/* Product Details */}
-                  <td className="p-4 font-medium">{item.product_name?.split("#")[0]}<br/><span className="text-sm text-gray-600">{`${item.product_name?.split("#")[1]? '#'+item.product_name?.split("#")[1]:''}`}</span></td>
+                  <td className="p-4 font-medium">{item.product_name?.split("#")[0]}<br/>{item.product_name?.split("#")[1] && <span className="text-sm text-gray-600">{`${'#'+item.product_name?.split("#")[1]}`}</span>}</td>
                   <td className="p-4">${item.product_price}</td>
                   <td className="p-4">
                     {item.product_size}

@@ -64,7 +64,8 @@ function ProductForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append("product_name", productData.product_name.split('#')[0]+'#'+productData.cafe_category);
+        console.log("productData cafecategory",productData?.cafe_category);
+        formData.append("product_name", productData.product_category==='cafe' ? productData.product_name.split('#')[0]+'#'+productData.cafe_category : productData.product_name.split('#')[0]);
         formData.append("product_price", productData.product_price === '' ? 0 : Number(productData.product_price));
         formData.append("product_size", productData.product_size === '' ? 0 : Number(productData.product_size));
         formData.append("quantity_measure", productData.quantity_measure);

@@ -133,7 +133,7 @@ function CartPage() {
           </button>
 
           <Link
-            to="/allitems"
+            to="/"
             className="block text-center text-green-600 hover:text-green-700 mt-4 font-medium"
           >
             Continue Shopping
