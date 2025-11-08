@@ -187,26 +187,31 @@ const Profile = () => {
                       alt={item?.product_name}
                       className="w-16 h-16 rounded-lg object-cover border"
                     />
+                    
+                    <div className='flex-1 items-center md:flex-row flex-col '>
 
                     {/* Product Info */}
-                    <div className="flex-1">
+                    <div className="">
                       <Typography className="font-medium text-gray-800">
                         {item?.product_name}
                       </Typography>
                       <Typography className="text-sm text-gray-500">
                         Qty: {item?.quantity}
                       </Typography>
+                     
+                    </div>
+                    <div className="text-right">
+                        <Typography className="font-medium text-gray-800">
+                          ${item?.total_price}
+                        </Typography>
+                        <Typography className="text-sm text-gray-500">
+                          ${item?.product?.product_price} {item?.product?.product_size}{item?.product?.quantity_measure}
+                        </Typography>
+                    </div>
                     </div>
 
-                    {/* Price */}
-                    <div className="text-right">
-                      <Typography className="font-medium text-gray-800">
-                        ${item?.total_price}
-                      </Typography>
-                      <Typography className="text-sm text-gray-500">
-                        ${item?.product?.price} {item?.product?.product_size}{item?.product?.quantity_measure}
-                      </Typography>
-                    </div>
+
+                    
                   </div>
                 );
               })}
