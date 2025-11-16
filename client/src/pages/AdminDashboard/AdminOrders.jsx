@@ -138,7 +138,10 @@ const AdminOrders = () => {
     processing: orders?.filter(o => o.order_status === 'processing').length,
     shipped: orders?.filter(o => o.order_status === 'shipped').length,
     delivered: orders?.filter(o => o.order_status === 'delivered').length,
-    totalRevenue: orders?.reduce((sum, order) => sum + parseFloat(order.total_amount), 0),
+    totalRevenue: orders.filter((item)=>item.payment_status==='succeeded').reduce(
+      (sum, order) => sum + (parseFloat(order.total_amount) || 0),
+      0
+    )
   };
 
   if (loading) {

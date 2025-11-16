@@ -39,8 +39,11 @@ const ProductSchema = new mongoose.Schema({
     outOfStock: { 
         type: Boolean, 
         default: false 
+    },
+    discount: {
+        type: Number,
+        default: 0
     }
-
 });
 
 const Product = mongoose.model('Product', ProductSchema);

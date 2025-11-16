@@ -42,7 +42,10 @@ const AdminPayments = () => {
   });
 
   const paymentStats = {
-    totalRevenue: filteredOrders?.reduce((sum, o) => sum + (o.total_amount || 0), 0).toFixed(2),
+    totalRevenue: filteredOrders?.filter((item)=>item.payment_status==='succeeded').reduce(
+      (sum, order) => sum + (parseFloat(order.total_amount) || 0),
+      0
+    ),
     pending: filteredOrders?.filter((o) => o.payment_status === 'pending').length,
     completed: filteredOrders?.filter((o) => o.payment_status === 'succeeded').length,
     failed: filteredOrders?.filter((o) => o.payment_status === 'failed').length,

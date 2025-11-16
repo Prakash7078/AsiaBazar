@@ -29,7 +29,7 @@ const AdminDashboard = () => {
 
   
 
-  const totalRevenue = orders.reduce(
+  const totalRevenue = orders.filter((item)=>item.payment_status==='succeeded').reduce(
     (sum, order) => sum + (parseFloat(order.total_amount) || 0),
     0
   );

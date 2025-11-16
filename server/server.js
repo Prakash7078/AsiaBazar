@@ -59,6 +59,10 @@ const port = process.env.PORT || 5001;
 const start = async () => {
   try {
     await connectDB();
+    // await Product.updateMany(
+    //   {}, // Empty filter to select all documents
+    //   { $set: { discount: 0 } } // Set the new field with a default value
+    // );
     app.listen(port, () => {
       console.log(`Server listening on port ${port}`);
     });
