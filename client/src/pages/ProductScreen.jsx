@@ -136,7 +136,7 @@ function ProductScreen() {
             No products found.
           </Typography>
         ) : (
-          <div className="overflow-x-auto pb-4">
+          <div className="overflow-x-auto pb-4 relative">
             <div className="flex gap-6 min-w-max">
               {products
                 ?.filter(
@@ -163,6 +163,12 @@ function ProductScreen() {
                         ))}
                       </Slider>
                     </Link>
+                    {/* Discount Ribbon */}
+                    {item?.discount > 0 && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md shadow">
+                          {item.discount}% OFF
+                        </div>
+                      )}
 
                     <div className="mt-4">
                       <Typography
@@ -188,9 +194,28 @@ function ProductScreen() {
                           ? item?.product_description?.slice(0, 50) + "..."
                           : item?.product_description}
                       </Typography>
-                      <Typography className="text-red-600 font-bold text-lg mt-3">
-                        ${item?.product_price}
-                      </Typography>
+                      {item?.discount>0 ? 
+                      <div className="mt-3">
+                        <div className="flex items-center gap-2">
+                          <Typography className="text-lg sm:text-xl text-red-500 font-bold">
+                            ${ (item?.product_price - (product?.product_price * product?.discount)/100).toFixed(2)}
+                          </Typography>
+                          <Typography className="text-sm sm:text-base  line-through">
+                            ${item?.product_price}
+                          </Typography>
+                          <Typography className="text-sm  font-medium">
+                            ({item?.discount}% OFF)
+                          </Typography>
+                        </div>
+                      
+                        
+                      </div>:
+                      <div>
+                          <Typography className="text-lg sm:text-xl text-red-500 font-bold mt-3">
+                            ${item?.product_price}
+                          </Typography>
+                      
+                      </div>}
                       <hr/>
                       <div className="pt-3 flex justify-center">
                       <Button

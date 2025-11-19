@@ -211,7 +211,7 @@ function CafeItems() {
             No items found.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 relative sm:grid-cols-3 lg:grid-cols-4 gap-5">
             {filteredProducts.map((product) => (
               <Card
                 key={product._id}
@@ -230,7 +230,12 @@ function CafeItems() {
                       </div>
                     ))}
                   </Slider>
-
+                    {/* Discount Ribbon */}
+                    {product?.discount > 0 && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md shadow">
+                          {product?.discount}% OFF
+                        </div>
+                      )}
                   <div className="pt-3">
                     <div className="flex flex-col md:flex-row justify-between ">
                       <Typography className="font-semibold text-gray-800 text-sm sm:text-base ">
@@ -261,11 +266,21 @@ function CafeItems() {
                         : product?.product_description}
                     </Typography>
 
-                    <div className="mt-3">
-                      <Typography className="text-lg sm:text-xl text-red-600 font-bold">
-                        ${product?.product_price}
-                      </Typography>
-                    </div>
+                    {product?.discount>0 ?<div className="flex items-center gap-2 mt-3">
+                        <Typography className="text-lg sm:text-xl text-red-500 font-bold">
+                          ${ (product?.product_price - (product?.product_price * product?.discount)/100).toFixed(2)}
+                        </Typography>
+                        <Typography className="text-sm sm:text-base  line-through">
+                          ${product?.product_price}
+                        </Typography>
+                        {/* <Typography className="text-sm  font-medium">
+                          ({item?.discount}% OFF)
+                        </Typography> */}
+                      </div>:<div>
+                        <Typography className="text-sm sm:text-base mt-3">
+                            ${product?.product_price}
+                          </Typography>
+                      </div>}
                   </div>
                 </Link>
 

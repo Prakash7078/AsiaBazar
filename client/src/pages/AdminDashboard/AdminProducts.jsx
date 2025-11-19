@@ -163,7 +163,25 @@ function AdminProducts() {
 
                   {/* Product Details */}
                   <td className="p-4 font-medium">{item.product_name?.split("#")[0]}<br/>{item.product_name?.split("#")[1] && <span className="text-sm text-gray-600">{`${'#'+item.product_name?.split("#")[1]}`}</span>}</td>
-                  <td className="p-4">${item.product_price}</td>
+                  <td className="flex p-4 justify-center items-center gap-2">
+                    {item?.discount>0 ?<div>
+                      <Typography className="text-md sm:text-md text-red-500 font-bold">
+                          ${ (item?.product_price - (item?.product_price * item?.discount)/100).toFixed(2)}
+                        </Typography>
+                        <Typography className="text-sm sm:text-base  line-through">
+                          ${item?.product_price}
+                        </Typography>
+                    </div>:<div>
+                      <Typography className="text-sm sm:text-base">
+                          ${item?.product_price}
+                        </Typography>
+                    </div>
+                    }
+                       
+                        {/* <Typography className="text-sm  font-medium">
+                          ({item?.discount}% OFF)
+                        </Typography> */}
+                  </td>
                   <td className="p-4">
                     {item.product_size}
                     {item.quantity_measure}

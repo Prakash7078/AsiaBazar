@@ -26,6 +26,8 @@ const addProduct = expressAsyncHandler(async (req, res) => {
     quantity_measure,
     total_products,
     product_description,
+    outOfStock,
+    discount,
   } = req.body;
 
   const imageUrls = [];
@@ -48,6 +50,8 @@ const addProduct = expressAsyncHandler(async (req, res) => {
     total_products: totalQty,
     product_category,
     product_description,
+    outOfStock,
+    discount,
     product_image: imageUrls,
   });
 
@@ -80,7 +84,8 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
     total_products,
     product_category,
     product_description,
-    outOfStock
+    outOfStock,
+    discount,
   } = req.body;
 
   const productId = req.params.id;
@@ -112,6 +117,7 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
     product_description,
     product_image: allImages,
     outOfStock,
+    discount,
   };
   console.log("Update Fields:", updateFields);
 

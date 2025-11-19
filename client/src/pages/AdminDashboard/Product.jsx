@@ -22,6 +22,7 @@ function ProductForm() {
         product_category: '',
         cafe_category: '',
         outOfStock:false,
+        discount:0,
         product_description:'',
         product_images: [], // changed from single file to array
     });
@@ -54,6 +55,7 @@ function ProductForm() {
                 outOfStock: selectedProduct.outOfStock,
                 product_category: selectedProduct?.product_category,
                 cafe_category: selectedProduct?.product_name?.split('#')[1],
+                discount: selectedProduct?.discount,
                 product_description: selectedProduct?.product_description,
                 product_images: [],
                 existing_images: parsedImages || [],
@@ -73,6 +75,7 @@ function ProductForm() {
         formData.append("product_category", productData.product_category);
         formData.append("outOfStock", productData.outOfStock);
         formData.append("product_description", productData.product_description);
+        formData.append("discount", productData.discount);
         formData.append("existing_images", JSON.stringify(productData.existing_images));
 
         productData.product_images.forEach((img, idx) => {
@@ -93,6 +96,7 @@ function ProductForm() {
                 total_products:0,
                 product_category: '',
                 outOfStock:'',
+                discount:0,
                 product_description:'',
                 product_images: []})
         }
@@ -211,7 +215,7 @@ function ProductForm() {
 
                             <Input
                                 color="brown"
-                                label='No of Items'
+                                label='Total No of Items'
                                 type='number'
                                 value={productData?.total_products}
                                 onChange={(e) => setProductData({ ...productData, total_products: e.target.value })}
@@ -254,6 +258,13 @@ function ProductForm() {
                                 <option value="true">outOfStock</option>
                                 
                             </select>
+                            <Input
+                                color="brown"
+                                label='Discount %'
+                                type='number'
+                                value={productData?.discount}
+                                onChange={(e) => setProductData({ ...productData, discount: e.target.value })}
+                            />
                             <Textarea rows={5} placeholder='description of product' value={productData?.product_description} onChange={(e)=>setProductData({...productData,product_description:e.target.value})}>
                             </Textarea>
 

@@ -235,14 +235,147 @@ function Categories() {
         </div>
 
       </div>
+      {/*discount products*/}
+      {/* ---------- RELATED PRODUCTS SECTION ---------- */}
+      <div className="mt-20 px-3 md:px-8 ">
+        {/* <h1 className="text-2xl font-bold underline mb-6">Discount Products</h1> */}
 
+        {filteredProducts?.length === 0 ? (
+          <Typography variant="paragraph" className="text-center">
+            No products found.
+          </Typography>
+        ) : (
+          <div className="overflow-x-auto pb-4 relative">
+            <div className="flex gap-6 min-w-max">
+              {filteredProducts.filter(product=>product.discount>0)
+                .map((item) => (
+                  <Card
+                    key={item?._id}
+                    shadow
+                    className="p-4 w-64 sm:w-72 hover:shadow-xl transition flex-shrink-0"
+                  >
+                    <Link to={`/product/${item?._id}`}>
+                      <Slider {...settings} className="product-slider">
+                        {item?.product_image?.map((imgUrl, idx) => (
+                          <div key={idx} className="w-full h-48 sm:h-56">
+                            <img
+                              className="object-cover w-full h-full rounded-md"
+                              src={imgUrl}
+                              alt={`Product Image ${idx + 1}`}
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    </Link>
+                    {/* Discount Ribbon */}
+                      {item?.discount > 0 && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md shadow">
+                          {item.discount}% OFF
+                        </div>
+                      )}
+
+                    <div className="mt-4">
+                      <Typography
+                        variant="h6"
+                        className="font-semibold text-gray-800 truncate"
+                      >
+                        {item?.product_name}
+                      </Typography>
+                      <Typography className="text-gray-500 text-sm">
+                        {item?.product_category}
+                      </Typography>
+                      <Typography className="text-gray-700 text-sm mt-1">
+                        {item?.product_size}
+                        {item?.quantity_measure}
+                      </Typography>
+                      {item?.total_products !== 0 && (
+                        <Typography className="text-gray-600 text-sm">
+                          Total Items: {item?.total_products}
+                        </Typography>
+                      )}
+                      <Typography className="text-gray-600 text-sm mt-2 line-clamp-2">
+                        {item?.product_description?.length > 50
+                          ? item?.product_description?.slice(0, 50) + "..."
+                          : item?.product_description}
+                      </Typography>
+                      <div className="mt-3">
+                      <div className="flex items-center gap-2">
+                        <Typography className="text-lg sm:text-xl text-red-500 font-bold">
+                          ${ (item?.product_price - (item?.product_price * item?.discount)/100).toFixed(2)}
+                        </Typography>
+                        <Typography className="text-sm sm:text-base  line-through">
+                          ${item?.product_price}
+                        </Typography>
+                        {/* <Typography className="text-sm  font-medium">
+                          ({item?.discount}% OFF)
+                        </Typography> */}
+                      </div>
+                     
+                      
+                    </div>
+                      <hr/>
+                      <div className="pt-3 flex justify-center">
+                      <Button
+                          onClick={() => handleCart(item?._id)}
+                          color={item?.outOfStock?'red':'green'}
+                          disabled={item?.outOfStock}
+                          size="sm"
+                          className=""
+                        >
+                        {item?.outOfStock ? "Out of Stock" : <span className="font-semibold flex items-center gap-2 px-3">
+                            <ShoppingCart size={18} />
+                          Add</span>}
+                          
+                        </Button>
+                    </div>
+                    </div>
+                  </Card>
+                ))}
+            </div>
+            
+          </div>
+        )}
+
+        {/* Optional Scroll Indicator */}
+        <div className="text-center text-gray-500 mt-3 text-sm">
+          Scroll ➡️ to view more
+        </div>
+
+        <style>{`
+          .product-slider .slick-prev {
+            left: 5px !important;
+            z-index: 1;
+          }
+          .product-slider .slick-next {
+            right: 5px !important;
+            z-index: 1;
+          }
+
+          /* Smooth horizontal scrolling */
+          .overflow-x-auto {
+            scroll-behavior: smooth;
+          }
+
+          /* Hide scrollbar for modern look */
+          .overflow-x-auto::-webkit-scrollbar {
+            height: 8px;
+          }
+          .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+          }
+          .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: #999;
+          }
+        `}</style>
+      </div>
       {/* Product Grid */}
       {loading ? (
         <div className="text-center py-20 text-lg font-medium text-gray-700">
           Loading...
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-3 md:px-8">
+        <div className="grid grid-cols-2 mt-20 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-3 md:px-8">
           {filteredProducts?.length === 0 ? (
             <Typography
               variant="paragraph"
@@ -251,13 +384,13 @@ function Categories() {
               No products found.
             </Typography>
           ) : (
-            filteredProducts
+            filteredProducts.filter(product=>product.discount===0)
               .map((product) => (
                 <Card
                   key={product._id}
                   shadow
                   id="grocery"
-                  className="p-3 hover:shadow-lg hover:scale-[1.02] transition-all bg-white rounded-xl"
+                  className="p-3 hover:shadow-lg  hover:scale-[1.02] transition-all bg-white rounded-xl"
                 >
                   <Link to={`/product/${product?._id}`} key={product._id}>
                     <Slider {...settings} className="rounded-lg">
@@ -302,8 +435,8 @@ function Categories() {
                         : product?.product_description}
                     </Typography>
 
-                    <div className="mt-3">
-                      <Typography className="text-lg sm:text-xl text-red-600 font-bold">
+                    <div>
+                      <Typography className="text-lg sm:text-xl text-red-500 font-bold mt-3">
                         ${product?.product_price}
                       </Typography>
                       
