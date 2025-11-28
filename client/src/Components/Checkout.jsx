@@ -24,7 +24,7 @@ const Checkout = () => {
   const [message, setMessage] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [credittax,setCredittax]=useState(0);
-
+  const [orderStatus,setOrderStatus]=useState("");
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const cartItems = useSelector((state) => state.product.cartItems);
@@ -76,7 +76,10 @@ const Checkout = () => {
     if(paymentMethod!=="CARD"){
       setCredittax(0);
     }
-  },[paymentMethod])
+    if(total<10){
+      setOrderStatus("Minimum order amount for delivery should be 10$");
+    }
+  },[paymentMethod,total])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -463,6 +466,9 @@ const Checkout = () => {
                 <div>
                   <h1 className="text-red-300">Credit card payments are temporarily unavailable. </h1>
                 </div>
+                <div>
+                  {orderStatus && <h1 className="text-red-300">{orderStatus}</h1>}
+                </div>
               </div>
               
             )}
@@ -490,7 +496,7 @@ const Checkout = () => {
               ) : (
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={orderStatus || loading }
                   className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   {loading ? "Processing..." : "Place Order"}

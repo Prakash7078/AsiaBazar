@@ -16,7 +16,7 @@ const uploadImage=async (folderName,file) => {
   
       const command =new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key:`${folderName}/${file.originalname}`,
+        Key:`${folderName}/${Date.now()}_${file.originalname}`,
         Body: file.buffer,
         ContentType: contentType,
       });
