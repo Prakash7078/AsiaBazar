@@ -14,10 +14,11 @@ const uploadImage=async (folderName,file) => {
   console.log("Uploading file:", file.originalname);
     try {
       const contentType = file.mimetype;
-  
+      const key = `${folderName}/${uuidv4()}_${file.originalname}`;
+
       const command =new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key:`${folderName}/${uuidv4()}_${file.originalname}`,
+        Key:key,
         Body: file.buffer,
         ContentType: contentType,
       });
