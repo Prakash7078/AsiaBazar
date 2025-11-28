@@ -36,8 +36,8 @@ const addProduct = expressAsyncHandler(async (req, res) => {
 
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
-      await uploadImage("asiabazar", file);
-      const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/asiabazar/${file.originalname}`;
+      const {url} = await uploadImage("asiabazar", file);
+      const imageUrl = url;
       imageUrls.push(imageUrl);
     }
   }
@@ -97,8 +97,8 @@ const updateProduct = expressAsyncHandler(async (req, res) => {
   // Handle new file uploads
   if (req.files && req.files.length > 0) {
     for (const file of req.files) {
-      await uploadImage("asiabazar", file);
-      const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/asiabazar/${file.originalname}`;
+      const { url }=await uploadImage("asiabazar", file);
+      const imageUrl = url;
       newImageUrls.push(imageUrl);
     }
   }

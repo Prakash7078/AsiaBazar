@@ -11,6 +11,7 @@ const s3Client = new S3Client({
   });
 
 const uploadImage=async (folderName,file) => {
+  console.log("Uploading file:", file.originalname);
     try {
       const contentType = file.mimetype;
   
@@ -22,8 +23,8 @@ const uploadImage=async (folderName,file) => {
       });
   
       const response = await s3Client.send(command);
-      console.log("File uploaded to S3:", response);
-    
+      const url = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
+      return { response, key, url };    
     } catch (error) {
       console.error("Failed to upload file to S3:", error);
     }
