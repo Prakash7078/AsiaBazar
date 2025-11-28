@@ -57,7 +57,7 @@ function CartPage() {
         <p className="text-gray-500 text-center text-lg">Your cart is empty.</p>
       ) : (
         <div className="space-y-6 mb-48  ">
-          {cartItems.map((item) => (
+          {cartItems?.map((item) => (
               <div
                 key={item?._id}
                 className="flex md:flex-row flex-col gap-6 items-center bg-white rounded-lg shadow-md p-4 border"
