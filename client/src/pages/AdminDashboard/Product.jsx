@@ -29,9 +29,13 @@ function ProductForm() {
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setProductData({ ...productData, product_images: files });
-        toast.success(`${files.length} image(s) uploaded successfully`);
+        setProductData(prev => ({
+            ...prev,
+            product_images: [...(prev.product_images || []), ...files],
+        }));
+        e.target.value = null; // allow picking same file again
     };
+
     useEffect(() => {
         if (productId) {
             dispatch(getProducts());
