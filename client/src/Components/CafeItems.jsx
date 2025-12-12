@@ -212,7 +212,7 @@ function CafeItems() {
           </p>
         ) : (
           <div className="grid grid-cols-2 relative sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {filteredProducts.map((product) => (
+            {filteredProducts?.map((product) => (
               <Card
                 key={product._id}
                 shadow

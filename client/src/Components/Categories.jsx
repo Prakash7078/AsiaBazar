@@ -247,7 +247,7 @@ function Categories() {
         ) : (
           <div className="overflow-x-auto pb-4 relative">
             <div className="flex gap-6 min-w-max">
-              {filteredProducts.filter(product=>product.discount>0)
+              {filteredProducts?.filter(product=>product?.discount>0)
                 .map((item) => (
                   <Card
                     key={item?._id}
@@ -384,10 +384,10 @@ function Categories() {
               No products found.
             </Typography>
           ) : (
-            filteredProducts.filter(product=>product.discount===0)
+            filteredProducts?.filter(product=>product?.discount===0)
               .map((product) => (
                 <Card
-                  key={product._id}
+                  key={product?._id}
                   shadow
                   id="grocery"
                   className="p-3 hover:shadow-lg  hover:scale-[1.02] transition-all bg-white rounded-xl"
