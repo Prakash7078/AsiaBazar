@@ -244,11 +244,14 @@ function ProductForm() {
                                 onChange={(e) => setProductData({ ...productData, cafe_category: e.target.value })}
                                 >
                                 <option value="">Cafe Category</option>
-                                <option value="Appetizers">Appetizers</option>
-                                <option value="Deserts">Deserts</option>
-                                <option value="Drinks">Drinks & Juices</option>
-                                <option value="Shawarmas & Gros">Shawarmas & Gros</option>
-                                <option value="Specialities">Specialities</option>
+                                <option value="NON VEG APPETIZERS">NON VEG APPETIZERS</option>
+                                <option value="VEG APPETIZERS">VEG APPETIZERS</option>
+                                <option value="RICE BOWLS(EACH)">RICE BOWLS(EACH)</option>
+                                <option value="GRAVIES(PER LB)">GRAVIES(PER LB)</option>
+                                <option value="DESERTS">DESERTS</option>
+                                <option value="CHAT CORNER SPECIALS">CHAT CORNER SPECIALS</option>
+                                <option value="DRINKS">DRINKS</option>
+                                <option value="BRUNCH BUFFET SPECIALS">BRUNCH BUFFET SPECIALS</option>
                             </select>}
 
                             <select

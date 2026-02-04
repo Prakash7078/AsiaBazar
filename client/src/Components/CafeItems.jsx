@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, FreeMode } from "swiper/modules";
+import 'swiper/css';
+
 import {
   addproducttoCart,
   getCafeItems,
@@ -24,24 +28,29 @@ function CafeItems() {
   const [index, setIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [open, setOpen] = useState(false);
-
+  
   const images = [
+    "/Images/samosachat.jpeg",
+    "/Images/panipuri.jpeg",
+    "/Images/chatspecials.jpeg",
     "/Images/chickenrice.jpeg",
     "/Images/cold_drinks.jpeg",
     "/Images/gulab.jpeg",
     "/Images/meals.jpeg",
-    "/Images/parata.jpeg",
     "/Images/rasa.jpeg",
     "/Images/sweets1.jpeg",
   ];
 
   const categories = [
     "All",
-    "Appetizers",
-    "Deserts",
-    "Drinks & Juices",
-    "Shawarmas & Gros",
-    "Specialities",
+    "NON VEG APPETIZERS",
+    "VEG APPETIZERS",
+    "RICE BOWLS(EACH)",
+    "GRAVIES(PER LB)",
+    "DESERTS",
+    "CHAT CORNER SPECIALS",
+    "DRINKS",
+    "BRUNCH BUFFET SPECIALS"
   ];
 
   useEffect(() => {
@@ -101,13 +110,13 @@ function CafeItems() {
   return (
     <div className="min-h-screen pb-16">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-14 bg-white/80 backdrop-blur-md rounded-3xl shadow-sm md:mt-24 mt-20 max-w-6xl mx-auto">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-10 px-8 py-6 md:py-4 bg-white/80 backdrop-blur-md md:rounded-3xl shadow-sm md:mt-24 mt-16 max-w-6xl mx-auto bg-gradient-to-r from-green-50 to-green-100">
         {/* Text Section */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
-          <h1 className="text-3xl md:text-5xl h-16 font-extrabold text-gray-800 leading-tight">
+          <h1 className="text-3xl md:text-4xl h-16 font-extrabold text-gray-800 leading-tight">
             Welcome to{" "}
             <TypeAnimation
-              sequence={["ASIA BAZAR", 2000, "CAFÉ", 2000]}
+              sequence={["ASIA BAZAAR", 2000, "CAFÉ", 2000]}
               speed={60}
               wrapper="span"
               repeat={Infinity}
@@ -129,7 +138,7 @@ function CafeItems() {
         </div>
 
         {/* Animated Image Section */}
-        <div className="relative z-0 w-48 h-48 md:w-64 md:h-64 flex justify-center items-center">
+        <div className="relative z-0 w-48 h-48 md:w-52 md:h-52 flex justify-center items-center">
           <AnimatePresence mode="wait">
             <motion.img
               key={index}
@@ -145,6 +154,38 @@ function CafeItems() {
           </AnimatePresence>
         </div>
       </div>
+      <div className="max-w-6xl mx-auto mt-12 md:mt-10">
+          <Swiper
+            modules={[Autoplay]}
+            slidesPerView={4}
+            spaceBetween={20}
+            loop={true}
+            speed={2500}          // fast slide transition
+            autoplay={{
+              delay: 1200,        // starts immediately after load
+              disableOnInteraction: false,
+            }}
+            grabCursor={true}
+            breakpoints={{
+              640: { slidesPerView: 3 },
+              768: { slidesPerView: 3 },
+              1024: { slidesPerView: 4 },
+            }}
+          >
+           {images.map((imgUrl, idx) => (
+            <SwiperSlide key={idx} className="!w-auto">
+              <img
+                src={imgUrl}
+                className="h-72 w-auto object-cover rounded-xl shadow-md"
+                alt={`slide-${idx}`}
+              />
+            </SwiperSlide>
+          ))}
+
+
+            
+          </Swiper>
+        </div>
 
       {/* ✅ Filter + Search Section */}
       <div className="mt-12 px-6 max-w-4xl mx-auto flex flex-col sm:flex-row-reverse items-center gap-4">

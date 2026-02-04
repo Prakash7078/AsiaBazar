@@ -36,7 +36,7 @@ function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Welcome to <span className="text-green-600">AsiaBazar</span>
+          Welcome to <span className="text-green-600">Asia Bazaar</span>
         </motion.h1>
 
         <motion.p

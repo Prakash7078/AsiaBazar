@@ -51,7 +51,7 @@ function Navbar() {
               className="w-16 h-12 rounded-md object-cover"
             />
             <h1 className="text-xl font-bold text-green-800 hidden sm:block">
-              Asia Bazar
+              Asia Bazaar
             </h1>
           </div>
         </Route>

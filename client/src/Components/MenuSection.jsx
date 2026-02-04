@@ -1,5 +1,5 @@
 import React from "react";
-import menu from "/Images/abm.jpg";
+import menu from "/Images/asiabazaar.jpg";
 
 const MenuSection = () => {
   return (
