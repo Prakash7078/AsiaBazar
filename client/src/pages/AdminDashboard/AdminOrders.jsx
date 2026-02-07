@@ -223,11 +223,13 @@ const AdminOrders = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="px-4 py-3 text-left">CallID</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Order Details</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Customer Info</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Address</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Date</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Total</th>
+                <th className="px-6 py-3 text-xs text-gray-500 uppercase">Order Type</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Status</th>
                 <th className="px-6 py-3 text-xs text-gray-500 uppercase">Payment</th>
                 {/* <th className="px-6 py-3 text-xs text-gray-500 uppercase">Actions</th> */}
@@ -237,6 +239,9 @@ const AdminOrders = () => {
               {filteredOrders?.map((order) => (
                 <React.Fragment key={order._id}>
                   <tr className="hover:bg-gray-50 ">
+                    <td className="px-6 py-4">
+                      {order.user?.name?.slice(0, 1) + order._id.slice(-2)}
+                    </td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => toggleOrderExpansion(order._id)}
@@ -262,6 +267,17 @@ const AdminOrders = () => {
                         minute: '2-digit',
                       })}</td>
                     <td className="px-6 py-4 font-medium">${parseFloat(order.total_amount).toFixed(2)}</td>
+                    <td className="px-6 py-4">
+                      {order.payment_method==="PICKUP" ? (
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                          Pickup
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                          Delivery
+                        </span>
+                      )}
+                    </td>
 
                     {/* Order Status */}
                     <td className="px-6 py-4">
@@ -314,7 +330,7 @@ const AdminOrders = () => {
                                 className="w-16 h-16 rounded-md object-cover"
                               />
                               <div>
-                                <div className="font-medium">{item.product_name}</div>
+                                <div className="font-medium">{item.product_name?.split("#")[0]}</div>
                                 <div className="text-xs text-gray-600">{item.product_category}</div>
                                 <div className="text-xs text-gray-500 mt-1">
                                   Qty: {item.quantity} {item.quantity_measure}

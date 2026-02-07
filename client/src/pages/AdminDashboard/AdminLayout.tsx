@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -21,21 +21,31 @@ import {
   Typography,
   IconButton,
 } from "@material-tailwind/react";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/authSlice';
+import { getAllOrders } from '../../redux/adminSlice';
 
 const AdminLayout = () => {
   const location = useLocation();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const dispatch=useDispatch();
   const toggleDrawer = () => setOpenDrawer(!openDrawer);
   const navigate=useNavigate();
+  const orders = useSelector((state) => state.admin.orders);
+  const dispatch = useDispatch();
+  useEffect(() => {
+      dispatch(getAllOrders());
+  }, [dispatch]);
+      // Count pending orders
+  const pendingOrdersCount = orders?.filter(
+    (order) => order?.order_status?.toLowerCase() === 'pending'
+  ).length || 0;
+  console.log("Pending Orders Count:", pendingOrdersCount);
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Add Product', href: '/admin/addProduct', icon: Package },
     { name: 'Users', href: '/admin/users', icon: Users },
-    { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
+    { name: 'Orders', href: '/admin/orders', icon: ShoppingCart, badge: pendingOrdersCount},
     { name: 'Payments', href: '/admin/payments', icon: CreditCard },
     { name: 'Reviews', href: '/admin/reviews', icon: Star }
   ];
@@ -69,7 +79,12 @@ const AdminLayout = () => {
                   <ListItemPrefix>
                     <item.icon className="h-5 w-5" />
                   </ListItemPrefix>
-                  {item.name}
+                  <span>{item.name}</span>
+                  {item?.badge > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {item?.badge}
+                    </span>
+                  )}
                 </ListItem>
               </Link>
             ))}
@@ -119,7 +134,12 @@ const AdminLayout = () => {
                 <ListItemPrefix>
                   <item.icon className="h-5 w-5" />
                 </ListItemPrefix>
-                {item.name}
+                <span>{item.name}</span>
+                {item?.badge > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {item?.badge}
+                    </span>
+                )}
               </ListItem>
             </Link>
           ))}

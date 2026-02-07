@@ -24,6 +24,7 @@ const addCustomerOrder = expressAsyncHandler(async(req,res)=>{
         paymentIntent,
         paymentStatus,
         totalAmount,
+        deliveryType,
     } = formData;
     
     // Combine shipping address details
@@ -50,6 +51,7 @@ const addCustomerOrder = expressAsyncHandler(async(req,res)=>{
             total_amount: totalAmount,
             payment_method: paymentIntent,
             payment_status: paymentStatus,
+            deliveryType: deliveryType,
             updated_mobile_no,
             shipping_address,
             items: orderItems, // Embedded order items

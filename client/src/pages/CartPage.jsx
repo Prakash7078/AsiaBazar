@@ -70,7 +70,7 @@ function CartPage() {
 
                 <div className="flex-1 space-y-2">
                   <p className="text-gray-600 text-sm">🛍️ Cart Item </p>
-                  <h2 className="text-xl font-bold text-gray-800">{item?.product.product_name}</h2>
+                  <h2 className="text-xl font-bold text-gray-800">{item?.product?.product_name?.split("#")[0]}</h2>
                   {/* <p className="text-sm text-gray-600">{item?.product.product_description}</p> */}
                   <p className="text-sm">
                     <span className="font-semibold">Category:</span> {item?.product.product_category}
@@ -115,7 +115,7 @@ function CartPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Tax</span>
-              <span className="font-medium">${(totalCartPrice()*0.01).toFixed(2)}</span>
+              <span className="font-medium">${(totalCartPrice()*0.07).toFixed(2)}</span>
             </div>
             <div className="border-t border-gray-200 pt-3">
               <div className="flex justify-between">
