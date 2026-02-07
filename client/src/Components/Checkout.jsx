@@ -368,13 +368,13 @@ const Checkout = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3  w-full">
         {/* Checkout Form */}
-        <div className="lg:col-span-2 mx-auto w-full">
+        <div className="lg:col-span-2 mx-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Step 1: Personal Information */}
             {currentStep === 1 && (
-              <div className="bg-white rounded-lg md:shadow-md md:p-6">
+              <div className="bg-white rounded-lg md:p-6">
                 <div className="flex items-center mb-6">
                   <User className="h-6 w-6 text-green-600 mr-2" />
                   <h2 className="md:text-xl font-bold">Personal Information</h2>

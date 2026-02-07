@@ -69,10 +69,10 @@ function ProductScreen() {
         <div className="w-full lg:w-1/2 space-y-6">
           <div>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
-              {product?.product_name}
+              {product?.product_name?.split("#")[0]}
             </h2>
             <p className="text-gray-500 text-sm sm:text-base mt-1">
-              Category: <span className="font-semibold">{product?.product_category}</span>
+              Category: <span className="font-semibold">{product?.product_category} {product?.product_name?.split("#")[1]? '#'+product?.product_name?.split("#")[1]:''}</span>
             </p>
           </div>
 
@@ -139,11 +139,18 @@ function ProductScreen() {
           <div className="overflow-x-auto pb-4 relative">
             <div className="flex gap-6 min-w-max">
               {products
-                ?.filter(
-                  (item) =>
-                    item.product_category?.toLowerCase() ===
-                    product?.product_category?.toLowerCase()
-                )
+                ?.filter((item) => {
+                  // If main product is in "cafe" category, filter by product_name containing '#DRINKS'
+                  if (product?.product_category?.toLowerCase() === "cafe") {
+                    return item.product_name?.toLowerCase().includes(product?.product_name?.split("#")[1]?.toLowerCase());
+                  } else {
+                    // Otherwise, filter by matching category
+                    return (
+                      item.product_category?.toLowerCase() ===
+                      product?.product_category?.toLowerCase()
+                    );
+                  }
+                })
                 .map((item) => (
                   <Card
                     key={item?._id}
@@ -175,7 +182,7 @@ function ProductScreen() {
                         variant="h6"
                         className="font-semibold text-gray-800 truncate"
                       >
-                        {item?.product_name}
+                        {item?.product_name?.split("#")[0]}
                       </Typography>
                       <Typography className="text-gray-500 text-sm">
                         {item?.product_category}
