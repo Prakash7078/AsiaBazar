@@ -239,8 +239,8 @@ const AdminOrders = () => {
               {filteredOrders?.map((order) => (
                 <React.Fragment key={order._id}>
                   <tr className="hover:bg-gray-50 ">
-                    <td className="px-6 py-4">
-                      {order.user?.name?.slice(0, 1) + order._id.slice(-2)}
+                    <td className="px-6 py-4 ">
+                      <span className="text-white bg-green-400 rounded-full p-2 font-bold">{order._id.slice(0,2)}</span>
                     </td>
                     <td className="px-6 py-4">
                       <button

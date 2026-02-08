@@ -144,10 +144,13 @@ const Profile = () => {
           <CardBody>
             {/* Order Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-              <div>
-                <Typography variant="h6" className="font-semibold text-gray-800">
-                  Order #{order?._id}
-                </Typography>
+              <div className=''>
+                <div className='flex items-center gap-2 '>
+                  <Typography className="text-white underline bg-green-400 rounded-full p-2 font-bold">{order._id.slice(0,2)}</Typography>
+                  <Typography variant="h6" className="font-semibold text-gray-800">
+                    Order #{order?._id}
+                  </Typography>
+                </div>
                 <Typography className="text-sm text-gray-500">
                   Placed on {new Date(order?.createdAt).toLocaleString('en-US', {
                         year: 'numeric',
