@@ -176,7 +176,7 @@ function CafeItems() {
             <SwiperSlide key={idx} className="!w-auto">
               <img
                 src={imgUrl}
-                className="h-72 w-auto object-cover rounded-xl shadow-md"
+                className="md:h-72 h-28 w-auto object-cover rounded-xl shadow-md"
                 alt={`slide-${idx}`}
               />
             </SwiperSlide>
@@ -307,18 +307,18 @@ function CafeItems() {
                         : product?.product_description}
                     </Typography>
 
-                    {product?.discount>0 ?<div className="flex items-center gap-2 mt-3">
+                    {product?.discount>0 ?<div className="flex items-center font-bold  gap-2 mt-3">
                         <Typography className="text-lg sm:text-xl text-red-500 font-bold">
                           ${ (product?.product_price - (product?.product_price * product?.discount)/100).toFixed(2)}
                         </Typography>
-                        <Typography className="text-sm sm:text-base  line-through">
+                        <Typography className="text-sm sm:text-base font-bold text-green-700 line-through">
                           ${product?.product_price}
                         </Typography>
                         {/* <Typography className="text-sm  font-medium">
                           ({item?.discount}% OFF)
                         </Typography> */}
                       </div>:<div>
-                        <Typography className="text-sm sm:text-base mt-3">
+                        <Typography className="text-sm font-bold sm:text-base mt-3 text-green-700">
                             ${product?.product_price}
                           </Typography>
                       </div>}
