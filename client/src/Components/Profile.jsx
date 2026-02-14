@@ -146,7 +146,7 @@ const Profile = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
               <div className=''>
                 <div className='flex items-center gap-2 '>
-                  <Typography className="text-white underline bg-green-400 rounded-full p-2 font-bold">{order._id.slice(0,2)}</Typography>
+                  <Typography className="text-white underline bg-green-400 rounded-full p-2 font-bold">{order?.updated_mobile_no?.slice(-3)}</Typography>
                   <Typography variant="h6" className="font-semibold text-gray-800">
                     Order #{order?._id}
                   </Typography>
