@@ -14,7 +14,7 @@ function Footer() {
                 className="mr-2 h-10 cursor-pointer rounded-sm"
               />
               <h2 className="text-sm font-semibold  uppercase">
-                AsiaBazar 
+                AsiaBazzar 
               </h2>
             </div>
           </div>
@@ -79,7 +79,7 @@ function Footer() {
         <hr className="my-6 border-secondary" />
         <div className="flex justify-between items-center">
           <span className="text-sm ">
-            &copy; {new Date().getFullYear()} AsiaBazar. All rights
+            &copy; {new Date().getFullYear()} AsiaBazzar. All rights
             reserved.
           </span>
           <div className="flex space-x-4">
