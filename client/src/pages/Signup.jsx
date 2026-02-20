@@ -5,6 +5,7 @@ import { signupUser } from "../redux/authSlice";
 import { Link } from 'react-router-dom';
 import { Button, Input, Typography } from '@material-tailwind/react';
 import { toast } from 'react-toastify';
+import { IoEyeOutline } from 'react-icons/io5';
 function Signup() {
     const[data,setData]=useState({
         name:"",
@@ -22,7 +23,11 @@ function Signup() {
     const dispatch = useDispatch();
 	const navigate = useNavigate();
     const userInfo = useSelector((state) => state.auth.userInfo);
-    
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 	const handleChange = (e) => {
         setData({ ...data, [e.target.name]: e.target.value });
         setError(''); // Clear any previous error when the user makes changes
@@ -64,14 +69,20 @@ function Signup() {
     },[navigate,userInfo]);
   return (
     <div className='flex-col flex justify-center items-center h-full w-full' >
-        <div className='border-2 shadow-lg flex flex-col items-center justify-center bg-white rounded-lg mt-32 pl-2 py-10'>
+        <div className='sm:border-2 md:shadow-lg flex flex-col items-center justify-center bg-white rounded-lg sm:mt-32 mt-20 pl-2 py-10'>
                 <Typography variant="h4" color="blue-gray">
                     Sign Up
                 </Typography>            
-                <form onSubmit={handleSignup} className='flex flex-col md:py-0 my-3 gap-6 sm:px-10 sm:mx-5 mx-10 px-0'>
+                <form onSubmit={handleSignup} className='flex  border-collapse flex-col md:py-0 my-3 gap-6 sm:px-10 sm:mx-5 mx-10 px-0'>
                     <Input size="lg" required label="Name" name="name" value={data.name}onChange={handleChange}/>
                     <Input size="lg" required label="Email" name="email" value={data.email} onChange={handleChange}/>
-                    <Input type="password" required size="lg" label="Password" value={data.password} name="password" onChange={handleChange}/>
+                    <div className="flex items-center border-2 border-gray-300 rounded-md px-2">
+                        <Input  required size="lg" label="Password" type={showPassword ? "text" : "password"} value={data.password} name="password" onChange={handleChange} className='border-none'/>
+                        <IoEyeOutline
+                                    onClick={togglePasswordVisibility}
+                                    className="cursor-pointer ml-2"
+                                    />
+                    </div>
                     <textarea 
                         required
                         id="address" 
