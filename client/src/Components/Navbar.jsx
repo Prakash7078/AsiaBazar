@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ab from "/Images/asiabazar.png";
+import ab from "/Images/asiabazzarlogo.png";
 import { TiThMenu } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
 import { IoPersonCircleOutline } from "react-icons/io5";
@@ -48,11 +48,11 @@ function Navbar() {
             <img
               src={ab}
               alt="logo"
-              className="w-16 h-12 rounded-md object-cover"
+              className="w-16 sm:w-24 h-12 rounded-md object-cover"
             />
-            <h1 className="text-xl font-bold text-green-800 hidden sm:block">
+            {/* <h1 className="text-xl font-bold text-green-800 hidden sm:block">
               Asia Bazaar
-            </h1>
+            </h1> */}
           </div>
         </Route>
 
