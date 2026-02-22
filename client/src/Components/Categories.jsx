@@ -11,7 +11,7 @@ import { TypeAnimation } from "react-type-animation";
 import { ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link as ScrollLink } from "react-scroll";
-
+import data from '../data.js';
 function Categories() {
   const dispatch = useDispatch();
   const [selectedCategory, setSelectcategory] = useState("");
@@ -19,9 +19,6 @@ function Categories() {
   const { storeItems, loading } = useSelector((state) => state.product);
   const [filters, setFilters] = useState({
     name: "",
-    price: "",
-    quantity: "",
-    total: "",
     category: selectedCategory,
   });
   const navigate = useNavigate();
@@ -40,11 +37,6 @@ function Categories() {
   const filteredProducts = storeItems?.filter((item) => {
     return (
       item.product_name.toLowerCase().includes(filters.name.toLowerCase()) &&
-      item.product_price.toString().includes(filters.price) &&
-      `${item.product_size}${item.quantity_measure}`
-        .toLowerCase()
-        .includes(filters.quantity.toLowerCase()) &&
-      item.total_products.toString().includes(filters.total) &&
       item.product_category.toLowerCase().includes(filters.category.toLowerCase())
     );
   });
@@ -168,7 +160,7 @@ function Categories() {
       {/* Filters */}
       <div className="pt-10 mx-auto mb-8 px-4 max-w-6xl ">
         <h1 className="mb-10 ml-2 font-bold text-3xl">Fresh Items</h1>
-        <div className="flex flex-col md:flex-row  items-center justify-center gap-4 bg-gray-50 p-4 rounded-xl shadow-sm">
+        <div className="flex flex-col md:flex-row  items-center justify-center gap-4 bg-green-300 p-4 rounded-xl shadow-sm">
           <Input
             label="Search Name"
             name="name"
@@ -177,61 +169,20 @@ function Categories() {
             variant="outlined"
             size="md"
             color="green"
-            className="bg-white w-full sm:w-48"
+            className="bg-white w-full "
           />
+          <select className="rounded-md w-full sm:w-52" name="category" onClick={(e)=>{handleFilterChange(e)}}>
+            <option  value="">All</option>
+            {data?.categories?.map((item)=>
+              <div key={item?.id}>
+                <option value={item?.name}>{item?.name}</option>
+              </div>
+            )}
+          </select>
 
-          <Input
-            label="Search Price"
-            name="price"
-            value={filters.price}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
+          
 
-          <Input
-            label="Search Quantity"
-            name="quantity"
-            value={filters.quantity}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Input
-            label="Search Total"
-            name="total"
-            value={filters.total}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Input
-            label="Search Category"
-            name="category"
-            value={filters.category}
-            onChange={handleFilterChange}
-            variant="outlined"
-            size="md"
-            color="green"
-            className="bg-white w-full sm:w-48"
-          />
-
-          <Button
-            onClick={() => setSelectcategory("")}
-            color="red"
-            size="md"
-            className="w-full sm:w-32 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-          >
-            All
-          </Button>
+          
         </div>
 
       </div>

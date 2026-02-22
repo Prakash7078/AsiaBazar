@@ -1,6 +1,6 @@
 import {AiFillInstagram} from 'react-icons/ai';
 import {BsTwitter,BsBrowserChrome} from 'react-icons/bs';
-import ab from '/Images/asiabazar.png'
+import ab from "/Images/asiabazzarlogo.png";
 function Footer() {
   return (
     <footer className=" bg-gradient-to-br from-green-50 via-white to-green-50">
