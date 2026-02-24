@@ -23,7 +23,7 @@ const sendMail = async (email, message) => {
             from: "ponduriprakash7078@gmail.com",
             to: email,
             subject: "Message from AsiaBazzar",
-            text: `${message}`,
+            html: message,
         };
 
         // 3. Use the Promise-based version of sendMail (Remove the callback)

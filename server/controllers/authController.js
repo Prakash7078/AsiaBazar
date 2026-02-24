@@ -122,7 +122,60 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  const message = `https://asiabazar.vercel.app/reset-password/${user._id}/${token}`;
+  const message = `
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; margin: 0;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        
+        <!-- Header -->
+        <div style="background-color: #16a34a; padding: 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 26px;">🛒 Asia Bazzar</h1>
+          <p style="color: #dcfce7; margin: 6px 0 0;">Password Reset Request</p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding: 30px;">
+          <h2 style="color: #1f2937;">Forgot your password? 🔐</h2>
+          <p style="color: #6b7280; font-size: 15px;">
+            We received a request to reset your password. Click the button below to set a new one.
+          </p>
+
+          <!-- Reset Button -->
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://asiabazar.vercel.app/reset-password/${user._id}/${token}"
+              style="background-color: #16a34a; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold; display: inline-block;">
+              Reset My Password
+            </a>
+          </div>
+
+          <!-- Warning Box -->
+          <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <p style="margin: 0; color: #991b1b; font-size: 14px;">
+              ⚠️ This link will expire in <strong>15 minutes</strong>. If you didn't request a password reset, please ignore this email — your account is safe.
+            </p>
+          </div>
+
+          <!-- Fallback link -->
+          <p style="color: #9ca3af; font-size: 13px;">
+            If the button doesn't work, copy and paste this link into your browser:
+            <br/>
+            <a href="https://asiabazar.vercel.app/reset-password/${user._id}/${token}" 
+              style="color: #16a34a; word-break: break-all;">
+              https://asiabazar.vercel.app/reset-password/${user._id}/${token}
+            </a>
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+          <p style="color: #9ca3af; font-size: 13px; margin: 0;">© 2025 Asia Bazzar. All rights reserved.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+    `;
   try{
     await sendMail(user.email, message);
   }catch(err){
