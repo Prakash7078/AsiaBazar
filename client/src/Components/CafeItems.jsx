@@ -283,6 +283,22 @@ function CafeItems() {
           <p className="mt-4 text-gray-600 md:text-lg max-w-md">
             Experience freshly cooked meals, drinks, and sweets — crafted with
             love and delivered with care.
+
+            <span className="mt-4 flex items-center gap-2 text-amber-700 font-semibold text-base">
+              <span className="text-lg">🕓</span>
+              Open daily 4:00 PM – 9:30 PM
+            </span>
+
+            <span className="mt-3 flex flex-wrap gap-2">
+              {["Friday", "Saturday", "Sunday", "Monday"].map((day) => (
+                <span
+                  key={day}
+                  className="px-3 py-1 text-sm font-medium rounded-full bg-amber-50 text-amber-800 border border-amber-200"
+                >
+                  {day}
+                </span>
+              ))}
+            </span>
           </p>
 
           <Button
