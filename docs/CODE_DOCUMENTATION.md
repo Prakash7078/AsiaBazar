@@ -430,29 +430,9 @@ npm run build
 
 ---
 
-## 9. Known Gaps and Code Notes
 
-- `Contact.jsx` posts to `/api/msgs/send`, but this route is not present in current backend routes.
-- Admin reviews page is mock-data based (`client/src/data/mockData.ts`), not database-driven.
-- `addAdmin` thunk exists in frontend but corresponding active backend route is commented out.
-- Stripe publishable key is hardcoded in frontend app config (`App.jsx`) in current state.
-- Some pages still contain legacy/commented code sections, which can be cleaned in future refactor.
 
----
-
-## 10. Suggested Refactor Roadmap
-
-1. Move all API keys/URLs to env variables and remove hardcoded secrets.
-2. Implement real review CRUD backend and connect AdminReviews.
-3. Add tests:
-- unit tests for slices/controllers
-- integration tests for auth/cart/order APIs
-4. Add standardized API error response contract.
-5. Add role-based middleware for stricter admin-only backend routes.
-
----
-
-## 11. Quick Module-to-File Mapping
+## 9. Quick Module-to-File Mapping
 
 - Routing shell: `client/src/App.jsx`
 - Customer catalog: `client/src/Components/Categories.jsx`, `client/src/Components/CafeItems.jsx`

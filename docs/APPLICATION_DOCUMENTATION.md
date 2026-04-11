@@ -279,10 +279,3 @@ This project solves that by delivering:
 
 ---
 
-## 12. Presentation-Ready Summary (Use This in Viva)
-
-This project is a full-stack ecommerce platform built for a real grocery + cafe workflow.  
-Customers can register, browse products, apply filters, manage cart, and complete checkout with pickup/delivery and card or cash options.  
-Admins can manage products, monitor orders, update order/payment status, and track store operations through a dedicated dashboard.  
-The system uses React + Redux on the frontend, Express + MongoDB on the backend, Stripe for payments, AWS S3 for image storage, and Nodemailer for email workflows.  
-Overall, the application demonstrates complete ecommerce lifecycle implementation with practical business features and deployment-ready architecture.
