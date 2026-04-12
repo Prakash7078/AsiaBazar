@@ -105,7 +105,7 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
         .json({ message: "Error with token" });
     }
   });
-  const hash = bcrypt.hashSync(password);
+  const hash = bcrypt.hashSync(password, 10);
   // console.log("hash", hash);
   await User.findByIdAndUpdate(id, { password: hash });
   return res
@@ -113,7 +113,13 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
     .json({ message: "password updated succesfully..." });
 });
 const forgotPassword = expressAsyncHandler(async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
+  const email = req.body?.email?.toLowerCase?.().trim?.();
+  if (!email) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Email is required" });
+  }
+  const user = await User.findOne({ email });
   if (!user) {
     return res
       .status(StatusCodes.NOT_FOUND)
@@ -181,7 +187,7 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
   }catch(err){
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "Error sending email" });
+      .json({ message: err.message || "Error sending email" });
   }
   return res.status(StatusCodes.OK).json({ message: "mail sent succesfully" });
 });

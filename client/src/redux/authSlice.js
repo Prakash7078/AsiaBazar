@@ -28,24 +28,28 @@ export const loginUser = createAsyncThunk(
 );
 export const resetPassword=createAsyncThunk(
   "api/resetpassword",
-  async({password,id,token})=>{
+  async({password,id,token},{ rejectWithValue })=>{
     try{
       const res=await axios.patch(`${BASE_URL}/api/auth/resetpassword/${id}/${token}`,{password});
       return res.data;
     }catch(err){
-      console.log(err.message);
+      return rejectWithValue(
+        err?.response?.data || { message: err.message || "Reset password failed" }
+      );
     }
   }
 )
 export const forgotPassword=createAsyncThunk(
   "api/forgotpassword",
-  async({email})=>{
+  async({email},{ rejectWithValue })=>{
     // console.log("email",email);
     try{
       const res=await axios.post(`${BASE_URL}/api/auth/forgotpassword`,{email});
       return res.data;
     }catch(err){
-      console.log(err.message);
+      return rejectWithValue(
+        err?.response?.data || { message: err.message || "Forgot password request failed" }
+      );
     }
   }
 )
@@ -152,7 +156,7 @@ const authSlice = createSlice({
       })
       .addCase(forgotPassword.rejected, (state, action) => {
         state.loading = false;
-        const {message} = action.payload;
+        const message = action.payload?.message || action.error?.message || "Forgot password request failed";
         toast.error(message);
       });
     builder
@@ -167,7 +171,7 @@ const authSlice = createSlice({
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
-        const {message} = action.payload;
+        const message = action.payload?.message || action.error?.message || "Reset password failed";
         toast.error(message);
       });
 
