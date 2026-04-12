@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 
 const sendMail = async (email, message) => {
     try {
+        const email_from=process.env.EMAIL_FROM;
         // 1. Fetch user info
         const userInfo = await User.findOne({ email: email });
 
@@ -14,13 +15,13 @@ const sendMail = async (email, message) => {
             port: 465,
             secure: true, // Use true for port 465
             auth: {
-                user: "ponduriprakash7078@gmail.com",
+                user: email_from,
                 pass: process.env.PASS, // Ensure this is set in Vercel Dashboard
             },
         });
 
         const mailOptions = {
-            from: "ponduriprakash7078@gmail.com",
+            from: email_from,
             to: email,
             subject: "Message from AsiaBazzar",
             html: message,
