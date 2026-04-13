@@ -1,34 +1,34 @@
 const nodemailer = require("nodemailer");
-const User = require("../models/userModel");
-
+const dotenv=require('dotenv');
+dotenv.config();
 const sendMail = async (email, message) => {
     try {
-        const email_from=process.env.EMAIL_FROM;
-        // 1. Fetch user info
-        const userInfo = await User.findOne({ email: email });
+        const smtpUser = process.env.EMAIL_FROM;
+        const smtpPass = process.env.PASS;
 
-        // 2. Create a transporter 
-        // Note: 'service: gmail' and 'host' together are redundant, 
-        // but keeping it explicit for stability.
+        if (!smtpUser || !smtpPass) {
+            throw new Error(
+                "SMTP credentials are missing. Set SMTP_USER (or EMAIL_FROM) and SMTP_PASS (or EMAIL_PASS/PASS)."
+            );
+        }
+
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
-            secure: true, // Use true for port 465
+            secure: true,
             auth: {
-                user: email_from,
-                pass: process.env.PASS, // Ensure this is set in Vercel Dashboard
+                user: smtpUser,
+                pass: smtpPass,
             },
         });
 
         const mailOptions = {
-            from: email_from,
+            from: smtpUser,
             to: email,
             subject: "Message from AsiaBazzar",
             html: message,
         };
 
-        // 3. Use the Promise-based version of sendMail (Remove the callback)
-        // Vercel requires 'await' to resolve before the function finishes.
         const info = await transporter.sendMail(mailOptions);
         
         console.log("Email sent successfully:", info.messageId);

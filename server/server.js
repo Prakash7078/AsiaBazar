@@ -8,10 +8,9 @@ const productRouter=require('./routes/productRoutes');
 const connectDB=require('./db/connectDB');
 const Product = require('./models/productModel');
 const app = express();
+dotenv.config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
-
-dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
@@ -72,4 +71,3 @@ const start = async () => {
 };
 
 start();
-

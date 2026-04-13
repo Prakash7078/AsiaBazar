@@ -395,7 +395,8 @@ VVIT-Clubs-main/
 - `MONGODB_URL`
 - `JWT_SECRET`
 - `STRIPE_SECRET`
-- `PASS` (SMTP app password)
+- `SMTP_USER` (preferred SMTP sender email; fallback: `EMAIL_FROM`)
+- `SMTP_PASS` (preferred SMTP app password; fallback: `EMAIL_PASS` or `PASS`)
 - `AWS_ACCOUNT_REGION`
 - `AWS_ACCOUNT_ACCESS_KEY`
 - `AWS_ACCOUNT_SECRET_ACCESS_KEY`
