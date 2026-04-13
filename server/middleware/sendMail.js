@@ -3,7 +3,7 @@ const dotenv=require('dotenv');
 dotenv.config();
 const sendMail = async (email, message) => {
     try {
-        const smtpUser = process.env.EMAIL_FROM;
+        const smtpUser = process.env.EMAIL_FROM || 'ponduriprakash7078@gmail.com';
         const smtpPass = process.env.PASS;
 
         if (!smtpUser || !smtpPass) {
