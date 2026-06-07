@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
@@ -17,11 +17,12 @@ import "slick-carousel/slick/slick-theme.css";
 import { TypeAnimation } from "react-type-animation";
 import { ShoppingCart, ChevronDown, SlidersHorizontal, X, Search, CheckCircle2, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getRecommendedProducts, smartFilterProducts } from "../utils/smartProductSearch";
 
 function CafeItems() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { cafeItems, loading } = useSelector((state) => state.product);
+  const { cafeItems, cartItems, loading } = useSelector((state) => state.product);
   const userInfo = useSelector((state) => state.auth.userInfo);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -85,19 +86,22 @@ function CafeItems() {
     await dispatch(getCartItems({ user_id: userInfo._id }));
   };
 
-  // filtering by name + category + new filters
-  const filteredProducts = cafeItems?.filter((item) => {
-    const matchSearch = item.product_name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchCategory =
-      selectedCategory === "All" ||
-      item.product_name?.split('#')[1].toLowerCase()===(selectedCategory.toLowerCase());
-    const matchDiscount = !onlyDiscount || item.discount > 0;
-    const matchInStock = !onlyInStock || !item.outOfStock;
-    const matchOutOfStock = !onlyOutOfStock || item.outOfStock;
-    return matchSearch && matchCategory && matchDiscount && matchInStock && matchOutOfStock;
-  });
+  const filteredProducts = useMemo(() => smartFilterProducts(cafeItems, {
+    query: searchTerm,
+    category: selectedCategory,
+    categoryMatcher: (product, category) =>
+      category === "All" ||
+      product.product_name?.split("#")?.[1]?.toLowerCase() === category.toLowerCase(),
+    onlyDiscount,
+    onlyInStock,
+    onlyOutOfStock,
+  }), [cafeItems, onlyDiscount, onlyInStock, onlyOutOfStock, searchTerm, selectedCategory]);
+
+  const recommendedProducts = useMemo(() => getRecommendedProducts(cafeItems, {
+    cartItems,
+    category: "cafe",
+    limit: 5,
+  }), [cafeItems, cartItems]);
 
   const variants = {
     initial: { z: -200, opacity: 0, scale: 0.9 },
@@ -172,7 +176,7 @@ function CafeItems() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder='Try "spicy chat" or "drinks under $5"'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50"
@@ -396,6 +400,56 @@ function CafeItems() {
                 )}
               </button>
             </div>
+
+            {recommendedProducts.length > 0 && (
+              <div className="mb-10 rounded-2xl bg-gradient-to-r from-amber-50 to-green-50 border border-amber-100 p-4">
+                <div className="mb-4">
+                  <h2 className="font-bold text-xl text-gray-800">✨ Smart Café Picks</h2>
+                  <p className="text-sm text-gray-500">Picked from available café items, deals, and your cart context.</p>
+                </div>
+                <div className="overflow-x-auto pb-3">
+                  <div className="flex gap-5 min-w-max">
+                    {recommendedProducts.map((item) => (
+                      <Card
+                        key={item?._id}
+                        shadow
+                        className="p-4 w-56 sm:w-64 hover:shadow-xl transition flex-shrink-0 bg-white"
+                      >
+                        <Link to={`/product/${item?._id}`}>
+                          <img
+                            className="object-cover w-full h-36 rounded-md"
+                            src={item?.product_image?.[0]}
+                            alt={item?.product_name}
+                          />
+                          <div className="mt-3">
+                            <Typography className="font-semibold text-gray-800 truncate">
+                              {item?.product_name?.split("#")?.[0]}
+                            </Typography>
+                            <Typography className="text-xs text-green-700 font-medium">
+                              {item?.product_name?.split("#")?.[1] || item?.product_category}
+                            </Typography>
+                            <Typography className="text-lg text-red-500 font-bold mt-2">
+                              ${item?.discount > 0
+                                ? (item?.product_price - (item?.product_price * item?.discount) / 100).toFixed(2)
+                                : item?.product_price}
+                            </Typography>
+                          </div>
+                        </Link>
+                        <Button
+                          onClick={() => handleCart(item?._id)}
+                          color={item?.outOfStock ? "red" : "green"}
+                          disabled={item?.outOfStock}
+                          size="sm"
+                          className="mt-3 w-full"
+                        >
+                          {item?.outOfStock ? "Out of Stock" : "Add"}
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Product Grid */}
             {loading ? (

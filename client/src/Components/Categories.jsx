@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addproducttoCart, getCartItems, getStoreItems } from "../redux/productSlice";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
@@ -12,12 +12,13 @@ import { ShoppingCart, SlidersHorizontal, X, Search, CheckCircle2, XCircle } fro
 import { motion, AnimatePresence } from "framer-motion";
 import { Link as ScrollLink } from "react-scroll";
 import data from '../data.js';
+import { getRecommendedProducts, smartFilterProducts } from "../utils/smartProductSearch";
 
 function Categories() {
   const dispatch = useDispatch();
   const [selectedCategory, setSelectcategory] = useState("");
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const { storeItems, loading } = useSelector((state) => state.product);
+  const { storeItems, cartItems, loading } = useSelector((state) => state.product);
   const [filters, setFilters] = useState({
     name: "",
     category: selectedCategory,
@@ -42,14 +43,19 @@ function Categories() {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const filteredProducts = storeItems?.filter((item) => {
-    const matchName = item.product_name.toLowerCase().includes(filters.name.toLowerCase());
-    const matchCategory = item.product_category.toLowerCase().includes(filters.category.toLowerCase());
-    const matchDiscount = !onlyDiscount || item.discount > 0;
-    const matchInStock = !onlyInStock || !item.outOfStock;
-    const matchOutOfStock = !onlyOutOfStock || item.outOfStock;
-    return matchName && matchCategory && matchDiscount && matchInStock && matchOutOfStock;
-  });
+  const filteredProducts = useMemo(() => smartFilterProducts(storeItems, {
+    query: filters.name,
+    category: filters.category,
+    onlyDiscount,
+    onlyInStock,
+    onlyOutOfStock,
+  }), [filters.name, filters.category, onlyDiscount, onlyInStock, onlyOutOfStock, storeItems]);
+
+  const recommendedProducts = useMemo(() => getRecommendedProducts(storeItems, {
+    cartItems,
+    category: filters.category,
+    limit: 5,
+  }), [cartItems, filters.category, storeItems]);
 
   const handleCart = async (productId) => {
     if (!userInfo) {
@@ -169,7 +175,7 @@ function Categories() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder='Try "spicy snacks under $5"'
             name="name"
             value={filters.name}
             onChange={handleFilterChange}
@@ -363,6 +369,58 @@ function Categories() {
                 )}
               </button>
             </div>
+
+            {recommendedProducts.length > 0 && (
+              <div className="mb-12 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="font-bold text-xl text-gray-800">✨ Smart Picks For You</h2>
+                    <p className="text-sm text-gray-500">Based on your cart, category, discounts, and availability.</p>
+                  </div>
+                </div>
+                <div className="overflow-x-auto pb-3">
+                  <div className="flex gap-5 min-w-max">
+                    {recommendedProducts.map((item) => (
+                      <Card
+                        key={item?._id}
+                        shadow
+                        className="p-4 w-56 sm:w-64 hover:shadow-xl transition flex-shrink-0 bg-white"
+                      >
+                        <Link to={`/product/${item?._id}`}>
+                          <img
+                            className="object-cover w-full h-36 rounded-md"
+                            src={item?.product_image?.[0]}
+                            alt={item?.product_name}
+                          />
+                          <div className="mt-3">
+                            <Typography className="font-semibold text-gray-800 truncate">
+                              {item?.product_name}
+                            </Typography>
+                            <Typography className="text-xs text-green-700 font-medium">
+                              {item?.product_category}
+                            </Typography>
+                            <Typography className="text-lg text-red-500 font-bold mt-2">
+                              ${item?.discount > 0
+                                ? (item?.product_price - (item?.product_price * item?.discount) / 100).toFixed(2)
+                                : item?.product_price}
+                            </Typography>
+                          </div>
+                        </Link>
+                        <Button
+                          onClick={() => handleCart(item?._id)}
+                          color={item?.outOfStock ? "red" : "green"}
+                          disabled={item?.outOfStock}
+                          size="sm"
+                          className="mt-3 w-full"
+                        >
+                          {item?.outOfStock ? "Out of Stock" : "Add"}
+                        </Button>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Discounted Products horizontal scroll */}
             {filteredProducts?.filter(product => product?.discount > 0).length > 0 && (

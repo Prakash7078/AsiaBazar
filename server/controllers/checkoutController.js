@@ -89,7 +89,7 @@ const addCustomerOrder = expressAsyncHandler(async(req,res)=>{
                 <!-- Pickup Notice -->
                 <div style="background-color: #fefce8; border-left: 4px solid #facc15; padding: 15px; border-radius: 4px; margin: 20px 0;">
                     <p style="margin: 0; color: #92400e; font-size: 15px;">
-                    ⚠️ <strong>Pickup Order:</strong> Please tell your <strong>${String(phone).slice(-3)}</strong> at the counter and pay when you pick up your order.
+                    ⚠️ <strong>Pickup Order:</strong> Please tell your full name <strong>${firstName}</strong> at the counter and pay when you pick up your order.
                     </p>
                 </div>
 

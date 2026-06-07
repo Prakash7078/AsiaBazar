@@ -29,6 +29,7 @@ import PasswordRequest from "./pages/PasswordRequest";
 import MenuSection from "./Components/MenuSection";
 import Cafe from "./Components/Cafe";
 import Store from "./Components/Store";
+import Chatbot from "./Components/Chatbot";
 
 const ProtectedAdminRoute = ({ children }) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
@@ -138,6 +139,7 @@ function App() {
             <Route path="reviews" element={<AdminReviews />} />
           </Route>
         </Routes>
+        <Chatbot />
       </BrowserRouter>
       
       <ToastContainer

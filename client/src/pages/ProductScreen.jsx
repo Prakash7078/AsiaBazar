@@ -9,6 +9,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ShoppingCart } from 'lucide-react';
+import { getRecommendedProducts } from '../utils/smartProductSearch';
 
 function ProductScreen() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function ProductScreen() {
   const { productId } = params;
   const [product, setProduct] = useState([]);
   const { products, loading } = useSelector((state) => state.product);
+  const cartItems = useSelector((state) => state.product.cartItems);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +53,29 @@ function ProductScreen() {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
+  const recommendedProducts = getRecommendedProducts(products, {
+    currentProduct: product,
+    cartItems,
+    limit: 8,
+  });
+
+  const relatedProducts = products?.filter((item) => {
+    if (item?._id === product?._id) return false;
+
+    if (product?.product_category?.toLowerCase() === "cafe") {
+      return item.product_name
+        ?.toLowerCase()
+        .includes(product?.product_name?.split("#")[1]?.toLowerCase());
+    }
+
+    return (
+      item.product_category?.toLowerCase() ===
+      product?.product_category?.toLowerCase()
+    );
+  });
+
+  const displayProducts = relatedProducts?.length > 0 ? relatedProducts : recommendedProducts;
 
   return (
     <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-8 mt-24">
@@ -129,7 +154,12 @@ function ProductScreen() {
 
       {/* ---------- RELATED PRODUCTS SECTION ---------- */}
       <div className="mt-20">
-        <h1 className="text-2xl font-bold underline mb-6">Related Products</h1>
+        <h1 className="text-2xl font-bold underline mb-2">Related Products</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          {relatedProducts?.length > 0
+            ? "Showing more items from the same section."
+            : "Smart picks based on availability, deals, and your cart."}
+        </p>
 
         {products?.length === 0 ? (
           <Typography variant="paragraph" className="text-center">
@@ -138,20 +168,7 @@ function ProductScreen() {
         ) : (
           <div className="overflow-x-auto pb-4 relative">
             <div className="flex gap-6 min-w-max">
-              {products
-                ?.filter((item) => {
-                  // If main product is in "cafe" category, filter by product_name containing '#DRINKS'
-                  if (product?.product_category?.toLowerCase() === "cafe") {
-                    return item.product_name?.toLowerCase().includes(product?.product_name?.split("#")[1]?.toLowerCase());
-                  } else {
-                    // Otherwise, filter by matching category
-                    return (
-                      item.product_category?.toLowerCase() ===
-                      product?.product_category?.toLowerCase()
-                    );
-                  }
-                })
-                .map((item) => (
+              {displayProducts.map((item) => (
                   <Card
                     key={item?._id}
                     shadow
@@ -205,7 +222,7 @@ function ProductScreen() {
                       <div className="mt-3">
                         <div className="flex items-center gap-2">
                           <Typography className="text-lg sm:text-xl text-red-500 font-bold">
-                            ${ (item?.product_price - (product?.product_price * product?.discount)/100).toFixed(2)}
+                            ${ (item?.product_price - (item?.product_price * item?.discount)/100).toFixed(2)}
                           </Typography>
                           <Typography className="text-sm sm:text-base  line-through">
                             ${item?.product_price}
