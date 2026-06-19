@@ -152,7 +152,7 @@ const Chatbot = () => {
   return (
     <>
       {isOpen && (
-        <div className="fixed bottom-24 right-3 sm:right-6 z-[60] w-[calc(100vw-1.5rem)] max-w-md overflow-hidden rounded-3xl border border-green-100 bg-white shadow-2xl">
+        <div className="fixed bottom-24 left-1/2 z-[60] w-[calc(100vw-1.5rem)] max-w-md -translate-x-1/2 overflow-hidden rounded-3xl border border-green-100 bg-white shadow-2xl sm:left-auto sm:right-6 sm:w-[28rem] sm:translate-x-0">
           <div className="bg-gradient-to-r from-green-700 to-emerald-500 px-4 py-4 text-white">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ const Chatbot = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="border-t border-green-100 bg-white/95 p-3">
+          <div className="border-t border-green-100 bg-white/95 p-3 sm:p-4">
             <div className="mb-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {QUICK_PROMPTS.map((prompt) => (
                 <button
@@ -242,21 +242,21 @@ const Chatbot = () => {
                 event.preventDefault();
                 sendMessage();
               }}
-              className="flex w-full items-center gap-2"
+              className="chatbot-composer flex w-full min-w-0 items-center gap-2 rounded-3xl border border-green-200 bg-white p-2 shadow-sm focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-100"
             >
               <input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 placeholder="Ask about products, café, pickup..."
-                className="min-w-0 flex-1 rounded-2xl border border-green-200 bg-gray-50 px-4 py-3 text-sm text-gray-800 shadow-inner placeholder:text-gray-400 focus:border-green-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-100"
+                className="min-w-0 flex-1 border-0 bg-transparent px-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-green-600 text-white shadow-md shadow-green-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
+                className="grid h-11 w-11 min-w-[2.75rem] place-items-center rounded-full bg-green-600 text-white shadow-md shadow-green-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-300"
                 aria-label="Send message"
               >
-                <Send size={18} />
+                <Send size={18} strokeWidth={2.5} />
               </button>
             </form>
           </div>
