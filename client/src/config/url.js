@@ -1,3 +1,1 @@
-export const BASE_URL = "https://asia-bazar-api.vercel.app";
-// export const BASE_URL = "http://localhost:5001";
-//urls need to change
+export const BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:5001").replace(/\/$/, "");

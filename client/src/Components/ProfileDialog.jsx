@@ -6,14 +6,12 @@ function ProfileDialog({ rollno, handle }) {
   const [isLoad, setIsLoad] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
-      await fetch(`${BASE_URL}/api/users/${rollno}`, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((data) => setUserInfo(data))
-        .finally(setIsLoad(false));
-      setUserInfo(user.data);
-      // console.log("user", user.data);
+      try {
+        const response = await fetch(`${BASE_URL}/api/users/${rollno}`);
+        setUserInfo(await response.json());
+      } finally {
+        setIsLoad(false);
+      }
     };
     fetchData();
   }, []);

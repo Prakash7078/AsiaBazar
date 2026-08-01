@@ -1,73 +1,33 @@
-const express=require('express');
-const dotenv=require('dotenv');
-const cors=require('cors');
-const multer=require('multer');
-const authRouter=require('./routes/authRoutes');
-const adminRouter = require('./routes/adminRoutes');
-const productRouter=require('./routes/productRoutes');
-const connectDB=require('./db/connectDB');
-const Product = require('./models/productModel');
-const app = express();
-dotenv.config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET);
+require("dotenv").config();
+const app = require("./app");
+const connectDB = require("./db/connectDB");
 
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 25 * 1024 * 1024, // 25MB in bytes
-  },
-});
-app.use(cors());
+const port = Number(process.env.PORT) || 5001;
+let server;
 
-//middlewares
-app.use(express.json());
-//socket server
-
-//create payment Intent used to send client secret to client
-app.post("/create-payment-intent", async (req, res) => {
-  const { amount } = req.body;
-  const amountInCents = Math.round(amount * 100);
-
-  // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: amountInCents,
-    currency: "usd",
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-    automatic_payment_methods: {
-      enabled: true,
-    },
-  });
-
-  res.send({
-    clientSecret: paymentIntent.client_secret,
-  });
-});
-
-
-
-app.use("/api/auth",upload.single("image"), authRouter);
-app.use("/api/admin",upload.array("product_images", 5),adminRouter)
-app.use("/api/products",productRouter)
-
-
-
-const port = process.env.PORT || 5001;
-
-// Start the server
-const start = async () => {
-  try {
-    await connectDB();
-    // await Product.updateMany(
-    //   {}, // Empty filter to select all documents
-    //   { $set: { discount: 0 } } // Set the new field with a default value
-    // );
-    app.listen(port, () => {
-      console.log(`Server listening on port ${port}`);
-    });
-  } catch (error) {
-    console.log(error);
+async function start() {
+  if (!process.env.MONGODB_URL) throw new Error("MONGODB_URL is required");
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+    throw new Error("JWT_SECRET must contain at least 32 characters");
   }
-};
+  await connectDB();
+  server = app.listen(port, () => console.log(`API listening on port ${port}`));
+}
 
-start();
+async function shutdown(signal) {
+  console.log(`${signal} received; shutting down`);
+  if (server) await new Promise((resolve) => server.close(resolve));
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled rejection", error);
+  process.exit(1);
+});
+
+start().catch((error) => {
+  console.error("Failed to start API", error);
+  process.exit(1);
+});
