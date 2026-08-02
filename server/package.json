@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "node --test",
-    "lint": "node --check server.js && node --check app.js && node --check middleware/auth.js",
+    "lint": "node --check server.js && node --check vercel.js && node --check app.js && node --check middleware/auth.js",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },

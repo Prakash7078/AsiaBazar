@@ -10,6 +10,8 @@
 
 Copy the `.env.example` files and supply secrets through the deployment platform. Use distinct keys and databases per environment. `CORS_ORIGINS` is a comma-separated allowlist. `TRUST_PROXY=1` is appropriate behind one trusted reverse proxy.
 
+For Vercel, configure `VITE_API_URL=https://asia-bazar-api.vercel.app` in the client project. Configure `MONGODB_URL`, a 32+ character `JWT_SECRET`, `CORS_ORIGINS=https://asiabazar.vercel.app`, and integration secrets in the API project. Redeploy after changing build-time client variables.
+
 ## Release and rollback
 
 Create a semantic version tag after CI passes. The release workflow publishes immutable client and server images tagged with the Git SHA and release version. Deploy through a protected environment. Roll back by redeploying the previous known-good image tag.
