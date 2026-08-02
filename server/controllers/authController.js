@@ -27,6 +27,7 @@ const login = expressAsyncHandler(async (req, res) => {
   // Compare provided password with hashed password
   if (bcrypt.compareSync(req.body.data.password, user.password)) {
     const token = generateToken(user);
+    delete user.password;
     res.status(201).json({ token, user });
     return;
   }
@@ -41,8 +42,11 @@ const signup = expressAsyncHandler(async (req, res) => {
     password,
     mobileno,
     address,
-    admin,
   } = req.body;
+
+  if (!name?.trim() || !email?.trim() || !password || password.length < 8) {
+    return res.status(400).json({ error: "Name, valid email, and an 8+ character password are required" });
+  }
 
   // Check if user already exists
   const existingUser = await User.findOne({ email });
@@ -52,7 +56,6 @@ const signup = expressAsyncHandler(async (req, res) => {
   }
   
   const hashedPassword = bcrypt.hashSync(password, 10);
-  console.log("hashed", hashedPassword)
   
   // Create and save new user document
   const newUser = await User.create({
@@ -61,13 +64,13 @@ const signup = expressAsyncHandler(async (req, res) => {
     password: hashedPassword,
     mobile_no: mobileno,
     address,
-    admin,
+    admin: false,
   });
-  
-  console.log(newUser);
+
   const token = generateToken(newUser);
-  
-  res.status(201).json({ token, user: newUser });
+  const safeUser = newUser.toObject();
+  delete safeUser.password;
+  res.status(201).json({ token, user: safeUser });
 });
 
 
@@ -79,7 +82,7 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       user_id,
       { name, email, mobile_no:phone, address },
-      { new: true, runValidators: true } // new:true returns updated doc
+      { new: true, runValidators: true, select: "-password" } // new:true returns updated doc
     );
 
     if (!updatedUser) {
@@ -98,13 +101,15 @@ const updateProfile = expressAsyncHandler(async (req, res) => {
 const resetPassword = expressAsyncHandler(async (req, res) => {
   const { id, token } = req.params;
   const { password } = req.body;
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Error with token" });
-    }
-  });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (String(decoded.id) !== String(id)) throw new Error("Token does not match user");
+  } catch (_error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid or expired token" });
+  }
+  if (typeof password !== "string" || password.length < 8) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Password must contain at least 8 characters" });
+  }
   const hash = bcrypt.hashSync(password, 10);
   // console.log("hash", hash);
   await User.findByIdAndUpdate(id, { password: hash });
@@ -126,7 +131,7 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
       .json({ message: "User Not Exist" });
   }
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "15m",
   });
   const message = `
     <!DOCTYPE html>
@@ -149,7 +154,7 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
 
           <!-- Reset Button -->
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://asiabazar.vercel.app/reset-password/${user._id}/${token}"
+            <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/reset-password/${user._id}/${token}"
               style="background-color: #16a34a; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold; display: inline-block;">
               Reset My Password
             </a>
@@ -166,9 +171,9 @@ const forgotPassword = expressAsyncHandler(async (req, res) => {
           <p style="color: #9ca3af; font-size: 13px;">
             If the button doesn't work, copy and paste this link into your browser:
             <br/>
-            <a href="https://asiabazar.vercel.app/reset-password/${user._id}/${token}" 
+            <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/reset-password/${user._id}/${token}"
               style="color: #16a34a; word-break: break-all;">
-              https://asiabazar.vercel.app/reset-password/${user._id}/${token}
+              ${process.env.CLIENT_URL || "http://localhost:5173"}/reset-password/${user._id}/${token}
             </a>
           </p>
         </div>

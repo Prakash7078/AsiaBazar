@@ -202,7 +202,10 @@ const Checkout = () => {
       try {
         const response = await fetch(`${BASE_URL}/create-payment-intent`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           body: JSON.stringify({ amount: total }),
         });
 

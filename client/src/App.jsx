@@ -88,7 +88,8 @@ function App() {
   };
 
   // This is your test publishable API key
-  const stripePromise = loadStripe('pk_test_51RyflqKnzA1djliPeNryh0ES6pw1NvRIcb7LOnw1S4q4VQsq3hNgjmi3Sbfl92EE1uHJbfSINguJsB8Og6nV34Ow00qKC55yV4');
+  const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+  const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -111,9 +112,11 @@ function App() {
           <Route 
             path="/checkout" 
             element={
-              <Elements options={options} stripe={stripePromise}>
-                <Checkout />
-              </Elements>
+              userInfo ? (
+                <Elements options={options} stripe={stripePromise}>
+                  <Checkout />
+                </Elements>
+              ) : <Navigate to="/login" replace />
             } 
           />
           {/* <Route path="/allitems" element={<Categories />} /> */}
