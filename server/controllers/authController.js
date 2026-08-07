@@ -13,26 +13,26 @@ const {sendMail} = require("../middleware/sendMail");
 dotenv.config();
 
 const login = expressAsyncHandler(async (req, res) => {
-  
-  // Find user by email
-  const user = await User.findOne({ 
-      email: req.body.data.email.toLowerCase() 
-  }).lean(); 
+  const email = req.body?.data?.email?.toLowerCase?.().trim?.();
+  const password = req.body?.data?.password;
 
-  if (!user) {
-    res.status(403).send({ error: "user not found" });
-    return;
+  if (!email || !password) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: "Email and password are required" });
   }
-  
-  // Compare provided password with hashed password
-  if (bcrypt.compareSync(req.body.data.password, user.password)) {
-    const token = generateToken(user);
-    delete user.password;
-    res.status(201).json({ token, user });
-    return;
+
+  const user = await User.findOne({ email }).lean();
+
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ error: "Invalid email or password" });
   }
-  
-  res.status(401).send({ error: "Invalid Password" });
+
+  const token = generateToken(user);
+  delete user.password;
+  return res.status(StatusCodes.OK).json({ token, user });
 });
 
 const signup = expressAsyncHandler(async (req, res) => {
